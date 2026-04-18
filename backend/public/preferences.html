@@ -1,0 +1,73 @@
+<\!doctype html>
+<html lang="en"><head><meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Preferences - AstroPath</title><link rel="stylesheet" href="/demo/static/app.css" /></head><body>
+<main class="container">
+<h1>Preferences</h1>
+<p class="muted">GET /v1/profile/preferences, PATCH /v1/profile/preferences. Language here is the backend's stored preference — separate from this page's language picker in the top bar.</p>
+
+<div id="current"><div class="muted">Loading current preferences…</div></div>
+
+<h2>Update</h2>
+<div class="panel">
+  <div class="row">
+    <div><label>Language code</label>
+      <select id="languageCode">
+        <option value="en">en (English)</option>
+        <option value="hi">hi (Hindi)</option>
+        <option value="mr">mr (Marathi)</option>
+      </select>
+    </div>
+    <div><label>Notifications</label>
+      <select id="notificationsEnabled"><option value="true">enabled</option><option value="false">disabled</option></select>
+    </div>
+    <div><label>Consultation mode</label>
+      <select id="consultationMode"><option>chat</option><option>call</option><option>video</option></select>
+    </div>
+    <div><label>Focus area</label>
+      <select id="focusArea">
+        <option>balance</option><option>career</option><option>love</option><option>finance</option><option>spiritual</option>
+      </select>
+    </div>
+  </div>
+  <div style="margin-top:12px;"><button id="go">Save</button></div>
+</div>
+
+<div id="out"></div>
+</main>
+<script src="/demo/static/app.js"></script>
+<script>
+AP.renderTopbar();
+const cur = document.getElementById('current');
+const out = document.getElementById('out');
+async function load() {
+  try {
+    const body = await AP.api('/v1/profile/preferences');
+    cur.innerHTML = '';
+    cur.appendChild(AP.el('div', { class: 'panel' }, AP.kv(body.data)));
+    for (const k of ['languageCode', 'consultationMode', 'focusArea']) {
+      const v = body.data[k];
+      const s = document.getElementById(k);
+      if (s) s.value = v;
+    }
+    document.getElementById('notificationsEnabled').value = String(body.data.notificationsEnabled);
+  } catch (err) { AP.showError(cur, err); }
+}
+load();
+document.getElementById('go').onclick = async () => {
+  out.innerHTML = '<div class="muted">Saving…</div>';
+  try {
+    const body = await AP.api('/v1/profile/preferences', {
+      method: 'PATCH',
+      body: {
+        languageCode: document.getElementById('languageCode').value,
+        notificationsEnabled: document.getElementById('notificationsEnabled').value === 'true',
+        consultationMode: document.getElementById('consultationMode').value,
+        focusArea: document.getElementById('focusArea').value,
+      },
+    });
+    out.innerHTML = '';
+    out.appendChild(AP.el('div', { class: 'success-msg' }, '✓ Saved'));
+    out.appendChild(AP.kv(body.data));
+  } catch (err) { AP.showError(out, err); }
+};
+</script></body></html>

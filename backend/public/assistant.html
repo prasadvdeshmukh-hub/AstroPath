@@ -1,0 +1,70 @@
+<\!doctype html>
+<html lang="en"><head><meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>AI Assistant - AstroPath</title><link rel="stylesheet" href="/demo/static/app.css" /></head><body>
+<main class="container">
+<h1>AI assistant</h1>
+<p class="muted">GET /v1/assistant/snapshot, POST /v1/assistant/query. Advisory, non-deterministic.</p>
+
+<div id="snap"><div class="muted">Loading snapshot…</div></div>
+
+<h2>Ask the assistant</h2>
+<div class="panel">
+  <label>Prompt</label>
+  <textarea id="prompt" rows="3">What should I focus on this week?</textarea>
+  <div style="margin-top:12px;"><button id="go">Ask</button></div>
+</div>
+<div id="answer"></div>
+</main>
+<script src="/demo/static/app.js"></script>
+<script>
+AP.renderTopbar();
+const snapEl = document.getElementById('snap');
+const ansEl = document.getElementById('answer');
+(async () => {
+  try {
+    const body = await AP.api('/v1/assistant/snapshot');
+    const s = body.data;
+    snapEl.innerHTML = '';
+    snapEl.appendChild(AP.el('div', { class: 'panel' },
+      AP.el('div', { style: 'font-size:18px;color:var(--gold);' }, s.welcomeTitle),
+      AP.el('p', null, s.welcomeBody),
+      AP.el('div', { class: 'muted' }, s.disclaimer)
+    ));
+    snapEl.appendChild(AP.el('h2', null, 'Try a suggestion'));
+    const row = AP.el('div', { class: 'grid' });
+    for (const sg of s.suggestions) {
+      row.appendChild(AP.el('div', { class: 'card', onclick: () => {
+        document.getElementById('prompt').value = sg.prompt;
+      }, style: 'cursor:pointer;' },
+        AP.el('div', { class: 'title' }, sg.label),
+        AP.el('div', { class: 'sub' }, sg.prompt)));
+    }
+    snapEl.appendChild(row);
+    snapEl.appendChild(AP.el('h2', null, 'Starter messages'));
+    for (const m of s.starterMessages) {
+      snapEl.appendChild(AP.el('div', { class: 'card' }, m.text));
+    }
+  } catch (err) { AP.showError(snapEl, err); }
+})();
+
+document.getElementById('go').onclick = async () => {
+  ansEl.innerHTML = '<div class="muted">Thinking…</div>';
+  try {
+    const body = await AP.api('/v1/assistant/query', {
+      method: 'POST',
+      body: { prompt: document.getElementById('prompt').value },
+    });
+    const a = body.data;
+    ansEl.innerHTML = '';
+    ansEl.appendChild(AP.el('div', { class: 'panel' },
+      AP.el('p', null, a.reply),
+      AP.el('div', { class: 'muted' }, 'nonDeterministic: ' + a.nonDeterministic)
+    ));
+    const row = AP.el('div', { class: 'row' });
+    for (const s of a.suggestedActions) {
+      row.appendChild(AP.el('button', { class: 'secondary' }, s.label));
+    }
+    ansEl.appendChild(row);
+  } catch (err) { AP.showError(ansEl, err); }
+};
+</script></body></html>

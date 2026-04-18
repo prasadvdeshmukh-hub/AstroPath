@@ -1,0 +1,343 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AstroPath — Dashboard</title>
+<link rel="stylesheet" href="./shared.css">
+<style>
+  .greet {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-top: 22px;
+  }
+  .greet h2 {
+    margin: 0; font-size: 1.4rem; letter-spacing: -0.02em; color: var(--gold-3);
+  }
+  .greet-sub { color: var(--muted); font-size: 0.84rem; margin-top: 4px; }
+  .avatar {
+    width: 44px; height: 44px; border-radius: 50%;
+    background:
+      radial-gradient(circle at 30% 30%, rgba(255,235,190,0.85), rgba(255,180,100,0.5) 40%, transparent 70%),
+      linear-gradient(135deg, rgba(255,210,140,0.4), rgba(192,124,255,0.4));
+    border: 1px solid rgba(255, 235, 205, 0.2);
+  }
+
+  /* today horoscope card */
+  .horoscope {
+    position: relative;
+    margin-top: 16px;
+    padding: 18px;
+    border-radius: 22px;
+    background:
+      radial-gradient(circle at 100% 0%, rgba(255, 188, 100, 0.22), transparent 54%),
+      radial-gradient(circle at 0% 100%, rgba(200, 123, 255, 0.18), transparent 50%),
+      linear-gradient(180deg, rgba(40,20,70,0.8), rgba(16,8,28,0.9));
+    border: 1px solid rgba(255, 213, 148, 0.24);
+    overflow: hidden;
+  }
+  .horoscope::before {
+    content: "";
+    position: absolute; right: -40px; top: -40px;
+    width: 160px; height: 160px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(255,180,90,0.6) 0%, rgba(255,180,90,0.10) 40%, transparent 60%);
+    filter: blur(4px);
+  }
+  .horoscope-label {
+    color: var(--gold-3); font-size: 0.72rem; letter-spacing: 0.18em; text-transform: uppercase;
+  }
+  .horoscope-title { margin: 6px 0 8px; font-size: 1.2rem; font-weight: 700; color: var(--gold-2); }
+  .horoscope-body { color: var(--muted); font-size: 0.86rem; line-height: 1.55; margin: 0; }
+  .horoscope-cta {
+    margin-top: 14px;
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 10px 14px; border-radius: 999px;
+    background: linear-gradient(135deg, var(--gold), var(--amber));
+    color: #2b1308; font-weight: 700; text-decoration: none; font-size: 0.84rem;
+  }
+
+  /* energy gauge */
+  .energy {
+    margin-top: 14px;
+    padding: 16px;
+    border-radius: 20px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,236,205,0.10);
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 16px;
+    align-items: center;
+  }
+  .gauge {
+    --val: 76;
+    width: 66px; height: 66px;
+    border-radius: 50%;
+    background:
+      conic-gradient(var(--gold) 0 calc(var(--val) * 1%),
+                     rgba(255,255,255,0.08) calc(var(--val) * 1%) 100%);
+    display: grid; place-items: center;
+    box-shadow: 0 0 18px rgba(255,176,84,0.25);
+  }
+  .gauge::after {
+    content: attr(data-val) "%";
+    width: 50px; height: 50px; border-radius: 50%;
+    background: rgba(8,4,18,0.94);
+    display: grid; place-items: center;
+    color: var(--gold-3); font-weight: 700; font-size: 0.9rem;
+  }
+  .energy-label { color: var(--gold-3); font-size: 0.72rem; letter-spacing: 0.16em; text-transform: uppercase; }
+  .energy-title { font-weight: 700; font-size: 1rem; margin: 4px 0; color: var(--text); }
+  .energy-sub { color: var(--muted); font-size: 0.82rem; margin: 0; }
+
+  /* quick actions */
+  .quick {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+  }
+  .qa {
+    display: flex; flex-direction: column; align-items: center; gap: 6px;
+    padding: 12px 6px;
+    border-radius: 16px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,236,205,0.09);
+    color: var(--text);
+    font-size: 0.72rem;
+    cursor: pointer;
+    text-decoration: none;
+    transition: 180ms ease;
+  }
+  .qa:hover { border-color: rgba(255, 213, 148, 0.30); transform: translateY(-1px); }
+  .qa-icon {
+    width: 34px; height: 34px; border-radius: 12px;
+    display: grid; place-items: center;
+    background: linear-gradient(135deg, rgba(255, 213, 148, 0.25), rgba(192,124,255,0.25));
+    color: var(--gold-3);
+  }
+
+  /* moon phase */
+  .moon {
+    margin-top: 14px; padding: 16px;
+    border-radius: 20px;
+    background: linear-gradient(180deg, rgba(40,20,70,0.6), rgba(10,6,20,0.7));
+    border: 1px solid rgba(255, 236, 205, 0.10);
+    display: grid;
+    grid-template-columns: 64px 1fr;
+    gap: 14px; align-items: center;
+  }
+  .moon-orb {
+    width: 64px; height: 64px; border-radius: 50%;
+    background:
+      radial-gradient(circle at 30% 30%, #f5e7c4, #8a7ea0 60%, #2b1f44 100%);
+    box-shadow: inset -10px -8px 18px rgba(0,0,0,0.6), 0 0 22px rgba(200,180,255,0.25);
+  }
+  .moon-label { color: var(--muted-2); font-size: 0.7rem; letter-spacing: 0.14em; text-transform: uppercase; }
+  .moon-phase { font-weight: 700; color: var(--gold-3); margin: 4px 0; }
+  .moon-sub { color: var(--muted); font-size: 0.82rem; margin: 0; }
+
+  /* notifications */
+  .notif {
+    display: grid; gap: 8px;
+  }
+  .n-item {
+    display: grid; grid-template-columns: auto 1fr auto; gap: 10px; align-items: center;
+    padding: 10px 12px;
+    border-radius: 14px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,236,205,0.08);
+  }
+  .n-dot { width: 8px; height: 8px; border-radius: 50%; }
+  .n-dot.gold   { background: var(--gold);   box-shadow: 0 0 8px var(--gold); }
+  .n-dot.plasma { background: var(--plasma); box-shadow: 0 0 8px var(--plasma); }
+  .n-dot.teal   { background: var(--teal);   box-shadow: 0 0 8px var(--teal); }
+  .n-title { font-size: 0.86rem; font-weight: 600; }
+  .n-sub { color: var(--muted); font-size: 0.76rem; margin-top: 2px; }
+  .n-time { color: var(--muted-2); font-size: 0.72rem; }
+</style>
+</head>
+<body>
+<main class="scene">
+  <section class="shell">
+    <article class="panel hero">
+      <a class="portal-link" href="./hub.html">← All previews</a>
+
+      <div class="hero-top">
+        <span class="eyebrow">Daily Cosmos</span>
+        <h1>One glance.<br>Today's whole sky.</h1>
+        <p class="hero-copy">
+          The dashboard is the user's morning ritual — greeting, today's horoscope, energy score,
+          quick actions for kundli / panchang / consultation, current moon phase, and fresh notifications —
+          all in a single scroll.
+        </p>
+      </div>
+
+      <div class="hero-grid">
+        <div class="stat">
+          <span class="stat-label">Energy</span>
+          <span class="stat-value">76%</span>
+        </div>
+        <div class="stat">
+          <span class="stat-label">Moon</span>
+          <span class="stat-value">Waxing Gibbous</span>
+        </div>
+        <div class="stat">
+          <span class="stat-label">Next Muhurat</span>
+          <span class="stat-value">04:58 AM</span>
+        </div>
+      </div>
+    </article>
+
+    <article class="panel form-wrap">
+      <div class="phone-frame">
+        <div class="phone-notch"></div>
+        <div class="phone-screen">
+          <div class="status-row">
+            <span>9:41</span>
+            <span><span class="status-dot"></span>Aligned</span>
+          </div>
+
+          <div class="greet">
+            <div>
+              <h2 id="greeting">Good morning, Vihaan ✦</h2>
+              <div class="greet-sub" id="greetingSub">Saturday, 18 April · Chitra Nakshatra</div>
+            </div>
+            <div class="avatar" aria-hidden="true"></div>
+          </div>
+
+          <div class="horoscope">
+            <span class="horoscope-label">Today's Horoscope</span>
+            <div class="horoscope-title" id="horoTitle">The sun favours your second house.</div>
+            <p class="horoscope-body" id="horoBody">
+              A career conversation opens a door you didn't know was closed. Move with intent after 3 PM,
+              and avoid financial commitments until Mercury settles tomorrow morning.
+            </p>
+            <a class="horoscope-cta" href="./horoscope.html">Read full horoscope →</a>
+          </div>
+
+          <div class="energy">
+            <div class="gauge" id="energyGauge" data-val="76" style="--val: 76;"></div>
+            <div>
+              <div class="energy-label">Cosmic Energy</div>
+              <div class="energy-title" id="energyTitle">76 · High focus window</div>
+              <p class="energy-sub" id="energySub">Best time for decisions: 10:30 AM – 1:45 PM</p>
+            </div>
+          </div>
+
+          <div class="section-h">
+            <h3>Quick Actions</h3>
+            <a href="#">Customize</a>
+          </div>
+          <div class="quick">
+            <a class="qa" href="./kundli.html">
+              <div class="qa-icon">⊕</div>
+              <span>Kundli</span>
+            </a>
+            <a class="qa" href="./panchang.html">
+              <div class="qa-icon">☼</div>
+              <span>Panchang</span>
+            </a>
+            <a class="qa" href="./consultation.html">
+              <div class="qa-icon">💬</div>
+              <span>Consult</span>
+            </a>
+            <a class="qa" href="./assistant.html">
+              <div class="qa-icon">✶</div>
+              <span>AI Guru</span>
+            </a>
+          </div>
+
+          <div class="moon">
+            <div class="moon-orb"></div>
+            <div>
+              <div class="moon-label">Moon Phase</div>
+              <div class="moon-phase" id="moonPhase">Waxing Gibbous · 82%</div>
+              <p class="moon-sub" id="moonSub">Ideal for starting long-term commitments. Energy peaks at 11:14 PM.</p>
+            </div>
+          </div>
+
+          <div class="section-h">
+            <h3>Recent</h3>
+            <a href="#">See all</a>
+          </div>
+          <div class="notif">
+            <div class="n-item">
+              <span class="n-dot gold"></span>
+              <div>
+                <div class="n-title">Astrologer Pandit Verma replied</div>
+                <div class="n-sub">"Regarding your career question — let's talk..."</div>
+              </div>
+              <span class="n-time">2m</span>
+            </div>
+            <div class="n-item">
+              <span class="n-dot plasma"></span>
+              <div>
+                <div class="n-title">Mangal Dosha weakens this week</div>
+                <div class="n-sub">Remedy suggestions available</div>
+              </div>
+              <span class="n-time">1h</span>
+            </div>
+            <div class="n-item">
+              <span class="n-dot teal"></span>
+              <div>
+                <div class="n-title">Compatibility report ready</div>
+                <div class="n-sub">Your Guna Milan score is 27/36</div>
+              </div>
+              <span class="n-time">yst</span>
+            </div>
+          </div>
+
+          <nav class="bottom-nav">
+            <a class="bn-item is-active" href="./dashboard.html"><span class="bn-icon">☰</span>Home</a>
+            <a class="bn-item" href="./kundli.html"><span class="bn-icon">⊕</span>Kundli</a>
+            <a class="bn-item" href="./consultation.html"><span class="bn-icon">💬</span>Consult</a>
+            <a class="bn-item" href="./assistant.html"><span class="bn-icon">✶</span>AI</a>
+            <a class="bn-item" href="./settings.html"><span class="bn-icon">⚙</span>More</a>
+          </nav>
+        </div>
+      </div>
+    </article>
+  </section>
+</main>
+
+<script src="./app.js"></script>
+<script>
+  (async function () {
+    const AP = window.AstroPath;
+    if (!AP) return;
+    if (!(await AP.guard('app'))) return;
+
+    // Seed greeting from the cached user while we fetch.
+    const hour = new Date().getHours();
+    const greetBase = hour < 5 ? 'Good night' : hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
+    const user = AP.state.user;
+    const name = (AP.state.birthInfo && AP.state.birthInfo.name) || (user && user.email ? user.email.split('@')[0] : 'seeker');
+    AP.dom.setText('#greeting', greetBase + ', ' + name + ' ✦');
+
+    const today = new Date();
+    const fmt = today.toLocaleDateString(undefined, { weekday: 'long', day: 'numeric', month: 'long' });
+    AP.dom.setText('#greetingSub', fmt);
+
+    try {
+      const data = await AP.api.dashboard();
+      if (data) {
+        if (data.greeting) AP.dom.setText('#greeting', data.greeting + ' ✦');
+        if (data.horoscopeHeadline) AP.dom.setText('#horoTitle', data.horoscopeHeadline);
+        if (data.horoscopeBody)     AP.dom.setText('#horoBody', data.horoscopeBody);
+        if (typeof data.energyScore === 'number') {
+          const g = document.getElementById('energyGauge');
+          if (g) {
+            g.style.setProperty('--val', String(data.energyScore));
+            g.setAttribute('data-val', String(data.energyScore));
+          }
+          AP.dom.setText('#energyTitle', data.energyScore + ' · ' + (data.energyScore >= 70 ? 'High focus window' : 'Steady pace today'));
+        }
+        if (data.moonPhase) AP.dom.setText('#moonPhase', data.moonPhase);
+        if (data.sunSign)   AP.dom.setText('#greetingSub', fmt + ' · ' + data.sunSign);
+      }
+    } catch (err) {
+      console.warn('Dashboard load failed:', err && err.message);
+      AP.dom.toast('Offline — showing cached dashboard.');
+    }
+  })();
+</script>
+</body>
+</html>

@@ -1,0 +1,52 @@
+<\!doctype html>
+<html lang="en"><head><meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Login - AstroPath</title><link rel="stylesheet" href="/demo/static/app.css" /></head><body>
+<main class="container">
+<h1>Session login</h1>
+<p class="muted">The backend runs with <code>AUTH_MODE=bypass</code> by default, so any click creates a synthetic dev session. In production, pass a Firebase ID token via the Authorization header.</p>
+
+<div class="panel">
+  <label>Firebase ID token (optional, for AUTH_MODE=firebase)</label>
+  <input id="token" type="text" placeholder="Leave blank to use bypass mode" />
+  <div style="margin-top:12px;display:flex;gap:8px;">
+    <button id="go">Start session</button>
+    <button class="secondary" id="clear">Clear</button>
+  </div>
+</div>
+
+<h2>Result</h2>
+<div id="out"></div>
+</main>
+<script src="/demo/static/app.js"></script>
+<script>
+AP.renderTopbar();
+const out = document.getElementById('out');
+document.getElementById('go').onclick = async () => {
+  out.innerHTML = '<div class="muted">Calling POST /v1/auth/session…</div>';
+  try {
+    const token = document.getElementById('token').value.trim();
+    const headers = token ? { 'authorization': 'Bearer ' + token } : {};
+    const res = await fetch('/v1/auth/session?lang=' + AP.getLocale(), {
+      method: 'POST',
+      headers: Object.assign({ 'content-type': 'application/json', 'accept-language': AP.getLocale() }, headers),
+      body: JSON.stringify({}),
+    });
+    const body = await res.json();
+    if (\!res.ok) throw Object.assign(new Error(body.error && body.error.message || ('HTTP ' + res.status)), { body });
+    out.innerHTML = '';
+    out.appendChild(AP.el('div', { class: 'success-msg' }, '✓ Session established'));
+    out.appendChild(AP.el('h2', null, 'User'));
+    out.appendChild(AP.kv(body.data.user));
+    out.appendChild(AP.el('h2', null, 'Profile preferences'));
+    out.appendChild(AP.kv(body.data.profile.preferences));
+    out.appendChild(AP.el('h2', null, 'Raw response'));
+    out.appendChild(AP.rawJson(body));
+  } catch (err) {
+    AP.showError(out, err);
+  }
+};
+document.getElementById('clear').onclick = () => {
+  out.innerHTML = '';
+  document.getElementById('token').value = '';
+};
+</script></body></html>

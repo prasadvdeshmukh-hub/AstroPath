@@ -1,0 +1,57 @@
+<\!doctype html>
+<html lang="en"><head><meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Panchang - AstroPath</title><link rel="stylesheet" href="/demo/static/app.css" /></head><body>
+<main class="container">
+<h1>Panchang</h1>
+<p class="muted">GET /v1/panchang. Tithi, nakshatra, yoga, karana, sunrise/sunset, Rahu Kalam — computed astronomically, localized weekday.</p>
+
+<div class="panel">
+  <div class="row">
+    <div><label>Date</label><input id="date" type="date" value="2020-01-01" /></div>
+    <div><label>Latitude</label><input id="latitude" type="number" step="0.0001" value="18.5204" /></div>
+    <div><label>Longitude</label><input id="longitude" type="number" step="0.0001" value="73.8567" /></div>
+    <div><label>TZ offset (minutes)</label><input id="tz" type="number" value="330" /></div>
+  </div>
+  <div style="margin-top:12px;"><button id="go">Fetch panchang</button></div>
+</div>
+
+<div id="out"></div>
+</main>
+<script src="/demo/static/app.js"></script>
+<script>
+AP.renderTopbar();
+const out = document.getElementById('out');
+async function fetchIt() {
+  out.innerHTML = '<div class="muted">Loading…</div>';
+  try {
+    const q = new URLSearchParams({
+      date: document.getElementById('date').value,
+      latitude: document.getElementById('latitude').value,
+      longitude: document.getElementById('longitude').value,
+      tzOffsetMinutes: document.getElementById('tz').value,
+    });
+    const body = await AP.api('/v1/panchang?' + q.toString());
+    const p = body.data;
+    out.innerHTML = '';
+    out.appendChild(AP.el('div', { class: 'panel' },
+      AP.el('div', { style: 'font-size:22px;color:var(--gold);' }, p.vara + ' · ' + p.date),
+      AP.el('div', { class: 'muted' }, p.paksha + ' ' + p.tithi + '  (tithiIndex ' + p.tithiIndex + ')'),
+      AP.el('p', null, p.auspicious)
+    ));
+    out.appendChild(AP.kv({
+      Nakshatra: p.nakshatra,
+      Yoga: p.yoga,
+      Karana: p.karana,
+      Sunrise: p.sunrise,
+      Sunset: p.sunset,
+      Moonrise: p.moonrise,
+      Moonset: p.moonset,
+      'Rahu Kalam': p.rahuKalam ? (p.rahuKalam.start + ' - ' + p.rahuKalam.end) : 'n/a',
+    }));
+    out.appendChild(AP.el('h2', null, 'Raw response'));
+    out.appendChild(AP.rawJson(body));
+  } catch (err) { AP.showError(out, err); }
+}
+document.getElementById('go').onclick = fetchIt;
+fetchIt();
+</script></body></html>

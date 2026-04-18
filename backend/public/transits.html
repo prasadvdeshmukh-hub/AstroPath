@@ -1,0 +1,61 @@
+<\!doctype html>
+<html lang="en"><head><meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Transits - AstroPath</title><link rel="stylesheet" href="/demo/static/app.css" /></head><body>
+<main class="container">
+<h1>Transits</h1>
+<p class="muted">GET /v1/transits?date=…[&amp;natalLagna=&amp;natalMoon=]. Current planetary placements, optionally as houses relative to your natal chart.</p>
+
+<div class="panel">
+  <div class="row">
+    <div><label>Date</label><input id="date" type="date" value="2026-04-17" /></div>
+    <div><label>Natal lagna (sidereal °, 0-360, optional)</label><input id="natalLagna" type="number" step="0.01" value="34.76" /></div>
+    <div><label>Natal Moon (sidereal °, 0-360, optional)</label><input id="natalMoon" type="number" step="0.01" value="216.96" /></div>
+  </div>
+  <div style="margin-top:12px;"><button id="go">Fetch transits</button></div>
+</div>
+
+<div id="out"></div>
+</main>
+<script src="/demo/static/app.js"></script>
+<script>
+AP.renderTopbar();
+const out = document.getElementById('out');
+async function fetchIt() {
+  out.innerHTML = '<div class="muted">Loading…</div>';
+  try {
+    const qs = new URLSearchParams({
+      date: document.getElementById('date').value,
+    });
+    const nl = document.getElementById('natalLagna').value;
+    const nm = document.getElementById('natalMoon').value;
+    if (nl) qs.set('natalLagna', nl);
+    if (nm) qs.set('natalMoon', nm);
+    const body = await AP.api('/v1/transits?' + qs.toString());
+    const t = body.data;
+    out.innerHTML = '';
+    out.appendChild(AP.el('div', { class: 'muted' }, 'asOf ' + t.asOf + ' · ayanamsa ' + t.ayanamsa));
+    const tbl = AP.el('table', null,
+      AP.el('thead', null, AP.el('tr', null,
+        AP.el('th', null, 'Planet'), AP.el('th', null, 'Sign'), AP.el('th', null, 'Deg'),
+        AP.el('th', null, 'Nakshatra'), AP.el('th', null, 'From Lagna'), AP.el('th', null, 'From Moon')))
+    );
+    const tb = AP.el('tbody');
+    for (const p of t.planets) {
+      tb.appendChild(AP.el('tr', null,
+        AP.el('td', null, p.planet),
+        AP.el('td', null, p.sign),
+        AP.el('td', null, p.degreesInSign + '°'),
+        AP.el('td', null, p.nakshatra.name + ' pada ' + p.nakshatra.pada),
+        AP.el('td', null, p.houseFromLagna ? String(p.houseFromLagna) : '—'),
+        AP.el('td', null, p.houseFromMoon ? String(p.houseFromMoon) : '—')
+      ));
+    }
+    tbl.appendChild(tb);
+    out.appendChild(tbl);
+    out.appendChild(AP.el('h2', null, 'Raw response'));
+    out.appendChild(AP.rawJson(body));
+  } catch (err) { AP.showError(out, err); }
+}
+document.getElementById('go').onclick = fetchIt;
+fetchIt();
+</script></body></html>

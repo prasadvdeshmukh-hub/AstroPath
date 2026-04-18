@@ -1,0 +1,81 @@
+<\!doctype html>
+<html lang="en"><head><meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Consultations - AstroPath</title><link rel="stylesheet" href="/demo/static/app.css" /></head><body>
+<main class="container">
+<h1>Astrologer marketplace</h1>
+<p class="muted">GET /v1/consultations/hub, POST /v1/consultations/session.</p>
+
+<div id="hub"><div class="muted">Loading hub…</div></div>
+
+<h2>Queue a session</h2>
+<div class="panel">
+  <div class="row">
+    <div><label>Astrologer</label><select id="astrologer"></select></div>
+    <div><label>Mode</label>
+      <select id="mode"><option>chat</option><option>call</option><option>video</option></select>
+    </div>
+  </div>
+  <div style="margin-top:12px;"><button id="go">Queue session</button></div>
+</div>
+<div id="session"></div>
+</main>
+<script src="/demo/static/app.js"></script>
+<script>
+AP.renderTopbar();
+const hubEl = document.getElementById('hub');
+const sessEl = document.getElementById('session');
+const astroSelect = document.getElementById('astrologer');
+(async () => {
+  try {
+    const body = await AP.api('/v1/consultations/hub');
+    const h = body.data;
+    hubEl.innerHTML = '';
+    hubEl.appendChild(AP.el('div', { class: 'panel' },
+      AP.el('div', { style: 'font-size:18px;color:var(--gold);' }, h.walletHeadline),
+      AP.el('div', { class: 'muted' }, 'Wallet balance ₹' + h.walletBalance + ' · bonus ₹' + h.walletBonus),
+      AP.el('p', null, h.walletBody)
+    ));
+    hubEl.appendChild(AP.el('h2', null, 'Categories'));
+    const g1 = AP.el('div', { class: 'grid' });
+    for (const c of h.categories) g1.appendChild(AP.el('div', { class: 'card' },
+      AP.el('div', { class: 'title' }, c.title),
+      AP.el('div', { class: 'sub' }, c.subtitle)));
+    hubEl.appendChild(g1);
+    hubEl.appendChild(AP.el('h2', null, 'Astrologers'));
+    const g2 = AP.el('div', { class: 'grid' });
+    for (const a of h.astrologers) {
+      g2.appendChild(AP.el('div', { class: 'card' },
+        AP.el('div', { class: 'title' }, a.name + '  ★ ' + a.rating),
+        AP.el('div', { class: 'sub' }, a.specialty),
+        AP.el('div', { class: 'muted', style: 'margin-top:6px;' },
+          '₹' + a.pricePerMinute + '/min · ' + a.experienceYears + 'y exp · wait ' + a.waitMinutes + 'm · ' +
+          (a.isOnline ? 'online' : 'offline') + ' · ' + a.modes.join('/')),
+        AP.el('p', { style: 'margin-top:6px;' }, a.focusLine)
+      ));
+      const opt = AP.el('option', { value: a.id }, a.name);
+      astroSelect.appendChild(opt);
+    }
+    hubEl.appendChild(g2);
+    hubEl.appendChild(AP.el('h2', null, 'Reviews'));
+    const g3 = AP.el('div', { class: 'grid' });
+    for (const r of h.reviews) g3.appendChild(AP.el('div', { class: 'card' },
+      AP.el('div', { class: 'title' }, r.headline),
+      AP.el('div', { class: 'sub' }, '— ' + r.author),
+      AP.el('p', { style: 'margin-top:6px;' }, r.quote)));
+    hubEl.appendChild(g3);
+  } catch (err) { AP.showError(hubEl, err); }
+})();
+
+document.getElementById('go').onclick = async () => {
+  sessEl.innerHTML = '<div class="muted">Queuing…</div>';
+  try {
+    const body = await AP.api('/v1/consultations/session', {
+      method: 'POST',
+      body: { astrologerId: astroSelect.value, mode: document.getElementById('mode').value },
+    });
+    sessEl.innerHTML = '';
+    sessEl.appendChild(AP.el('div', { class: 'success-msg' }, '✓ Session queued'));
+    sessEl.appendChild(AP.kv(body.data));
+  } catch (err) { AP.showError(sessEl, err); }
+};
+</script></body></html>

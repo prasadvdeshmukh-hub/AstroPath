@@ -1,0 +1,239 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AstroPath — Panchang & Muhurat</title>
+<link rel="stylesheet" href="./shared.css">
+<style>
+  .sun-arc {
+    position: relative;
+    margin-top: 16px;
+    padding: 18px;
+    border-radius: 22px;
+    background:
+      radial-gradient(circle at 50% 120%, rgba(255, 154, 58, 0.30), transparent 60%),
+      linear-gradient(180deg, rgba(40,20,70,0.7), rgba(10,5,20,0.9));
+    border: 1px solid rgba(255, 213, 148, 0.22);
+    overflow: hidden;
+  }
+  .sun-arc svg { width: 100%; height: auto; display: block; }
+  .sun-times {
+    display: flex; justify-content: space-between;
+    margin-top: 8px; color: var(--muted-2);
+    font-size: 0.74rem; letter-spacing: 0.12em; text-transform: uppercase;
+  }
+  .sun-times b { color: var(--gold-3); font-weight: 700; font-size: 0.84rem; letter-spacing: 0.02em; text-transform: none; display: block; }
+
+  .panch-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 6px;
+  }
+  .tile {
+    padding: 10px; border-radius: 14px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,236,205,0.10);
+  }
+  .tile span { color: var(--muted-2); font-size: 0.64rem; letter-spacing: 0.14em; text-transform: uppercase; }
+  .tile b { display: block; color: var(--gold-2); font-size: 0.84rem; margin-top: 4px; }
+  .tile small { display: block; color: var(--muted); font-size: 0.68rem; margin-top: 2px; }
+
+  .muhurat {
+    display: grid; gap: 8px;
+  }
+  .m-item {
+    display: grid; grid-template-columns: auto 1fr auto; gap: 10px; align-items: center;
+    padding: 12px;
+    border-radius: 14px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,236,205,0.08);
+  }
+  .m-icon {
+    width: 32px; height: 32px; border-radius: 10px;
+    background: linear-gradient(135deg, rgba(255, 213, 148, 0.25), rgba(192,124,255,0.25));
+    color: var(--gold-3); font-weight: 700;
+    display: grid; place-items: center; font-size: 0.9rem;
+  }
+  .m-body b { display: block; font-size: 0.88rem; }
+  .m-body span { color: var(--muted); font-size: 0.74rem; }
+
+  .choi-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; margin-top: 12px; }
+  .choi {
+    padding: 8px 4px; border-radius: 12px; text-align: center;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,236,205,0.09);
+    color: var(--muted);
+    font-size: 0.7rem;
+    cursor: pointer; transition: 180ms ease;
+  }
+  .choi.is-active {
+    background: linear-gradient(180deg, rgba(255, 213, 148, 0.25), rgba(255, 154, 58, 0.10));
+    border-color: rgba(255, 213, 148, 0.45);
+    color: var(--gold-3);
+  }
+</style>
+</head>
+<body>
+<main class="scene">
+  <section class="shell">
+    <article class="panel hero">
+      <a class="portal-link" href="./hub.html">← All previews</a>
+      <div class="hero-top">
+        <span class="eyebrow">Vedic Almanac</span>
+        <h1>Today's sky,<br>measured in Panchang.</h1>
+        <p class="hero-copy">
+          Tithi, Nakshatra, Yoga, Karana, Vara — plus sunrise / sunset / moonrise / moonset with a live
+          arc. Scroll down to a Muhurat finder that suggests the best windows for marriage, business,
+          griha pravesh, travel, or naming.
+        </p>
+      </div>
+      <div class="hero-grid">
+        <div class="stat">
+          <span class="stat-label">Tithi</span>
+          <span class="stat-value">Shukla Dvitiya</span>
+        </div>
+        <div class="stat">
+          <span class="stat-label">Nakshatra</span>
+          <span class="stat-value">Chitra</span>
+        </div>
+        <div class="stat">
+          <span class="stat-label">Sunrise</span>
+          <span class="stat-value">06:18</span>
+        </div>
+      </div>
+    </article>
+
+    <article class="panel form-wrap">
+      <div class="phone-frame">
+        <div class="phone-notch"></div>
+        <div class="phone-screen">
+          <div class="status-row">
+            <span>9:41</span>
+            <span><span class="status-dot"></span>Panchang</span>
+          </div>
+
+          <div class="brand-lockup">
+            <div class="brand-icon">☼</div>
+            <div class="brand-meta">
+              <strong>PANCHANG</strong>
+              <span id="panchangMeta">Sat 18 Apr 2026 · Pune</span>
+            </div>
+          </div>
+
+          <div class="sun-arc">
+            <svg viewBox="0 0 260 110" aria-hidden="true">
+              <defs>
+                <linearGradient id="arc" x1="0" x2="1" y1="0" y2="0">
+                  <stop offset="0%" stop-color="#ff9a3a"/>
+                  <stop offset="50%" stop-color="#ffd891"/>
+                  <stop offset="100%" stop-color="#c87bff"/>
+                </linearGradient>
+              </defs>
+              <path d="M 10 100 Q 130 -30 250 100" fill="none" stroke="url(#arc)" stroke-width="2" stroke-linecap="round"/>
+              <!-- sun marker at ~40% -->
+              <circle cx="112" cy="40" r="9" fill="#ffd891"/>
+              <circle cx="112" cy="40" r="16" fill="none" stroke="rgba(255,216,145,0.35)" stroke-width="1"/>
+              <circle cx="10"  cy="100" r="3" fill="#ff9a3a"/>
+              <circle cx="250" cy="100" r="3" fill="#c87bff"/>
+            </svg>
+            <div class="sun-times">
+              <div>Sunrise<b id="sunriseTime">06:18 AM</b></div>
+              <div>Now<b id="nowTime">9:41 AM</b></div>
+              <div>Sunset<b id="sunsetTime">06:54 PM</b></div>
+            </div>
+          </div>
+
+          <div class="section-h"><h3>Panchang elements</h3><a href="#">Learn</a></div>
+          <div class="panch-grid" id="panchGrid">
+            <div class="tile" data-key="vara"><span>Vara</span><b>Shani (Sat)</b><small>Saturn day</small></div>
+            <div class="tile" data-key="tithi"><span>Tithi</span><b>Shukla 2</b><small>to 11:42 PM</small></div>
+            <div class="tile" data-key="nakshatra"><span>Nakshatra</span><b>Chitra</b><small>to 03:08 AM</small></div>
+            <div class="tile" data-key="yoga"><span>Yoga</span><b>Siddha</b><small>success-giving</small></div>
+            <div class="tile" data-key="karana"><span>Karana</span><b>Balava</b><small>movable</small></div>
+            <div class="tile" data-key="rahu"><span>Rahu kaal</span><b>09:12–10:48</b><small>avoid</small></div>
+          </div>
+
+          <div class="section-h"><h3>Moon today</h3><a href="#">Phase</a></div>
+          <div class="panch-grid">
+            <div class="tile"><span>Moonrise</span><b>08:22 AM</b><small>Kanya</small></div>
+            <div class="tile"><span>Moonset</span><b>10:14 PM</b><small>Tula</small></div>
+            <div class="tile"><span>Phase</span><b>Gibbous 82%</b><small>waxing</small></div>
+          </div>
+
+          <div class="section-h"><h3>Muhurat Finder</h3><a href="#">Custom</a></div>
+          <div class="choi-row">
+            <div class="choi is-active">💍<br>Marriage</div>
+            <div class="choi">◎<br>Business</div>
+            <div class="choi">🏠<br>Griha</div>
+            <div class="choi">✈<br>Travel</div>
+            <div class="choi">✍<br>Naming</div>
+          </div>
+
+          <div class="muhurat" style="margin-top: 12px;">
+            <div class="m-item">
+              <div class="m-icon">💍</div>
+              <div class="m-body"><b>Abhijit Muhurat</b><span>12:02 PM – 12:54 PM · highly favourable</span></div>
+              <span class="pill pill--teal">◎</span>
+            </div>
+            <div class="m-item">
+              <div class="m-icon">💍</div>
+              <div class="m-body"><b>Amrit Kaal</b><span>04:11 PM – 05:48 PM · auspicious</span></div>
+              <span class="pill pill--gold">◎</span>
+            </div>
+            <div class="m-item">
+              <div class="m-icon">⚠</div>
+              <div class="m-body"><b>Rahu Kaal (avoid)</b><span>09:12 AM – 10:48 AM</span></div>
+              <span class="pill" style="color: var(--danger); border-color: rgba(255,141,166,0.3); background: rgba(255,141,166,0.08);">✗</span>
+            </div>
+          </div>
+
+          <nav class="bottom-nav">
+            <a class="bn-item" href="./dashboard.html"><span class="bn-icon">☰</span>Home</a>
+            <a class="bn-item" href="./kundli.html"><span class="bn-icon">⊕</span>Kundli</a>
+            <a class="bn-item" href="./consultation.html"><span class="bn-icon">💬</span>Consult</a>
+            <a class="bn-item" href="./assistant.html"><span class="bn-icon">✶</span>AI</a>
+            <a class="bn-item" href="./settings.html"><span class="bn-icon">⚙</span>More</a>
+          </nav>
+        </div>
+      </div>
+    </article>
+  </section>
+</main>
+
+<script src="./app.js"></script>
+<script>
+  (async function () {
+    const AP = window.AstroPath;
+    if (!AP) return;
+    if (!(await AP.guard('app'))) return;
+
+    const nowFmt = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    AP.dom.setText('#nowTime', nowFmt);
+    const today = new Date();
+    const dateStr = today.toLocaleDateString(undefined, { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
+    AP.dom.setText('#panchangMeta', dateStr + ' · Pune');
+
+    function setTile(key, b, small) {
+      const tile = document.querySelector('[data-key="' + key + '"]');
+      if (!tile) return;
+      if (b)     { const bEl = tile.querySelector('b');     if (bEl)     bEl.textContent = b; }
+      if (small) { const sEl = tile.querySelector('small'); if (sEl) sEl.textContent = small; }
+    }
+
+    try {
+      const data = await AP.api.panchangToday();
+      if (!data) return;
+      if (data.sunrise) AP.dom.setText('#sunriseTime', data.sunrise);
+      if (data.sunset)  AP.dom.setText('#sunsetTime', data.sunset);
+      if (data.vara)      setTile('vara', data.vara.name, data.vara.deity || 'Saturn day');
+      if (data.tithi)     setTile('tithi', data.tithi.name, data.tithi.endsAt ? 'to ' + data.tithi.endsAt : null);
+      if (data.nakshatra) setTile('nakshatra', data.nakshatra.name, data.nakshatra.endsAt ? 'to ' + data.nakshatra.endsAt : null);
+      if (data.yoga)      setTile('yoga', data.yoga.name, data.yoga.nature || null);
+      if (data.karana)    setTile('karana', data.karana.name, data.karana.nature || null);
+      if (data.rahuKaal)  setTile('rahu', data.rahuKaal.window || data.rahuKaal, 'avoid');
+    } catch (err) {
+      console.warn('Panchang fetch failed:', err && err.message);
+    }
+  })();
+</script>
+</body>
+</html>

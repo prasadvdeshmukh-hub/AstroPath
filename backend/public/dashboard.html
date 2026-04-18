@@ -1,0 +1,49 @@
+<\!doctype html>
+<html lang="en"><head><meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Dashboard - AstroPath</title><link rel="stylesheet" href="/demo/static/app.css" /></head><body>
+<main class="container">
+<h1>Daily dashboard</h1>
+<p class="muted">GET /v1/dashboard — greeting, today's horoscope, quick actions, featured astrologers. Content changes with the language picker.</p>
+
+<div id="out"><div class="muted">Loading…</div></div>
+</main>
+<script src="/demo/static/app.js"></script>
+<script>
+AP.renderTopbar();
+const out = document.getElementById('out');
+(async () => {
+  try {
+    const body = await AP.api('/v1/dashboard');
+    const d = body.data;
+    out.innerHTML = '';
+    const hero = AP.el('div', { class: 'panel' },
+      AP.el('div', { style: 'font-size:22px;color:var(--gold);' }, d.greeting),
+      AP.el('div', { class: 'muted', style: 'margin-top:4px;' }, d.sunSign + ' · Moon: ' + d.moonPhase + ' · Energy ' + d.energyScore),
+      AP.el('h2', null, d.horoscopeHeadline),
+      AP.el('p', null, d.horoscopeBody)
+    );
+    out.appendChild(hero);
+    out.appendChild(AP.el('h2', null, 'Quick actions'));
+    const grid = AP.el('div', { class: 'grid' });
+    for (const qa of d.quickActions) {
+      grid.appendChild(AP.el('div', { class: 'card' },
+        AP.el('div', { class: 'title' }, qa.title),
+        AP.el('div', { class: 'sub' }, qa.subtitle)
+      ));
+    }
+    out.appendChild(grid);
+    out.appendChild(AP.el('h2', null, 'Featured astrologers'));
+    const grid2 = AP.el('div', { class: 'grid' });
+    for (const a of d.featuredAstrologers) {
+      grid2.appendChild(AP.el('div', { class: 'card' },
+        AP.el('div', { class: 'title' }, a.name + '  ★ ' + a.rating),
+        AP.el('div', { class: 'sub' }, a.specialty),
+        AP.el('div', { class: 'muted', style: 'margin-top:6px;' }, '₹' + a.ratePerMinute + '/min')
+      ));
+    }
+    out.appendChild(grid2);
+    out.appendChild(AP.el('h2', null, 'Raw response'));
+    out.appendChild(AP.rawJson(body));
+  } catch (err) { AP.showError(out, err); }
+})();
+</script></body></html>

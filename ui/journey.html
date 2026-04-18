@@ -1,0 +1,603 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AstroPath — Full Cosmic Journey</title>
+<link rel="stylesheet" href="./shared.css">
+<style>
+  /* journey-specific layout */
+  .journey {
+    position: relative;
+    width: min(100%, 1400px);
+    padding: 28px 24px 48px;
+    z-index: 1;
+  }
+
+  .j-top { max-width: 860px; }
+  .j-top h1 {
+    margin: 18px 0 10px;
+    font-size: clamp(2.4rem, 4vw, 3.8rem);
+    line-height: 1.02; letter-spacing: -0.03em;
+    background: linear-gradient(135deg, var(--gold-3) 10%, var(--gold) 60%, var(--amber) 100%);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .j-top p { color: var(--muted); font-size: 1rem; line-height: 1.6; }
+
+  .track {
+    position: relative;
+    margin-top: 30px;
+    padding: 14px 0 22px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255,213,148,0.30) transparent;
+  }
+  .track::-webkit-scrollbar { height: 8px; }
+  .track::-webkit-scrollbar-thumb { background: rgba(255,213,148,0.30); border-radius: 4px; }
+  .track-inner {
+    display: inline-flex; align-items: stretch; gap: 18px;
+    padding: 6px 14px 14px;
+  }
+
+  /* connecting path underneath */
+  .track-inner::before {
+    content: "";
+    position: absolute;
+    left: 0; right: 0; top: 48%;
+    height: 2px;
+    background: linear-gradient(90deg,
+      transparent 0%, rgba(255, 154, 58, 0.28) 4%,
+      rgba(200, 123, 255, 0.35) 48%,
+      rgba(255, 154, 58, 0.28) 96%, transparent 100%);
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  .stop {
+    position: relative;
+    z-index: 1;
+    width: 270px;
+    flex: 0 0 auto;
+    display: flex; flex-direction: column; gap: 10px;
+    text-decoration: none; color: inherit;
+  }
+  .stop-badge {
+    align-self: flex-start;
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 6px 12px;
+    border-radius: 999px;
+    background: linear-gradient(135deg, var(--gold), var(--amber));
+    color: #2b1308; font-weight: 800; font-size: 0.74rem;
+    letter-spacing: 0.1em;
+    box-shadow: 0 6px 18px rgba(255, 154, 58, 0.3);
+  }
+  .stop-badge::before {
+    content: counter(step);
+    counter-increment: step;
+    min-width: 18px; height: 18px;
+    display: inline-grid; place-items: center;
+    border-radius: 50%;
+    background: rgba(43, 19, 8, 0.92);
+    color: var(--gold-3);
+    font-size: 0.68rem;
+  }
+  .stop-title {
+    margin: 2px 0; font-weight: 700; color: var(--gold-3);
+    font-size: 0.94rem; letter-spacing: 0.02em;
+  }
+  .stop-desc { color: var(--muted); font-size: 0.76rem; line-height: 1.45; margin: 0; }
+
+  /* phone mini */
+  .phone-mini {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 9 / 19.2;
+    padding: 8px;
+    border-radius: 26px;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.10), rgba(255,255,255,0.02)),
+      rgba(4, 2, 10, 0.92);
+    border: 1px solid rgba(255, 228, 180, 0.16);
+    box-shadow: 0 18px 38px rgba(0,0,0,0.5);
+    transition: 220ms ease;
+  }
+  .stop:hover .phone-mini {
+    transform: translateY(-4px);
+    border-color: rgba(255, 213, 148, 0.45);
+    box-shadow: 0 24px 50px rgba(0,0,0,0.6), 0 0 0 2px rgba(255, 213, 148, 0.18);
+  }
+  .phone-mini::before {
+    content: "";
+    position: absolute;
+    top: 10px; left: 50%; transform: translateX(-50%);
+    width: 70px; height: 14px; border-radius: 999px;
+    background: rgba(4, 2, 10, 0.96);
+    z-index: 2;
+  }
+  .mini-screen {
+    position: relative; overflow: hidden;
+    width: 100%; height: 100%;
+    border-radius: 20px;
+    padding: 28px 10px 10px;
+    background:
+      radial-gradient(circle at 50% -4%, rgba(159, 106, 236, 0.22), transparent 34%),
+      radial-gradient(circle at 100% 20%, rgba(255, 204, 127, 0.14), transparent 28%),
+      linear-gradient(180deg, rgba(28, 14, 48, 0.96), rgba(8, 4, 16, 0.98));
+    display: flex; flex-direction: column; gap: 6px;
+  }
+  .mini-screen::before {
+    content: "";
+    position: absolute; inset: 0;
+    background-image:
+      radial-gradient(circle at 20% 14%, rgba(255,255,255,0.55) 0 1px, transparent 1.2px),
+      radial-gradient(circle at 78% 28%, rgba(255,235,200,0.45) 0 1px, transparent 1.2px),
+      radial-gradient(circle at 58% 66%, rgba(255,255,255,0.35) 0 1px, transparent 1.2px),
+      radial-gradient(circle at 14% 72%, rgba(255,235,200,0.35) 0 1px, transparent 1.2px);
+    pointer-events: none;
+    opacity: 0.7;
+  }
+  .mini-screen > * { position: relative; z-index: 1; }
+
+  .ms-status {
+    display: flex; justify-content: space-between;
+    color: rgba(255,245,228,0.80); font-size: 0.58rem;
+    letter-spacing: 0.1em; text-transform: uppercase;
+  }
+  .ms-title {
+    color: var(--gold-3); font-weight: 700;
+    font-size: 0.86rem;
+    letter-spacing: 0.02em;
+    margin: 4px 0 2px;
+  }
+  .ms-sub { color: var(--muted); font-size: 0.64rem; line-height: 1.4; }
+  .ms-card {
+    margin-top: auto;
+    padding: 8px 10px;
+    border-radius: 10px;
+    background: linear-gradient(180deg, rgba(40,20,70,0.80), rgba(16,8,28,0.90));
+    border: 1px solid rgba(255, 213, 148, 0.20);
+  }
+  .ms-chip-row { display: flex; gap: 4px; flex-wrap: wrap; margin-top: 6px; }
+  .ms-chip {
+    padding: 2px 6px; border-radius: 999px;
+    background: rgba(255, 213, 148, 0.16);
+    border: 1px solid rgba(255, 213, 148, 0.24);
+    color: var(--gold-3);
+    font-size: 0.54rem;
+  }
+  .ms-chip.p { background: rgba(200,123,255,0.16); border-color: rgba(200,123,255,0.26); color: #e2c3ff; }
+  .ms-chip.t { background: rgba(138, 240, 203, 0.10); border-color: rgba(138, 240, 203, 0.24); color: var(--teal); }
+  .ms-cta {
+    margin-top: 6px;
+    padding: 6px 0; border-radius: 10px;
+    background: linear-gradient(135deg, var(--gold), var(--amber));
+    color: #2b1308; font-weight: 700; font-size: 0.7rem;
+    text-align: center;
+  }
+  .ms-h {
+    display: flex; justify-content: space-between;
+    color: var(--muted-2); font-size: 0.54rem;
+    letter-spacing: 0.1em; text-transform: uppercase;
+  }
+
+  /* reusable screen-specific blocks */
+  .ms-chart {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px;
+    padding: 1px; border-radius: 8px;
+    background: rgba(255, 213, 148, 0.3);
+    margin-top: 6px;
+    aspect-ratio: 1/1;
+  }
+  .ms-chart span {
+    background: linear-gradient(180deg, rgba(30, 16, 52, 0.94), rgba(10,5,20,0.98));
+    font-size: 0.5rem; color: var(--muted-2); padding: 2px;
+    display: flex; flex-direction: column;
+  }
+  .ms-chart span.lagna { box-shadow: inset 0 0 0 1px var(--gold); color: var(--gold-2); }
+  .ms-chart span.ctr { grid-column: 2 / span 2; grid-row: 2 / span 2; background: rgba(6, 2, 14, 0.95); place-content: center; text-align: center; }
+
+  .ms-sun {
+    height: 38px; margin-top: 4px;
+    background:
+      radial-gradient(ellipse 80% 60% at 50% 120%, rgba(255, 154, 58, 0.4), transparent 60%),
+      linear-gradient(180deg, rgba(40,20,70,0.5), rgba(10,5,20,0.7));
+    border-radius: 10px;
+    border: 1px solid rgba(255, 213, 148, 0.18);
+    position: relative;
+  }
+  .ms-sun::before {
+    content: ""; position: absolute;
+    left: 10%; bottom: 0; right: 10%; top: 50%;
+    border-top: 1.5px solid;
+    border-image: linear-gradient(90deg, var(--amber), var(--gold-2), var(--plasma)) 1;
+    border-radius: 50%;
+    border-bottom: 0; border-left: 0; border-right: 0;
+    clip-path: inset(0 0 50% 0);
+  }
+  .ms-sun::after {
+    content: "";
+    position: absolute;
+    width: 8px; height: 8px;
+    background: var(--gold-2);
+    border-radius: 50%;
+    top: 32%; left: 35%;
+    box-shadow: 0 0 8px var(--gold);
+  }
+
+  .arrow {
+    align-self: center;
+    width: 40px; flex: 0 0 40px;
+    display: grid; place-items: center;
+    color: var(--gold-2);
+    font-size: 1.4rem;
+    position: relative;
+    z-index: 1;
+  }
+  .arrow::before {
+    content: ""; position: absolute;
+    inset: 50% 10% auto 10%; height: 0;
+    border-top: 2px dashed rgba(255, 213, 148, 0.36);
+  }
+  .arrow span {
+    position: relative; z-index: 1;
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--gold), var(--amber));
+    color: #2b1308;
+    display: grid; place-items: center;
+    box-shadow: 0 6px 16px rgba(255, 154, 58, 0.35);
+  }
+
+  /* narrative section */
+  .narrative {
+    margin-top: 24px;
+    padding: 24px;
+    border-radius: 22px;
+    background: linear-gradient(180deg, rgba(40,20,70,0.45), rgba(10,5,20,0.7));
+    border: 1px solid rgba(255, 213, 148, 0.14);
+    counter-reset: ncount;
+  }
+  .narrative h2 {
+    margin: 0 0 14px; color: var(--gold-3);
+    font-size: 1.25rem; letter-spacing: -0.01em;
+  }
+  .narr-list {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px;
+    counter-reset: ncount;
+  }
+  .narr-step {
+    position: relative;
+    padding: 12px 14px 12px 44px;
+    border-radius: 14px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255, 236, 205, 0.08);
+    counter-increment: ncount;
+  }
+  .narr-step::before {
+    content: counter(ncount, decimal-leading-zero);
+    position: absolute;
+    left: 12px; top: 14px;
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    display: grid; place-items: center;
+    background: linear-gradient(135deg, var(--gold), var(--amber));
+    color: #2b1308;
+    font-size: 0.7rem; font-weight: 800;
+  }
+  .narr-step b { color: var(--gold-3); display: block; margin-bottom: 4px; font-size: 0.9rem; }
+  .narr-step p { color: var(--muted); font-size: 0.82rem; margin: 0; line-height: 1.5; }
+
+  /* portal step has special artwork */
+  .portal-mini {
+    position: relative;
+    width: 100%; aspect-ratio: 9 / 19.2;
+    padding: 8px;
+    border-radius: 26px;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.10), rgba(255,255,255,0.02)),
+      rgba(4, 2, 10, 0.92);
+    border: 1px solid rgba(255, 228, 180, 0.16);
+    box-shadow: 0 18px 38px rgba(0,0,0,0.5);
+    overflow: hidden;
+  }
+  .portal-mini::before {
+    content: "";
+    position: absolute;
+    top: 10px; left: 50%; transform: translateX(-50%);
+    width: 70px; height: 14px; border-radius: 999px;
+    background: rgba(4, 2, 10, 0.96);
+    z-index: 2;
+  }
+  .portal-mini .p-inner {
+    width: 100%; height: 100%;
+    border-radius: 20px;
+    background: url("./assets/portal-artwork.png") center / cover no-repeat, #07030f;
+  }
+
+  .back-row {
+    margin-top: 24px;
+    display: flex; gap: 10px; flex-wrap: wrap;
+  }
+
+  .track-caption {
+    margin-top: 8px;
+    color: var(--muted-2);
+    font-size: 0.78rem; letter-spacing: 0.12em; text-transform: uppercase;
+    padding-left: 14px;
+  }
+
+  @media (max-width: 640px) {
+    .j-top h1 { font-size: 2.2rem; }
+  }
+</style>
+</head>
+<body>
+<main class="scene" style="align-items: flex-start; padding-top: 24px;">
+  <section class="journey">
+    <div class="j-top">
+      <span class="eyebrow">Full Cosmic Journey</span>
+      <h1>From the portal<br>to daily guidance — stitched.</h1>
+      <p>
+        The ten stops below trace a new user's first week with AstroPath: they arrive at the portal, sign in,
+        complete onboarding, see their personalised dashboard, and then weave through Kundli, Horoscope,
+        Panchang, Consultation, AI, and Settings. Scroll the track horizontally. Click any phone to open the
+        full preview.
+      </p>
+    </div>
+
+    <div class="track-caption">Scroll → to follow the flow</div>
+    <div class="track">
+      <div class="track-inner" style="counter-reset: step;">
+
+        <!-- Stop 1: Portal -->
+        <a class="stop" href="../index.html">
+          <div class="stop-badge">PORTAL</div>
+          <div class="portal-mini"><div class="p-inner" aria-label="Portal artwork"></div></div>
+          <div class="stop-title">The portal opens</div>
+          <p class="stop-desc">Cosmic solar-system artwork. First taste of the theme carried through every screen below.</p>
+        </a>
+
+        <div class="arrow" aria-hidden="true"><span>›</span></div>
+
+        <!-- Stop 2: Login -->
+        <a class="stop" href="../login.html">
+          <div class="stop-badge">LOGIN</div>
+          <div class="phone-mini"><div class="mini-screen">
+            <div class="ms-status"><span>9:41</span><span>Secure</span></div>
+            <div class="ms-title">Welcome back</div>
+            <div class="ms-sub">Continue with your preferred path.</div>
+            <div class="ms-card">
+              <div class="ms-h"><span>PHONE</span><span>EMAIL · SOCIAL</span></div>
+              <div style="margin-top:6px; padding:6px 8px; border-radius:8px; background:rgba(255,255,255,0.04); border:1px solid rgba(255,236,205,0.12); font-size:0.62rem; color:var(--muted);">+91 98765 43210</div>
+              <div class="ms-cta">Send OTP</div>
+            </div>
+            <div class="ms-chip-row">
+              <span class="ms-chip">Daily</span>
+              <span class="ms-chip p">Kundli</span>
+              <span class="ms-chip t">AI</span>
+            </div>
+          </div></div>
+          <div class="stop-title">Sign in</div>
+          <p class="stop-desc">Phone, email, or social — whichever the user prefers. First time takes them through onboarding.</p>
+        </a>
+
+        <div class="arrow"><span>›</span></div>
+
+        <!-- Stop 3: Onboarding -->
+        <a class="stop" href="./onboarding.html">
+          <div class="stop-badge">ONBOARD</div>
+          <div class="phone-mini"><div class="mini-screen">
+            <div class="ms-status"><span>9:41</span><span>Step 2/4</span></div>
+            <div class="ms-title">Where do you seek guidance?</div>
+            <div class="ms-sub">Pick focus areas — we tune the app around them.</div>
+            <div class="ms-card">
+              <div class="ms-h"><span>FOCUS</span><span>SELECT ANY</span></div>
+              <div class="ms-chip-row" style="margin-top: 6px;">
+                <span class="ms-chip">◎ Career</span>
+                <span class="ms-chip p">♡ Love</span>
+                <span class="ms-chip">₹ Finance</span>
+                <span class="ms-chip t">✺ Spiritual</span>
+              </div>
+              <div class="ms-cta">Continue</div>
+            </div>
+          </div></div>
+          <div class="stop-title">Onboarding · 4 steps</div>
+          <p class="stop-desc">Welcome → focus → language → birth details. The engine needs exact DOB + time + place.</p>
+        </a>
+
+        <div class="arrow"><span>›</span></div>
+
+        <!-- Stop 4: Dashboard -->
+        <a class="stop" href="./dashboard.html">
+          <div class="stop-badge">HOME</div>
+          <div class="phone-mini"><div class="mini-screen">
+            <div class="ms-status"><span>9:41</span><span>Aligned</span></div>
+            <div class="ms-title">Good morning, Vihaan ✦</div>
+            <div class="ms-sub">Saturday · Chitra Nakshatra</div>
+            <div class="ms-card">
+              <div class="ms-h"><span>TODAY</span><span>ENERGY 76</span></div>
+              <div style="margin-top:6px; color: var(--muted); font-size: 0.62rem; line-height: 1.4;">Sun favours your second house. Decisions best after 10:30 AM.</div>
+              <div class="ms-chip-row">
+                <span class="ms-chip">Kundli</span>
+                <span class="ms-chip p">Panchang</span>
+                <span class="ms-chip t">Consult</span>
+              </div>
+              <div class="ms-cta">Read full horoscope</div>
+            </div>
+          </div></div>
+          <div class="stop-title">Dashboard</div>
+          <p class="stop-desc">The morning ritual: greeting, horoscope preview, energy gauge, quick actions, moon phase.</p>
+        </a>
+
+        <div class="arrow"><span>›</span></div>
+
+        <!-- Stop 5: Kundli -->
+        <a class="stop" href="./kundli.html">
+          <div class="stop-badge">KUNDLI</div>
+          <div class="phone-mini"><div class="mini-screen">
+            <div class="ms-status"><span>KUNDLI</span><span>Lagna</span></div>
+            <div class="ms-title">Meena Lagna</div>
+            <div class="ms-sub">Moon: Kanya · Sun: Simha</div>
+            <div class="ms-chart">
+              <span class="lagna">H1<br>As</span><span>H2<br>Ke</span><span>H3</span><span>H4<br>Sa</span>
+              <span>H12<br>Ma</span><span class="ctr" style="font-size:0.5rem; color:var(--gold-3);">VIHAAN</span><span>H5<br>Ju</span>
+              <span>H11</span><span>H6<br>Su Ve</span>
+              <span>H10<br>Ra</span><span>H9</span><span>H8<br>Me</span><span>H7<br>Mo</span>
+            </div>
+            <div class="ms-chip-row" style="margin-top: auto;">
+              <span class="ms-chip">Exalted Sun</span>
+              <span class="ms-chip p">Retro Sat</span>
+            </div>
+          </div></div>
+          <div class="stop-title">Natal chart</div>
+          <p class="stop-desc">Lagna, navamsa, chandra tabs. Planet list, Vimshottari dasha bar, dosha chips.</p>
+        </a>
+
+        <div class="arrow"><span>›</span></div>
+
+        <!-- Stop 6: Horoscope -->
+        <a class="stop" href="./horoscope.html">
+          <div class="stop-badge">HOROSCOPE</div>
+          <div class="phone-mini"><div class="mini-screen">
+            <div class="ms-status"><span>HOROSCOPE</span><span>Today</span></div>
+            <div class="ms-title">Kanya · 18 Apr</div>
+            <div class="ms-sub">Day · Week · Month · Year</div>
+            <div class="ms-card">
+              <div class="ms-h"><span>SECOND HOUSE</span><span>76%</span></div>
+              <div style="margin-top:6px; color: var(--muted); font-size: 0.62rem; line-height: 1.4;">Career opens after 3 PM. Avoid financial commitments until tomorrow.</div>
+              <div class="ms-chip-row">
+                <span class="ms-chip">★★★★★ Career</span>
+                <span class="ms-chip p">★★★★ Love</span>
+                <span class="ms-chip t">★★★ Finance</span>
+              </div>
+            </div>
+          </div></div>
+          <div class="stop-title">Horoscope</div>
+          <p class="stop-desc">Four period tabs × four life categories. Lucky colour / number / direction.</p>
+        </a>
+
+        <div class="arrow"><span>›</span></div>
+
+        <!-- Stop 7: Panchang -->
+        <a class="stop" href="./panchang.html">
+          <div class="stop-badge">PANCHANG</div>
+          <div class="phone-mini"><div class="mini-screen">
+            <div class="ms-status"><span>PANCHANG</span><span>Sat · Pune</span></div>
+            <div class="ms-title">Shukla Dvitiya</div>
+            <div class="ms-sub">Chitra · Siddha · Balava</div>
+            <div class="ms-sun"></div>
+            <div class="ms-card">
+              <div class="ms-h"><span>MUHURAT</span><span>ABHIJIT 12:02</span></div>
+              <div class="ms-chip-row" style="margin-top: 6px;">
+                <span class="ms-chip">💍</span>
+                <span class="ms-chip">◎</span>
+                <span class="ms-chip">🏠</span>
+                <span class="ms-chip">✈</span>
+              </div>
+              <div class="ms-cta">Find best window</div>
+            </div>
+          </div></div>
+          <div class="stop-title">Panchang &amp; Muhurat</div>
+          <p class="stop-desc">Sun-arc, five elements, muhurat finder for marriage / business / griha / travel / naming.</p>
+        </a>
+
+        <div class="arrow"><span>›</span></div>
+
+        <!-- Stop 8: Consultation -->
+        <a class="stop" href="./consultation.html">
+          <div class="stop-badge">CONSULT</div>
+          <div class="phone-mini"><div class="mini-screen">
+            <div class="ms-status"><span>CONSULT</span><span>₹ 1,240</span></div>
+            <div class="ms-title">Pandit R. Verma</div>
+            <div class="ms-sub">Vedic · 12 yr exp · ★ 4.9</div>
+            <div class="ms-card">
+              <div class="ms-h"><span>ONLINE</span><span>₹ 28 / MIN</span></div>
+              <div style="margin-top:6px; color: var(--muted); font-size: 0.62rem; line-height: 1.4;">Career &amp; muhurat specialist. Speaks Hi / Mr / En.</div>
+              <div class="ms-chip-row">
+                <span class="ms-chip">💬 Chat</span>
+                <span class="ms-chip">📞 Call</span>
+                <span class="ms-chip">🎥 Video</span>
+              </div>
+              <div class="ms-cta">Book chat →</div>
+            </div>
+          </div></div>
+          <div class="stop-title">Marketplace</div>
+          <p class="stop-desc">Real astrologers by category, wallet-paid by the minute. Reviews at the bottom build trust.</p>
+        </a>
+
+        <div class="arrow"><span>›</span></div>
+
+        <!-- Stop 9: AI Assistant -->
+        <a class="stop" href="./assistant.html">
+          <div class="stop-badge">AI</div>
+          <div class="phone-mini"><div class="mini-screen">
+            <div class="ms-status"><span>AI GURU</span><span>Grounded</span></div>
+            <div class="ms-title">Namaste, Vihaan.</div>
+            <div class="ms-sub">Moon in Kanya · Jupiter in 5th.</div>
+            <div class="ms-card">
+              <div style="padding:6px 8px; border-radius:8px; background:rgba(200,123,255,0.16); border:1px solid rgba(200,123,255,0.26); font-size:0.60rem; color:#f0dcff;">What's on your mind today?</div>
+              <div class="ms-chip-row">
+                <span class="ms-chip">Saturn return</span>
+                <span class="ms-chip p">Dosha</span>
+                <span class="ms-chip t">Muhurat</span>
+              </div>
+              <div class="ms-cta">Ask a question…</div>
+            </div>
+          </div></div>
+          <div class="stop-title">AI Assistant</div>
+          <p class="stop-desc">Grounded in the user's kundli. Advisory tone — explicitly not medical, legal, financial.</p>
+        </a>
+
+        <div class="arrow"><span>›</span></div>
+
+        <!-- Stop 10: Settings -->
+        <a class="stop" href="./settings.html">
+          <div class="stop-badge">SETTINGS</div>
+          <div class="phone-mini"><div class="mini-screen">
+            <div class="ms-status"><span>SETTINGS</span><span>Free tier</span></div>
+            <div class="ms-title">Vihaan Deshmukh</div>
+            <div class="ms-sub">Meena Lagna · Kanya Moon</div>
+            <div class="ms-card">
+              <div class="ms-h"><span>LANGUAGE</span><span>APP-WIDE</span></div>
+              <div class="ms-chip-row" style="margin-top: 6px;">
+                <span class="ms-chip">English</span>
+                <span class="ms-chip p">हिन्दी</span>
+                <span class="ms-chip t">मराठी</span>
+                <span class="ms-chip">தமிழ்</span>
+              </div>
+              <div class="ms-cta">Notifications · Privacy</div>
+            </div>
+          </div></div>
+          <div class="stop-title">Settings</div>
+          <p class="stop-desc">Language switches the whole app. Notifications, consultation mode, privacy &amp; disclaimer.</p>
+        </a>
+
+      </div>
+    </div>
+
+    <section class="narrative">
+      <h2>The week, in ten beats</h2>
+      <div class="narr-list">
+        <div class="narr-step"><b>Portal opens</b><p>User taps the AstroPath app icon; the cosmic artwork greets them. First brand impression.</p></div>
+        <div class="narr-step"><b>Sign in</b><p>Phone OTP is fastest in India. Email / Google / Apple / WhatsApp also available.</p></div>
+        <div class="narr-step"><b>Onboard</b><p>Welcome → pick focus areas → choose language → enter birth details. Kundli is cast.</p></div>
+        <div class="narr-step"><b>Dashboard</b><p>First look at their personal horoscope, energy score, moon phase, and quick actions.</p></div>
+        <div class="narr-step"><b>Kundli</b><p>Explore the chart — houses, planets, dasha, doshas. Tap any element to learn more.</p></div>
+        <div class="narr-step"><b>Horoscope</b><p>Switch period (day / week / month / year) and rashi. Scan love / career / finance / health.</p></div>
+        <div class="narr-step"><b>Panchang</b><p>Check auspicious windows. Find a muhurat for marriage, business, travel, griha pravesh.</p></div>
+        <div class="narr-step"><b>Consult</b><p>Book a real astrologer by chat, call, or video. Wallet handles billing per minute.</p></div>
+        <div class="narr-step"><b>AI guide</b><p>Between sessions, the AI answers quick questions grounded in their own chart.</p></div>
+        <div class="narr-step"><b>Tune settings</b><p>Switch language, manage notifications, review privacy &amp; disclaimer. Done.</p></div>
+      </div>
+    </section>
+
+    <div class="back-row">
+      <a class="pill-button" href="./hub.html">← Preview hub</a>
+      <a class="pill-button" href="./onboarding.html">Start the flow</a>
+      <a class="pill-button" href="./dashboard.html">Dashboard</a>
+    </div>
+  </section>
+</main>
+</body>
+</html>

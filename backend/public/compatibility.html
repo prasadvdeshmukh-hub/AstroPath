@@ -1,0 +1,64 @@
+<\!doctype html>
+<html lang="en"><head><meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Compatibility - AstroPath</title><link rel="stylesheet" href="/demo/static/app.css" /></head><body>
+<main class="container">
+<h1>Compatibility</h1>
+<p class="muted">POST /v1/compatibility/match. Guna Milan + emotional + long-term fit.</p>
+
+<div class="panel">
+  <h2 style="margin-top:0;">Person A</h2>
+  <div class="row">
+    <div><label>Name</label><input id="aName" value="Rhea" /></div>
+    <div><label>Birth date</label><input id="aDate" type="date" value="1994-02-10" /></div>
+    <div><label>Birth time</label><input id="aTime" type="time" value="09:30" /></div>
+  </div>
+  <h2>Person B</h2>
+  <div class="row">
+    <div><label>Name</label><input id="bName" value="Arjun" /></div>
+    <div><label>Birth date</label><input id="bDate" type="date" value="1992-11-21" /></div>
+    <div><label>Birth time</label><input id="bTime" type="time" value="14:05" /></div>
+  </div>
+  <div style="margin-top:12px;"><button id="go">Match</button></div>
+</div>
+
+<div id="out"></div>
+</main>
+<script src="/demo/static/app.js"></script>
+<script>
+AP.renderTopbar();
+const out = document.getElementById('out');
+document.getElementById('go').onclick = async () => {
+  out.innerHTML = '<div class="muted">Matching…</div>';
+  try {
+    const body = await AP.api('/v1/compatibility/match', {
+      method: 'POST',
+      body: {
+        personA: { name: aName.value, birthDate: aDate.value, birthTime: aTime.value },
+        personB: { name: bName.value, birthDate: bDate.value, birthTime: bTime.value },
+      },
+    });
+    const d = body.data;
+    out.innerHTML = '';
+    out.appendChild(AP.el('div', { class: 'panel' },
+      AP.el('div', { style: 'font-size:22px;color:var(--gold);' },
+        'Guna Milan: ' + d.gunaMilan.total + '/' + d.gunaMilan.outOf),
+      AP.el('div', { class: 'muted' },
+        'Emotional ' + d.emotional.score + ' · Long-term ' + d.longTerm.score)
+    ));
+    const tbl = AP.el('table', null,
+      AP.el('thead', null, AP.el('tr', null, AP.el('th', null, 'Category'), AP.el('th', null, 'Score'), AP.el('th', null, 'Out of')))
+    );
+    const tb = AP.el('tbody');
+    for (const b of d.gunaMilan.breakdown) {
+      tb.appendChild(AP.el('tr', null,
+        AP.el('td', null, b.category), AP.el('td', null, String(b.score)), AP.el('td', null, String(b.outOf))));
+    }
+    tbl.appendChild(tb);
+    out.appendChild(tbl);
+    out.appendChild(AP.el('h2', null, 'Emotional'));
+    out.appendChild(AP.el('p', null, d.emotional.summary));
+    out.appendChild(AP.el('h2', null, 'Long-term'));
+    out.appendChild(AP.el('p', null, d.longTerm.summary));
+  } catch (err) { AP.showError(out, err); }
+};
+</script></body></html>

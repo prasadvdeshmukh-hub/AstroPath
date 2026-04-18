@@ -1,0 +1,868 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AstroPath Sign In</title>
+<style>
+  :root {
+    --bg-1: #05030a;
+    --bg-2: #120a1d;
+    --bg-3: #241432;
+    --panel: rgba(39, 22, 52, 0.88);
+    --panel-soft: rgba(63, 39, 82, 0.78);
+    --panel-line: rgba(255, 229, 193, 0.14);
+    --gold: #f4c26d;
+    --gold-2: #ffd891;
+    --gold-3: #ffefce;
+    --text: #fff5eb;
+    --muted: #d7c7d6;
+    --muted-2: #b39db0;
+    --pink: #f0a9cf;
+    --plasma: #d68cff;
+    --shadow: 0 28px 90px rgba(0, 0, 0, 0.5);
+    --success: #8af0cb;
+    --danger: #ff8da6;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  html,
+  body {
+    margin: 0;
+    min-height: 100%;
+    font-family: "Segoe UI", "Trebuchet MS", sans-serif;
+    color: var(--text);
+    background:
+      radial-gradient(circle at 15% 15%, rgba(255, 209, 143, 0.14), transparent 20%),
+      radial-gradient(circle at 80% 12%, rgba(203, 134, 255, 0.18), transparent 26%),
+      radial-gradient(circle at 50% 100%, rgba(122, 77, 180, 0.16), transparent 34%),
+      linear-gradient(180deg, #110a18 0%, #06030a 100%);
+    overflow-x: hidden;
+  }
+
+  body {
+    position: relative;
+  }
+
+  .scene {
+    position: relative;
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    padding: 28px 18px;
+    overflow: hidden;
+  }
+
+  .scene::before,
+  .scene::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+
+  .scene::before {
+    background:
+      radial-gradient(circle at 22% 24%, rgba(255, 211, 146, 0.08), transparent 0 22%),
+      radial-gradient(circle at 75% 20%, rgba(182, 130, 255, 0.11), transparent 0 24%),
+      radial-gradient(circle at 50% 82%, rgba(255, 176, 209, 0.08), transparent 0 18%);
+    filter: blur(18px);
+    animation: drift 15s ease-in-out infinite alternate;
+  }
+
+  .scene::after {
+    background-image:
+      radial-gradient(circle at 12% 18%, rgba(255,255,255,0.85) 0 1px, transparent 1.6px),
+      radial-gradient(circle at 32% 72%, rgba(255,238,205,0.75) 0 1px, transparent 1.8px),
+      radial-gradient(circle at 77% 24%, rgba(255,255,255,0.75) 0 1px, transparent 1.8px),
+      radial-gradient(circle at 66% 64%, rgba(255,240,220,0.7) 0 1px, transparent 1.8px),
+      radial-gradient(circle at 84% 42%, rgba(255,255,255,0.55) 0 1px, transparent 1.6px),
+      radial-gradient(circle at 18% 88%, rgba(255,255,255,0.55) 0 1px, transparent 1.8px);
+    opacity: 0.75;
+  }
+
+  .shell {
+    position: relative;
+    width: min(100%, 1140px);
+    display: grid;
+    grid-template-columns: 1.02fr 0.98fr;
+    gap: 24px;
+    align-items: stretch;
+    z-index: 1;
+  }
+
+  .panel {
+    position: relative;
+    overflow: hidden;
+    background:
+      linear-gradient(180deg, rgba(62, 40, 82, 0.84), rgba(24, 14, 34, 0.92)),
+      rgba(22, 12, 30, 0.9);
+    border: 1px solid var(--panel-line);
+    border-radius: 30px;
+    box-shadow: var(--shadow);
+    backdrop-filter: blur(16px);
+  }
+
+  .hero {
+    padding: 30px;
+    min-height: 740px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .hero::before {
+    content: "";
+    position: absolute;
+    inset: auto 14% 14% auto;
+    width: 240px;
+    height: 240px;
+    border-radius: 50%;
+    background:
+      radial-gradient(circle at 50% 50%, rgba(255, 215, 150, 0.18), rgba(255, 215, 150, 0.02) 48%, transparent 60%);
+    filter: blur(3px);
+    opacity: 0.8;
+  }
+
+  .hero::after {
+    content: "";
+    position: absolute;
+    right: -70px;
+    top: 88px;
+    width: 230px;
+    height: 230px;
+    border: 1px solid rgba(255, 218, 171, 0.18);
+    border-radius: 50%;
+    box-shadow:
+      0 0 0 26px rgba(255, 224, 183, 0.04),
+      0 0 0 58px rgba(230, 163, 255, 0.03);
+    transform: rotate(-14deg);
+  }
+
+  .hero-top {
+    position: relative;
+    z-index: 1;
+  }
+
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 14px;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 232, 204, 0.16);
+    background: rgba(255, 255, 255, 0.04);
+    color: var(--gold-3);
+    font-size: 12px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+  }
+
+  .eyebrow::before {
+    content: "";
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--gold), var(--pink));
+    box-shadow: 0 0 14px rgba(255, 208, 128, 0.5);
+  }
+
+  h1 {
+    margin: 22px 0 14px;
+    max-width: 12ch;
+    font-size: clamp(2.6rem, 4vw, 4.5rem);
+    line-height: 0.96;
+    letter-spacing: -0.04em;
+  }
+
+  .hero-copy {
+    max-width: 560px;
+    color: var(--muted);
+    font-size: 1rem;
+    line-height: 1.7;
+  }
+
+  .hero-grid {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+  }
+
+  .stat {
+    padding: 18px;
+    border-radius: 22px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 235, 215, 0.08);
+  }
+
+  .stat-label {
+    display: block;
+    color: var(--muted-2);
+    font-size: 0.72rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  .stat-value {
+    display: block;
+    margin-top: 8px;
+    color: var(--gold-2);
+    font-size: 1.1rem;
+    font-weight: 700;
+  }
+
+  .form-wrap {
+    padding: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .phone-frame {
+    position: relative;
+    width: min(100%, 410px);
+    padding: 14px;
+    border-radius: 34px;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.11), rgba(255,255,255,0.02)),
+      rgba(8, 4, 16, 0.84);
+    border: 1px solid rgba(255, 234, 208, 0.12);
+    box-shadow: 0 24px 70px rgba(0, 0, 0, 0.52);
+  }
+
+  .phone-notch {
+    position: absolute;
+    top: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 124px;
+    height: 24px;
+    border-radius: 999px;
+    background: rgba(5, 2, 11, 0.94);
+    z-index: 2;
+  }
+
+  .phone-screen {
+    position: relative;
+    overflow: hidden;
+    min-height: 710px;
+    padding: 42px 22px 22px;
+    border-radius: 26px;
+    background:
+      radial-gradient(circle at 50% 0%, rgba(159, 106, 236, 0.18), transparent 28%),
+      radial-gradient(circle at 100% 30%, rgba(255, 204, 127, 0.12), transparent 26%),
+      linear-gradient(180deg, rgba(29, 16, 40, 0.96), rgba(11, 6, 18, 0.98));
+  }
+
+  .status-row,
+  .auth-tabs,
+  .footer-links {
+    display: flex;
+    align-items: center;
+  }
+
+  .status-row {
+    justify-content: space-between;
+    color: rgba(255, 245, 235, 0.84);
+    font-size: 0.78rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .brand-lockup {
+    margin-top: 36px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .brand-icon {
+    width: 52px;
+    height: 52px;
+    display: grid;
+    place-items: center;
+    border-radius: 16px;
+    background:
+      radial-gradient(circle at 30% 30%, rgba(255, 234, 187, 0.72), rgba(255, 201, 102, 0.22) 34%, rgba(255,255,255,0.06) 56%, transparent 58%),
+      linear-gradient(135deg, rgba(255, 213, 140, 0.22), rgba(192, 124, 255, 0.3));
+    border: 1px solid rgba(255, 235, 205, 0.18);
+    font-size: 1.2rem;
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.24);
+  }
+
+  .brand-meta strong,
+  .panel-title {
+    display: block;
+    font-weight: 700;
+  }
+
+  .brand-meta strong {
+    font-size: 1.15rem;
+    letter-spacing: 0.12em;
+  }
+
+  .brand-meta span {
+    color: var(--muted);
+    font-size: 0.9rem;
+  }
+
+  .panel-title {
+    margin-top: 28px;
+    font-size: 2rem;
+    letter-spacing: -0.04em;
+  }
+
+  .panel-subtitle {
+    margin: 10px 0 24px;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+
+  .auth-tabs {
+    gap: 8px;
+    padding: 7px;
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.045);
+    border: 1px solid rgba(255, 236, 215, 0.08);
+  }
+
+  .tab {
+    flex: 1;
+    border: 0;
+    border-radius: 14px;
+    padding: 11px 12px;
+    background: transparent;
+    color: var(--muted);
+    font: inherit;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: 180ms ease;
+  }
+
+  .tab.is-active {
+    background: linear-gradient(180deg, rgba(255, 221, 176, 0.22), rgba(255, 169, 201, 0.16));
+    color: var(--gold-3);
+    box-shadow: inset 0 0 0 1px rgba(255, 236, 215, 0.08);
+  }
+
+  .auth-panel {
+    display: none;
+    margin-top: 18px;
+  }
+
+  .auth-panel.is-active {
+    display: block;
+    animation: fade-in 220ms ease;
+  }
+
+  .social-stack,
+  .field-stack {
+    display: grid;
+    gap: 12px;
+  }
+
+  .social-button,
+  .primary-button,
+  .ghost-button {
+    width: 100%;
+    border: 0;
+    border-radius: 18px;
+    padding: 15px 16px;
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 180ms ease, filter 180ms ease;
+  }
+
+  .social-button:hover,
+  .primary-button:hover,
+  .ghost-button:hover {
+    transform: translateY(-1px);
+    filter: brightness(1.04);
+  }
+
+  .social-button {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: rgba(255, 255, 255, 0.055);
+    color: var(--text);
+    border: 1px solid rgba(255, 239, 218, 0.1);
+  }
+
+  .social-button .bullet {
+    width: 34px;
+    height: 34px;
+    display: grid;
+    place-items: center;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.08);
+  }
+
+  .divider {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 12px;
+    align-items: center;
+    margin: 18px 0;
+    color: var(--muted-2);
+    font-size: 0.78rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .divider::before,
+  .divider::after {
+    content: "";
+    height: 1px;
+    background: rgba(255, 236, 215, 0.1);
+  }
+
+  label {
+    display: block;
+    margin-bottom: 8px;
+    color: var(--muted);
+    font-size: 0.78rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .field {
+    position: relative;
+  }
+
+  .field input {
+    width: 100%;
+    padding: 16px 18px;
+    border-radius: 18px;
+    border: 1px solid rgba(255, 235, 215, 0.1);
+    background: rgba(255, 255, 255, 0.045);
+    color: var(--text);
+    font: inherit;
+    outline: none;
+    transition: border-color 180ms ease, box-shadow 180ms ease, background 180ms ease;
+  }
+
+  .field input::placeholder {
+    color: rgba(218, 203, 214, 0.58);
+  }
+
+  .field input:focus {
+    border-color: rgba(255, 215, 148, 0.34);
+    box-shadow: 0 0 0 4px rgba(255, 210, 135, 0.08);
+    background: rgba(255, 255, 255, 0.06);
+  }
+
+  .field-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .micro-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 12px;
+    color: var(--muted);
+    font-size: 0.88rem;
+  }
+
+  .micro-row a,
+  .footer-links a,
+  .portal-link {
+    color: var(--gold-2);
+    text-decoration: none;
+  }
+
+  .primary-button {
+    margin-top: 18px;
+    background: linear-gradient(135deg, var(--gold), #f1a96f 52%, var(--pink));
+    color: #2d1427;
+    box-shadow: 0 18px 32px rgba(235, 178, 111, 0.24);
+  }
+
+  .ghost-button {
+    margin-top: 12px;
+    background: transparent;
+    color: var(--text);
+    border: 1px solid rgba(255, 236, 215, 0.12);
+  }
+
+  .pill-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 18px;
+  }
+
+  .pill {
+    padding: 8px 12px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 236, 215, 0.09);
+    color: var(--muted);
+    font-size: 0.78rem;
+  }
+
+  .trust-card {
+    margin-top: 20px;
+    padding: 16px;
+    border-radius: 20px;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.055), rgba(255, 255, 255, 0.03));
+    border: 1px solid rgba(255, 236, 215, 0.08);
+  }
+
+  .trust-card strong {
+    display: block;
+    color: var(--gold-2);
+    margin-bottom: 6px;
+  }
+
+  .trust-card p {
+    margin: 0;
+    color: var(--muted);
+    line-height: 1.55;
+    font-size: 0.92rem;
+  }
+
+  .footer-links {
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: 18px;
+    color: var(--muted-2);
+    font-size: 0.82rem;
+  }
+
+  .success-toast {
+    position: absolute;
+    right: 22px;
+    top: 86px;
+    padding: 12px 14px;
+    border-radius: 16px;
+    background: rgba(138, 240, 203, 0.1);
+    border: 1px solid rgba(138, 240, 203, 0.24);
+    color: var(--success);
+    font-size: 0.82rem;
+    opacity: 0;
+    transform: translateY(-8px);
+    pointer-events: none;
+    transition: 180ms ease;
+  }
+
+  .success-toast.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .portal-link {
+    position: absolute;
+    left: 26px;
+    top: 26px;
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 14px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 236, 215, 0.08);
+    font-size: 0.85rem;
+  }
+
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes drift {
+    from {
+      transform: translate3d(-12px, -10px, 0) scale(1);
+    }
+    to {
+      transform: translate3d(18px, 16px, 0) scale(1.05);
+    }
+  }
+
+  @media (max-width: 1024px) {
+    .shell {
+      grid-template-columns: 1fr;
+    }
+
+    .hero {
+      min-height: auto;
+      gap: 28px;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .scene {
+      padding: 18px 12px;
+    }
+
+    .panel {
+      border-radius: 26px;
+    }
+
+    .hero {
+      padding: 80px 20px 22px;
+    }
+
+    .hero-grid,
+    .field-row {
+      grid-template-columns: 1fr;
+    }
+
+    .form-wrap {
+      padding: 12px;
+    }
+
+    .phone-screen {
+      min-height: 690px;
+      padding-inline: 18px;
+    }
+
+    .portal-link {
+      left: 20px;
+      top: 20px;
+    }
+  }
+</style>
+</head>
+<body>
+  <main class="scene">
+    <section class="shell">
+      <article class="panel hero">
+        <a class="portal-link" href="./index.html">← Back to portal</a>
+
+        <div class="hero-top">
+          <span class="eyebrow">Cosmic Sign In</span>
+          <h1>Enter your daily guidance space.</h1>
+          <p class="hero-copy">
+            Step into AstroPath with the same celestial visual language as your landing portal.
+            This first screen turns the old dev preview into a premium mobile auth experience
+            with phone, email, and social entry points.
+          </p>
+        </div>
+
+        <div class="hero-grid">
+          <div class="stat">
+            <span class="stat-label">Daily Focus</span>
+            <span class="stat-value">Horoscope + rituals</span>
+          </div>
+          <div class="stat">
+            <span class="stat-label">AstroPath AI</span>
+            <span class="stat-value">Guided insights</span>
+          </div>
+          <div class="stat">
+            <span class="stat-label">Consultations</span>
+            <span class="stat-value">Verified astrologers</span>
+          </div>
+        </div>
+      </article>
+
+      <article class="panel form-wrap">
+        <div class="phone-frame">
+          <div class="phone-notch"></div>
+
+          <div class="phone-screen">
+            <div class="success-toast" id="successToast">Preview action captured. Flow ready for wiring.</div>
+
+            <div class="status-row">
+              <span>9:41</span>
+              <span>Secure session</span>
+            </div>
+
+            <div class="brand-lockup">
+              <div class="brand-icon">✦</div>
+              <div class="brand-meta">
+                <strong>ASTROPATH</strong>
+                <span>Aligned entry for your cosmic routine</span>
+              </div>
+            </div>
+
+            <strong class="panel-title">Welcome back</strong>
+            <p class="panel-subtitle">
+              Continue with your preferred path and pick up your dashboard, kundli, and AI guidance exactly where you left them.
+            </p>
+
+            <div class="auth-tabs" role="tablist" aria-label="Login methods">
+              <button class="tab is-active" type="button" data-tab="phone">Phone</button>
+              <button class="tab" type="button" data-tab="email">Email</button>
+              <button class="tab" type="button" data-tab="social">Social</button>
+            </div>
+
+            <section class="auth-panel is-active" data-panel="phone">
+              <div class="field-stack">
+                <div class="field">
+                  <label for="phoneNumber">Phone Number</label>
+                  <input id="phoneNumber" type="tel" placeholder="+91 98765 43210">
+                </div>
+                <div class="field-row">
+                  <div class="field">
+                    <label for="birthDate">Birth Date</label>
+                    <input id="birthDate" type="text" placeholder="08 Aug 2001">
+                  </div>
+                  <div class="field">
+                    <label for="language">Language</label>
+                    <input id="language" type="text" placeholder="English">
+                  </div>
+                </div>
+              </div>
+
+              <div class="micro-row">
+                <span>OTP and reminders stay private.</span>
+                <a href="#">Need help?</a>
+              </div>
+
+              <button class="primary-button" type="button" data-success="Phone auth preview ready">Send OTP</button>
+              <button class="ghost-button" type="button">Use guest preview</button>
+            </section>
+
+            <section class="auth-panel" data-panel="email">
+              <div class="field-stack">
+                <div class="field">
+                  <label for="emailAddress">Email Address</label>
+                  <input id="emailAddress" type="email" placeholder="name@example.com">
+                </div>
+                <div class="field">
+                  <label for="password">Password</label>
+                  <input id="password" type="password" placeholder="Enter your password">
+                </div>
+              </div>
+
+              <div class="micro-row">
+                <label><input type="checkbox" checked> Keep me aligned on this device</label>
+                <a href="#">Forgot password?</a>
+              </div>
+
+              <button class="primary-button" type="button" data-success="Email sign-in preview ready">Sign In</button>
+              <button class="ghost-button" type="button">Create new account</button>
+            </section>
+
+            <section class="auth-panel" data-panel="social">
+              <div class="social-stack">
+                <button class="social-button" type="button" data-success="Google sign-in preview ready">
+                  <span><span class="bullet">G</span></span>
+                  <span>Continue with Google</span>
+                  <span>→</span>
+                </button>
+                <button class="social-button" type="button" data-success="Apple sign-in preview ready">
+                  <span><span class="bullet"></span></span>
+                  <span>Continue with Apple</span>
+                  <span>→</span>
+                </button>
+                <button class="social-button" type="button" data-success="WhatsApp sign-in preview ready">
+                  <span><span class="bullet">W</span></span>
+                  <span>Continue with WhatsApp</span>
+                  <span>→</span>
+                </button>
+              </div>
+
+              <div class="divider">or</div>
+
+              <button class="primary-button" type="button" data-success="Magic link preview ready">Send magic link</button>
+            </section>
+
+            <div class="pill-row">
+              <span class="pill">Daily Horoscope</span>
+              <span class="pill">Kundli Preview</span>
+              <span class="pill">AstroPath AI</span>
+            </div>
+
+            <div class="trust-card">
+              <strong>Why this screen works</strong>
+              <p>
+                It preserves the cosmic gold and nebula mood from the landing overlay, but turns it into a practical mobile auth UI that is ready to wire into backend or Flutter flows later.
+              </p>
+            </div>
+
+            <div class="footer-links">
+              <a href="./index.html">Portal</a>
+              <a href="./ui/guidelines.html#privacy">Privacy</a>
+              <a href="./ui/guidelines.html#terms">Terms</a>
+              <a href="./ui/guidelines.html#ai">AI disclaimer</a>
+            </div>
+          </div>
+        </div>
+      </article>
+    </section>
+  </main>
+
+<script src="./ui/app.js"></script>
+<script>
+  const tabs = Array.from(document.querySelectorAll("[data-tab]"));
+  const panels = Array.from(document.querySelectorAll("[data-panel]"));
+  const toast = document.getElementById("successToast");
+  let toastTimer = null;
+
+  function showPanel(key) {
+    tabs.forEach((tab) => tab.classList.toggle("is-active", tab.dataset.tab === key));
+    panels.forEach((panel) => panel.classList.toggle("is-active", panel.dataset.panel === key));
+  }
+
+  function showToast(message) {
+    toast.textContent = message;
+    toast.classList.add("is-visible");
+    window.clearTimeout(toastTimer);
+    toastTimer = window.setTimeout(() => {
+      toast.classList.remove("is-visible");
+    }, 1800);
+  }
+
+  tabs.forEach((tab) => {
+    tab.addEventListener("click", () => showPanel(tab.dataset.tab));
+  });
+
+  // Real sign-in: hit the backend /v1/auth/session (bypass mode issues a dev identity).
+  // Any of the auth buttons starts the same flow for demo purposes; in production these
+  // would fork into phone-OTP, email+password, Google/Apple/WhatsApp OAuth.
+  async function doSignIn(providerLabel) {
+    const AP = window.AstroPath;
+    if (!AP) { showToast("Client not ready. Reload the page."); return; }
+    try {
+      showToast(providerLabel + "...");
+      const data = await AP.api.session();
+      if (data && data.user)    AP.state.user = data.user;
+      if (data && data.profile) AP.state.profile = data.profile;
+      if (data && data.profile && data.profile.preferences && data.profile.preferences.languageCode) {
+        AP.state.locale = data.profile.preferences.languageCode;
+      }
+      // If we've got stored birth info, skip onboarding; else send them there.
+      const next = AP.state.onboardingComplete ? "./ui/dashboard.html" : "./ui/onboarding.html";
+      showToast("Welcome back — opening " + (AP.state.onboardingComplete ? "dashboard" : "setup"));
+      setTimeout(function () { location.href = next; }, 550);
+    } catch (err) {
+      showToast("Sign-in failed: " + (err && err.message ? err.message : "unknown"));
+    }
+  }
+
+  document.querySelectorAll("[data-success]").forEach((button) => {
+    button.addEventListener("click", () => doSignIn(button.dataset.success));
+  });
+
+  // If already signed in, skip the login screen.
+  (async function redirectIfAuthed() {
+    const AP = window.AstroPath;
+    if (!AP) return;
+    // Try a silent bootstrap so dev-bypass populates the user automatically.
+    await AP.bootstrap();
+    if (AP.state.isAuthenticated()) {
+      const dest = AP.state.onboardingComplete ? "./ui/dashboard.html" : "./ui/onboarding.html";
+      location.replace(dest);
+    }
+  })();
+</script>
+</body>
+</html>

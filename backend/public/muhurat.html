@@ -1,0 +1,58 @@
+<\!doctype html>
+<html lang="en"><head><meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Muhurat - AstroPath</title><link rel="stylesheet" href="/demo/static/app.css" /></head><body>
+<main class="container">
+<h1>Muhurat finder</h1>
+<p class="muted">POST /v1/muhurat/search. Returns candidate auspicious windows within a date range.</p>
+
+<div class="panel">
+  <div class="row">
+    <div><label>Purpose</label>
+      <select id="purpose">
+        <option value="marriage">marriage</option>
+        <option value="business">business</option>
+        <option value="griha_pravesh">griha_pravesh</option>
+        <option value="travel">travel</option>
+        <option value="naming">naming</option>
+      </select>
+    </div>
+    <div><label>From</label><input id="from" type="date" value="2026-05-01" /></div>
+    <div><label>To</label><input id="to" type="date" value="2026-05-08" /></div>
+  </div>
+  <div style="margin-top:12px;"><button id="go">Find muhurat</button></div>
+</div>
+
+<div id="out"></div>
+</main>
+<script src="/demo/static/app.js"></script>
+<script>
+AP.renderTopbar();
+const out = document.getElementById('out');
+document.getElementById('go').onclick = async () => {
+  out.innerHTML = '<div class="muted">Searching…</div>';
+  try {
+    const body = await AP.api('/v1/muhurat/search', {
+      method: 'POST',
+      body: {
+        purpose: document.getElementById('purpose').value,
+        from: document.getElementById('from').value,
+        to: document.getElementById('to').value,
+      },
+    });
+    const m = body.data;
+    out.innerHTML = '';
+    const tbl = AP.el('table', null,
+      AP.el('thead', null, AP.el('tr', null,
+        AP.el('th', null, 'Date'), AP.el('th', null, 'Window'), AP.el('th', null, 'Quality'), AP.el('th', null, 'Note')))
+    );
+    const tb = AP.el('tbody');
+    for (const w of m.windows) {
+      tb.appendChild(AP.el('tr', null,
+        AP.el('td', null, w.date), AP.el('td', null, w.window),
+        AP.el('td', null, w.quality), AP.el('td', null, w.note)));
+    }
+    tbl.appendChild(tb);
+    out.appendChild(tbl);
+  } catch (err) { AP.showError(out, err); }
+};
+</script></body></html>

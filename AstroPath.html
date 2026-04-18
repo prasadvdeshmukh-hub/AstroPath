@@ -1,0 +1,1166 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>AstroPath Cosmic Preview</title>
+<style>
+  :root {
+    --bg: #0a0814;
+    --bg-deep: #120d20;
+    --panel: rgba(34, 25, 48, 0.88);
+    --panel-soft: rgba(48, 33, 63, 0.92);
+    --line: rgba(255, 219, 163, 0.24);
+    --gold: #f4c979;
+    --gold-soft: #ffdfaa;
+    --text: #fff6ec;
+    --muted: #d4b9c0;
+    --pink: #f09cb8;
+    --violet: #af8cff;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  html,
+  body {
+    margin: 0;
+    min-height: 100%;
+    font-family: "Segoe UI", "Trebuchet MS", sans-serif;
+    background:
+      radial-gradient(circle at 18% 12%, rgba(255, 222, 165, 0.18), transparent 18%),
+      radial-gradient(circle at 50% 0%, rgba(171, 138, 255, 0.28), transparent 24%),
+      radial-gradient(circle at 88% 14%, rgba(255, 219, 186, 0.12), transparent 16%),
+      radial-gradient(circle at 50% 50%, rgba(169, 127, 255, 0.12), transparent 34%),
+      linear-gradient(180deg, #171126 0%, #0d0a18 100%);
+    color: var(--text);
+    overflow: hidden;
+  }
+
+  body::before,
+  body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+  }
+
+  body::before {
+    background-image:
+      radial-gradient(circle at 8% 24%, rgba(255, 242, 218, 0.95) 0 1px, transparent 1.2px),
+      radial-gradient(circle at 14% 62%, rgba(255, 226, 163, 0.95) 0 1.4px, transparent 1.6px),
+      radial-gradient(circle at 22% 14%, rgba(255, 248, 229, 0.95) 0 1px, transparent 1.2px),
+      radial-gradient(circle at 34% 74%, rgba(255, 202, 138, 0.95) 0 1.1px, transparent 1.3px),
+      radial-gradient(circle at 41% 22%, rgba(245, 207, 255, 0.95) 0 1.2px, transparent 1.4px),
+      radial-gradient(circle at 57% 9%, rgba(255, 237, 214, 0.95) 0 1px, transparent 1.2px),
+      radial-gradient(circle at 64% 32%, rgba(255, 222, 165, 0.95) 0 1.4px, transparent 1.6px),
+      radial-gradient(circle at 71% 78%, rgba(255, 242, 218, 0.95) 0 1px, transparent 1.2px),
+      radial-gradient(circle at 82% 16%, rgba(255, 196, 170, 0.95) 0 1.3px, transparent 1.5px),
+      radial-gradient(circle at 90% 42%, rgba(255, 232, 197, 0.95) 0 1px, transparent 1.2px),
+      radial-gradient(circle at 94% 68%, rgba(255, 228, 171, 0.95) 0 1.1px, transparent 1.3px);
+    opacity: 0.85;
+  }
+
+  body::after {
+    background:
+      linear-gradient(110deg, transparent 0 10%, rgba(255, 218, 148, 0.32) 11%, transparent 13%) 6% 7% / 34% 22% no-repeat,
+      linear-gradient(170deg, transparent 0 46%, rgba(255, 209, 157, 0.18) 48%, transparent 50%) 82% 81% / 22% 14% no-repeat;
+    opacity: 0.8;
+  }
+
+  .preview {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 28px;
+  }
+
+  .phone-row {
+    display: flex;
+    gap: 34px;
+    align-items: center;
+    justify-content: center;
+    transform: scale(0.94);
+    transform-origin: center;
+  }
+
+  .phone {
+    position: relative;
+    width: 358px;
+    height: 760px;
+    border-radius: 42px;
+    padding: 12px;
+    background:
+      linear-gradient(180deg, rgba(255, 233, 189, 0.7), rgba(99, 73, 48, 0.6));
+    box-shadow:
+      0 40px 80px rgba(0, 0, 0, 0.45),
+      0 0 0 1px rgba(255, 235, 194, 0.1);
+  }
+
+  .phone::before {
+    content: "";
+    position: absolute;
+    inset: 7px;
+    border-radius: 36px;
+    background:
+      radial-gradient(circle at 24% 10%, rgba(255, 211, 135, 0.12), transparent 26%),
+      radial-gradient(circle at 78% 10%, rgba(193, 146, 255, 0.12), transparent 26%),
+      linear-gradient(180deg, #17111d 0%, #0f0c17 100%);
+    box-shadow: inset 0 0 0 1px rgba(255, 242, 217, 0.08);
+  }
+
+  .screen {
+    position: absolute;
+    inset: 18px;
+    border-radius: 34px;
+    overflow: hidden;
+    background:
+      radial-gradient(circle at 50% -12%, rgba(184, 131, 255, 0.35), transparent 34%),
+      radial-gradient(circle at 60% 28%, rgba(255, 203, 151, 0.08), transparent 26%),
+      linear-gradient(180deg, #1a1221 0%, #110d18 100%);
+    box-shadow: inset 0 0 0 1px rgba(255, 239, 215, 0.08);
+  }
+
+  .screen::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image:
+      radial-gradient(circle at 12% 16%, rgba(255, 232, 200, 0.95) 0 1.1px, transparent 1.3px),
+      radial-gradient(circle at 29% 9%, rgba(255, 201, 155, 0.95) 0 1.2px, transparent 1.4px),
+      radial-gradient(circle at 67% 12%, rgba(255, 241, 216, 0.9) 0 1px, transparent 1.2px),
+      radial-gradient(circle at 80% 18%, rgba(242, 187, 255, 0.8) 0 1px, transparent 1.2px),
+      radial-gradient(circle at 21% 70%, rgba(255, 233, 195, 0.9) 0 1px, transparent 1.2px),
+      radial-gradient(circle at 84% 58%, rgba(255, 216, 162, 0.9) 0 1.2px, transparent 1.4px),
+      radial-gradient(circle at 70% 85%, rgba(255, 236, 208, 0.95) 0 1px, transparent 1.2px);
+    opacity: 0.82;
+    pointer-events: none;
+  }
+
+  .screen::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(108deg, transparent 0 21%, rgba(255, 214, 154, 0.24) 22%, transparent 23%) 4% 10% / 84% 24% no-repeat,
+      linear-gradient(180deg, transparent 0 42%, rgba(255, 223, 184, 0.1) 43%, transparent 44%) 0 0 / 100% 100% no-repeat;
+    opacity: 0.6;
+    pointer-events: none;
+  }
+
+  .notch {
+    position: absolute;
+    top: 14px;
+    left: 50%;
+    width: 132px;
+    height: 28px;
+    border-radius: 0 0 18px 18px;
+    transform: translateX(-50%);
+    background: #111016;
+    z-index: 3;
+  }
+
+  .status {
+    position: absolute;
+    top: 20px;
+    left: 24px;
+    right: 24px;
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: rgba(255, 245, 231, 0.88);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+  }
+
+  .screen-content {
+    position: relative;
+    z-index: 2;
+    height: 100%;
+    padding: 42px 18px 28px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .top-icons {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+
+  .signal,
+  .battery,
+  .wifi {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+  }
+
+  .signal i,
+  .wifi i {
+    display: block;
+    width: 3px;
+    background: rgba(255, 248, 232, 0.9);
+    border-radius: 999px;
+  }
+
+  .signal i:nth-child(1) { height: 4px; opacity: 0.45; }
+  .signal i:nth-child(2) { height: 6px; opacity: 0.62; }
+  .signal i:nth-child(3) { height: 8px; opacity: 0.78; }
+  .signal i:nth-child(4) { height: 10px; }
+
+  .wifi i:nth-child(1),
+  .wifi i:nth-child(2),
+  .wifi i:nth-child(3) {
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+  }
+
+  .battery {
+    width: 16px;
+    height: 8px;
+    border: 1px solid rgba(255, 248, 232, 0.9);
+    border-radius: 2px;
+    position: relative;
+    padding: 1px;
+  }
+
+  .battery::after {
+    content: "";
+    position: absolute;
+    right: -3px;
+    top: 2px;
+    width: 2px;
+    height: 4px;
+    border-radius: 1px;
+    background: rgba(255, 248, 232, 0.9);
+  }
+
+  .battery span {
+    display: block;
+    height: 100%;
+    width: 72%;
+    border-radius: 1px;
+    background: rgba(255, 248, 232, 0.9);
+  }
+
+  .home-header {
+    text-align: center;
+    padding-top: 14px;
+    margin-bottom: 14px;
+  }
+
+  .home-header h1,
+  .title-bar h1 {
+    margin: 0;
+    font-size: 21px;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+  }
+
+  .home-header p,
+  .title-bar p {
+    margin: 4px 0 0;
+    color: rgba(255, 237, 213, 0.8);
+    font-size: 12px;
+    letter-spacing: 0.06em;
+  }
+
+  .card {
+    position: relative;
+    border-radius: 22px;
+    border: 1px solid rgba(255, 232, 195, 0.14);
+    overflow: hidden;
+    background:
+      linear-gradient(160deg, rgba(78, 47, 94, 0.88), rgba(40, 29, 55, 0.86)),
+      radial-gradient(circle at 74% 22%, rgba(255, 219, 171, 0.16), transparent 24%);
+    box-shadow: inset 0 0 0 1px rgba(255, 252, 248, 0.02);
+  }
+
+  .card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(circle at 75% 22%, rgba(255, 233, 173, 0.18), transparent 18%),
+      linear-gradient(120deg, transparent 0 40%, rgba(255, 201, 155, 0.1) 41%, transparent 42%);
+    pointer-events: none;
+  }
+
+  .horoscope-card {
+    min-height: 176px;
+    padding: 18px;
+    margin-bottom: 14px;
+    background:
+      radial-gradient(circle at 65% 28%, rgba(166, 118, 255, 0.45), transparent 24%),
+      radial-gradient(circle at 48% 22%, rgba(255, 205, 164, 0.14), transparent 30%),
+      linear-gradient(155deg, rgba(86, 49, 102, 0.92), rgba(50, 35, 63, 0.94));
+  }
+
+  .horoscope-card .hero-glyph {
+    position: absolute;
+    top: 18px;
+    right: 18px;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 228, 190, 0.22);
+    display: grid;
+    place-items: center;
+    color: var(--gold-soft);
+    font-size: 18px;
+  }
+
+  .eyebrow {
+    font-size: 12px;
+    color: rgba(255, 241, 217, 0.94);
+    letter-spacing: 0.05em;
+    margin-bottom: 10px;
+  }
+
+  .sign-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--gold-soft);
+    font-size: 16px;
+    margin-bottom: 14px;
+  }
+
+  .gold-dot {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, #ffe7bd, #d89f48 62%, #8e6128 100%);
+    box-shadow: 0 0 16px rgba(255, 204, 132, 0.35);
+  }
+
+  .horoscope-copy {
+    font-size: 15px;
+    line-height: 1.45;
+    max-width: 82%;
+    color: rgba(255, 241, 228, 0.94);
+  }
+
+  .read-more {
+    margin-top: 14px;
+    color: rgba(255, 241, 224, 0.86);
+    font-size: 14px;
+    letter-spacing: 0.02em;
+  }
+
+  .metrics {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+
+  .metric-card {
+    min-height: 164px;
+    padding: 16px 14px;
+  }
+
+  .metric-card h2 {
+    margin: 0 0 12px;
+    font-size: 17px;
+    font-weight: 500;
+  }
+
+  .energy-ring {
+    width: 130px;
+    height: 74px;
+    margin: 6px auto 10px;
+    border-radius: 120px 120px 0 0;
+    border: 4px solid rgba(255, 184, 101, 0.92);
+    border-bottom: 0;
+    position: relative;
+    box-shadow: 0 0 18px rgba(255, 185, 110, 0.18);
+  }
+
+  .energy-ring::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 14px;
+    width: 78px;
+    height: 44px;
+    transform: translateX(-50%);
+    border-radius: 80px 80px 0 0;
+    border: 2px solid rgba(255, 222, 180, 0.16);
+    border-bottom: 0;
+  }
+
+  .energy-score {
+    text-align: center;
+    margin-top: -8px;
+    font-size: 54px;
+    line-height: 1;
+    font-weight: 400;
+    color: #ffefcf;
+  }
+
+  .energy-score small {
+    font-size: 20px;
+    color: rgba(255, 233, 194, 0.84);
+  }
+
+  .metric-note {
+    text-align: center;
+    color: rgba(255, 237, 210, 0.88);
+    font-size: 12px;
+    letter-spacing: 0.05em;
+  }
+
+  .moon-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .moon {
+    width: 104px;
+    height: 104px;
+    border-radius: 50%;
+    background:
+      radial-gradient(circle at 38% 46%, #f6ddad 0 34%, #1d1622 36% 100%);
+    box-shadow:
+      inset -16px -10px 24px rgba(0, 0, 0, 0.32),
+      0 0 24px rgba(255, 216, 161, 0.16);
+  }
+
+  .quick-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+
+  .quick-card {
+    min-height: 82px;
+    padding: 10px 6px 8px;
+    text-align: center;
+  }
+
+  .quick-icon {
+    width: 32px;
+    height: 32px;
+    margin: 0 auto 8px;
+    border-radius: 12px;
+    display: grid;
+    place-items: center;
+    font-size: 15px;
+    color: var(--gold-soft);
+    background: rgba(255, 233, 189, 0.08);
+    border: 1px solid rgba(255, 229, 188, 0.08);
+  }
+
+  .quick-label {
+    font-size: 12px;
+    line-height: 1.25;
+    color: rgba(255, 242, 228, 0.9);
+  }
+
+  .premium-card {
+    padding: 16px;
+    min-height: 114px;
+    background:
+      radial-gradient(circle at 80% 100%, rgba(255, 186, 110, 0.28), transparent 26%),
+      linear-gradient(160deg, rgba(65, 39, 69, 0.94), rgba(45, 30, 54, 0.96));
+  }
+
+  .premium-title {
+    font-size: 17px;
+    margin-bottom: 4px;
+    color: #fff2de;
+  }
+
+  .premium-copy {
+    font-size: 12px;
+    color: rgba(255, 230, 206, 0.78);
+    margin-bottom: 14px;
+  }
+
+  .cta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 132px;
+    height: 42px;
+    border-radius: 14px;
+    border: 0;
+    color: #5d3210;
+    font-size: 14px;
+    font-weight: 700;
+    background: linear-gradient(180deg, #ffd98f, #d79947);
+    box-shadow: 0 10px 24px rgba(255, 193, 100, 0.28);
+  }
+
+  .premium-planet {
+    position: absolute;
+    right: 20px;
+    bottom: 18px;
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 32% 30%, #ffe8bf, #d49746 62%, #8b5b25 100%);
+    opacity: 0.88;
+  }
+
+  .premium-planet::after {
+    content: "";
+    position: absolute;
+    inset: -8px;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 228, 192, 0.24);
+    transform: rotate(-24deg) scaleX(1.45);
+  }
+
+  .title-bar,
+  .advisor-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 2px 14px;
+  }
+
+  .title-bar .center,
+  .advisor-bar .center {
+    text-align: center;
+    flex: 1;
+  }
+
+  .title-icon {
+    width: 24px;
+    text-align: center;
+    color: rgba(255, 240, 216, 0.88);
+    font-size: 22px;
+  }
+
+  .advisor-chip,
+  .chat-preview {
+    min-height: 70px;
+    padding: 14px 18px;
+    margin-bottom: 14px;
+  }
+
+  .chat-preview {
+    text-align: center;
+    display: grid;
+    place-items: center;
+    font-size: 18px;
+    color: #f8deb0;
+    letter-spacing: 0.03em;
+  }
+
+  .bubble {
+    padding: 16px 18px;
+    margin-bottom: 14px;
+    font-size: 15px;
+    line-height: 1.45;
+    color: rgba(255, 236, 218, 0.92);
+  }
+
+  .astro-card {
+    display: grid;
+    grid-template-columns: 98px 1fr;
+    gap: 14px;
+    padding: 12px;
+    min-height: 138px;
+    margin-bottom: 12px;
+  }
+
+  .avatar {
+    border-radius: 18px;
+    border: 1px solid rgba(255, 235, 204, 0.14);
+    background:
+      radial-gradient(circle at 50% 28%, rgba(255, 228, 184, 0.45), transparent 16%),
+      linear-gradient(180deg, rgba(203, 139, 115, 0.95), rgba(89, 49, 51, 0.94));
+    position: relative;
+    overflow: hidden;
+  }
+
+  .avatar::before {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 18%;
+    width: 44px;
+    height: 44px;
+    transform: translateX(-50%);
+    border-radius: 50%;
+    background: radial-gradient(circle at 50% 40%, #f3cfb2, #c48568 82%);
+  }
+
+  .avatar::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    bottom: -8px;
+    width: 86px;
+    height: 88px;
+    transform: translateX(-50%);
+    border-radius: 42px 42px 18px 18px;
+    background: linear-gradient(180deg, rgba(84, 48, 63, 0.95), rgba(43, 24, 28, 0.98));
+  }
+
+  .avatar.male {
+    background:
+      radial-gradient(circle at 50% 28%, rgba(255, 228, 184, 0.45), transparent 16%),
+      linear-gradient(180deg, rgba(106, 112, 132, 0.95), rgba(51, 47, 67, 0.94));
+  }
+
+  .avatar.male::before {
+    background: radial-gradient(circle at 50% 40%, #edc7a8, #a57155 82%);
+  }
+
+  .astro-meta h2 {
+    margin: 6px 0 2px;
+    font-size: 18px;
+    font-weight: 500;
+  }
+
+  .astro-line {
+    color: rgba(255, 228, 197, 0.82);
+    font-size: 13px;
+    margin-bottom: 12px;
+  }
+
+  .astro-line strong {
+    color: var(--gold);
+    font-weight: 700;
+  }
+
+  .astro-copy {
+    color: rgba(255, 242, 228, 0.84);
+    font-size: 13px;
+    line-height: 1.45;
+  }
+
+  .advisor-footer {
+    margin-top: 6px;
+    text-align: center;
+    font-size: 13px;
+    line-height: 1.45;
+    color: rgba(255, 235, 211, 0.85);
+  }
+
+  .advisor-footer::before,
+  .advisor-footer::after {
+    content: "";
+    display: block;
+    height: 1px;
+    margin: 12px auto;
+    width: 86%;
+    background: linear-gradient(90deg, transparent, rgba(255, 222, 177, 0.5), transparent);
+  }
+
+  .kundli-chart {
+    position: relative;
+    height: 308px;
+    margin-bottom: 16px;
+    display: grid;
+    place-items: center;
+  }
+
+  .kundli-chart .ring,
+  .kundli-chart .inner-ring,
+  .kundli-chart .core {
+    position: absolute;
+    border-radius: 50%;
+  }
+
+  .kundli-chart .ring {
+    width: 286px;
+    height: 286px;
+    border: 2px solid rgba(255, 217, 154, 0.68);
+    box-shadow: 0 0 26px rgba(255, 204, 122, 0.1);
+  }
+
+  .kundli-chart .ring::before,
+  .kundli-chart .ring::after {
+    content: "";
+    position: absolute;
+    inset: 18px;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 220, 172, 0.45);
+  }
+
+  .kundli-chart .ring::after {
+    inset: 42px;
+  }
+
+  .kundli-chart .inner-ring {
+    width: 136px;
+    height: 136px;
+    border: 1px solid rgba(255, 222, 173, 0.6);
+  }
+
+  .kundli-chart .core {
+    width: 76px;
+    height: 76px;
+    background: radial-gradient(circle at 35% 30%, #fff0c6, #ceb17c 46%, #4f3e2b 90%);
+    box-shadow: 0 0 22px rgba(255, 213, 128, 0.22);
+  }
+
+  .kundli-chart .spoke {
+    position: absolute;
+    width: 2px;
+    height: 260px;
+    background: linear-gradient(180deg, transparent, rgba(255, 216, 161, 0.48), transparent);
+  }
+
+  .kundli-chart .spoke.s1 { transform: rotate(18deg); }
+  .kundli-chart .spoke.s2 { transform: rotate(54deg); }
+  .kundli-chart .spoke.s3 { transform: rotate(90deg); }
+  .kundli-chart .spoke.s4 { transform: rotate(126deg); }
+  .kundli-chart .spoke.s5 { transform: rotate(162deg); }
+
+  .planet {
+    position: absolute;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    font-size: 10px;
+    color: rgba(255, 244, 231, 0.86);
+    background: radial-gradient(circle at 30% 30%, #ffe9bc, #c98639 74%, #6d4318 100%);
+    box-shadow: 0 0 18px rgba(255, 192, 113, 0.18);
+  }
+
+  .planet-label {
+    position: absolute;
+    font-size: 12px;
+    color: rgba(255, 231, 199, 0.84);
+  }
+
+  .planet.sun { top: 22px; left: 112px; }
+  .planet.moon { top: 16px; left: 156px; width: 32px; height: 32px; background: radial-gradient(circle at 30% 30%, #fff5de, #d8c6a1 72%, #796850 100%); }
+  .planet.mars { top: 22px; right: 104px; background: radial-gradient(circle at 30% 30%, #ffd2a0, #cb7d3b 72%, #6f3f1d 100%); }
+  .planet.mercury { top: 78px; right: 34px; background: radial-gradient(circle at 30% 30%, #f5ead7, #b8a48b 72%, #6d5d49 100%); }
+  .planet.venus { top: 132px; right: 18px; background: radial-gradient(circle at 30% 30%, #fee6be, #c59144 72%, #6d4720 100%); }
+  .planet.rahu { top: 196px; right: 58px; background: radial-gradient(circle at 30% 30%, #efdcc0, #ae9170 72%, #654f37 100%); }
+  .planet.ketu { bottom: 42px; right: 118px; background: radial-gradient(circle at 30% 30%, #f5d093, #bd7930 72%, #663c18 100%); }
+  .planet.saturn { bottom: 26px; left: 156px; width: 34px; height: 34px; background: radial-gradient(circle at 30% 30%, #f3bb72, #b96d2e 72%, #5f3312 100%); }
+  .planet.jupiter { bottom: 52px; left: 92px; background: radial-gradient(circle at 30% 30%, #e6d1ba, #ad8e72 72%, #65442c 100%); }
+  .planet.mars2 { top: 136px; left: 26px; background: radial-gradient(circle at 30% 30%, #d9c7af, #8f7b61 72%, #4d4031 100%); }
+  .planet.moon2 { top: 92px; left: 48px; width: 32px; height: 32px; background: radial-gradient(circle at 30% 30%, #f6c968, #bd7d20 72%, #673b11 100%); }
+
+  .planet-label.sun { top: 58px; left: 108px; }
+  .planet-label.moon { top: 52px; left: 156px; }
+  .planet-label.mars { top: 58px; right: 98px; }
+  .planet-label.mercury { top: 114px; right: 18px; }
+  .planet-label.venus { top: 168px; right: 18px; }
+  .planet-label.rahu { top: 236px; right: 60px; }
+  .planet-label.ketu { bottom: 22px; right: 118px; }
+  .planet-label.saturn { bottom: 6px; left: 144px; }
+  .planet-label.jupiter { bottom: 30px; left: 74px; }
+  .planet-label.mars2 { top: 170px; left: 18px; }
+  .planet-label.moon2 { top: 124px; left: 30px; }
+
+  .list-tile {
+    min-height: 54px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 16px;
+    margin-bottom: 10px;
+    font-size: 15px;
+    color: rgba(255, 239, 222, 0.92);
+  }
+
+  .list-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .tile-icon {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, #ffe6c0, #d79447 72%, #6d4117 100%);
+  }
+
+  .stat-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .stat-card {
+    min-height: 112px;
+    padding: 16px 14px;
+  }
+
+  .stat-card h3 {
+    margin: 0 0 8px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #f5d39b;
+  }
+
+  .stat-card strong {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 17px;
+    font-weight: 500;
+  }
+
+  .stat-card p {
+    margin: 0;
+    font-size: 12px;
+    line-height: 1.45;
+    color: rgba(255, 229, 201, 0.76);
+  }
+
+  .bottom-nav {
+    position: absolute;
+    left: 26px;
+    right: 26px;
+    bottom: 16px;
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: rgba(255, 243, 225, 0.84);
+  }
+
+  .nav-home {
+    width: 22px;
+    height: 18px;
+    border: 1.6px solid currentColor;
+    border-top: 0;
+    border-radius: 0 0 5px 5px;
+    position: relative;
+  }
+
+  .nav-home::before {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: -9px;
+    width: 12px;
+    height: 12px;
+    transform: translateX(-50%) rotate(45deg);
+    border-left: 1.6px solid currentColor;
+    border-top: 1.6px solid currentColor;
+    background: transparent;
+  }
+
+  .nav-ring {
+    width: 22px;
+    height: 22px;
+    border: 1.6px solid currentColor;
+    border-radius: 50%;
+  }
+
+  .nav-chat {
+    width: 22px;
+    height: 18px;
+    border: 1.6px solid currentColor;
+    border-radius: 12px;
+    position: relative;
+  }
+
+  .nav-chat::after {
+    content: "";
+    position: absolute;
+    right: 2px;
+    bottom: -4px;
+    width: 7px;
+    height: 7px;
+    border-right: 1.6px solid currentColor;
+    border-bottom: 1.6px solid currentColor;
+    transform: rotate(32deg);
+  }
+
+  .nav-constellation {
+    position: relative;
+    width: 22px;
+    height: 22px;
+  }
+
+  .nav-constellation::before,
+  .nav-constellation::after {
+    content: "";
+    position: absolute;
+    border-radius: 50%;
+    background: currentColor;
+  }
+
+  .nav-constellation::before {
+    width: 6px;
+    height: 6px;
+    left: 2px;
+    top: 9px;
+    box-shadow: 12px -7px 0 currentColor, 11px 8px 0 currentColor;
+  }
+
+  .nav-constellation::after {
+    width: 14px;
+    height: 1.5px;
+    left: 4px;
+    top: 11px;
+    transform: rotate(-24deg);
+  }
+
+  @media (max-width: 1320px) {
+    .phone-row {
+      transform: scale(0.82);
+    }
+  }
+
+  @media (max-width: 1080px) {
+    body {
+      overflow: auto;
+    }
+
+    .preview {
+      align-items: flex-start;
+    }
+
+    .phone-row {
+      flex-direction: column;
+      transform: scale(1);
+    }
+  }
+</style>
+</head>
+<body>
+  <main class="preview">
+    <section class="phone-row">
+      <article class="phone">
+        <div class="notch"></div>
+        <div class="screen">
+          <div class="status">
+            <div class="top-icons">
+              <div class="signal"><i></i><i></i><i></i><i></i></div>
+              <div class="wifi"><i></i><i></i><i></i></div>
+            </div>
+            <div class="top-icons">
+              <div class="signal"><i></i><i></i><i></i><i></i></div>
+              <div class="battery"><span></span></div>
+            </div>
+          </div>
+          <div class="screen-content">
+            <header class="home-header">
+              <h1>Welcome, Emily</h1>
+              <p>April 23</p>
+            </header>
+
+            <section class="card horoscope-card">
+              <div class="hero-glyph">✦</div>
+              <div class="eyebrow">Today's Horoscope</div>
+              <div class="sign-row">
+                <span class="gold-dot"></span>
+                <span>Sagittarius</span>
+                <span>⌄</span>
+              </div>
+              <div class="horoscope-copy">
+                Trust your intuition today.<br />
+                New opportunities are on the horizon.
+              </div>
+              <div class="read-more">Read More &nbsp;&gt;</div>
+            </section>
+
+            <div class="metrics">
+              <section class="card metric-card">
+                <h2>Energy Score</h2>
+                <div class="energy-ring"></div>
+                <div class="energy-score">82 <small>High</small></div>
+              </section>
+              <section class="card metric-card">
+                <h2>Moon Phase</h2>
+                <div class="moon-wrap">
+                  <div class="moon"></div>
+                  <div class="metric-note">Waxing Gibbous</div>
+                </div>
+              </section>
+            </div>
+
+            <div class="quick-grid">
+              <section class="card quick-card">
+                <div class="quick-icon">✉</div>
+                <div class="quick-label">Daily Tarot</div>
+              </section>
+              <section class="card quick-card">
+                <div class="quick-icon">❤</div>
+                <div class="quick-label">Love Compatibility</div>
+              </section>
+              <section class="card quick-card">
+                <div class="quick-icon">↓</div>
+                <div class="quick-label">Numerology</div>
+              </section>
+              <section class="card quick-card">
+                <div class="quick-icon">✦</div>
+                <div class="quick-label">Birth Chart</div>
+              </section>
+            </div>
+
+            <section class="card premium-card">
+              <div class="premium-title">Unlock Your Cosmic Insights</div>
+              <div class="premium-copy">Upgrade to Premium for exclusive features</div>
+              <button class="cta">Go Premium</button>
+              <span class="premium-planet"></span>
+            </section>
+          </div>
+
+          <nav class="bottom-nav">
+            <span class="nav-ring"></span>
+            <span class="nav-home"></span>
+            <span class="nav-chat"></span>
+          </nav>
+        </div>
+      </article>
+
+      <article class="phone">
+        <div class="notch"></div>
+        <div class="screen">
+          <div class="status">
+            <div class="top-icons">
+              <div class="signal"><i></i><i></i><i></i><i></i></div>
+              <div class="wifi"><i></i><i></i><i></i></div>
+            </div>
+            <div class="top-icons">
+              <div class="signal"><i></i><i></i><i></i><i></i></div>
+              <div class="battery"><span></span></div>
+            </div>
+          </div>
+          <div class="screen-content">
+            <header class="title-bar">
+              <div class="title-icon">←</div>
+              <div class="center">
+                <h1>Kundli</h1>
+              </div>
+              <div class="title-icon"></div>
+            </header>
+
+            <section class="kundli-chart">
+              <span class="spoke s1"></span>
+              <span class="spoke s2"></span>
+              <span class="spoke s3"></span>
+              <span class="spoke s4"></span>
+              <span class="spoke s5"></span>
+              <span class="ring"></span>
+              <span class="inner-ring"></span>
+              <span class="core"></span>
+
+              <span class="planet sun"></span>
+              <span class="planet moon"></span>
+              <span class="planet mars"></span>
+              <span class="planet mercury"></span>
+              <span class="planet venus"></span>
+              <span class="planet rahu"></span>
+              <span class="planet ketu"></span>
+              <span class="planet saturn"></span>
+              <span class="planet jupiter"></span>
+              <span class="planet mars2"></span>
+              <span class="planet moon2"></span>
+
+              <span class="planet-label sun">Sun</span>
+              <span class="planet-label moon">Moon</span>
+              <span class="planet-label mars">Mars</span>
+              <span class="planet-label mercury">Mercury</span>
+              <span class="planet-label venus">Venus</span>
+              <span class="planet-label rahu">Rahu</span>
+              <span class="planet-label ketu">Ketu</span>
+              <span class="planet-label saturn">Saturn</span>
+              <span class="planet-label jupiter">Jupiter</span>
+              <span class="planet-label mars2">Mars</span>
+              <span class="planet-label moon2">Moon</span>
+            </section>
+
+            <section class="card list-tile">
+              <div class="list-left"><span class="tile-icon"></span><span>Sun in Aries</span></div>
+              <span>&gt;</span>
+            </section>
+            <section class="card list-tile">
+              <div class="list-left"><span class="tile-icon"></span><span>Moon in Anuradha</span></div>
+              <span>&gt;</span>
+            </section>
+            <section class="card list-tile">
+              <div class="list-left"><span class="tile-icon"></span><span>Mars in Cancer</span></div>
+              <span>&gt;</span>
+            </section>
+
+            <div class="stat-grid">
+              <section class="card stat-card">
+                <h3>Nakshatra:</h3>
+                <strong>Anuradha</strong>
+                <p>Balanced &amp; Harmonious</p>
+              </section>
+              <section class="card stat-card">
+                <h3>Dosha:</h3>
+                <strong>Pitta</strong>
+                <p>Fire Element &amp; Passionate</p>
+              </section>
+            </div>
+          </div>
+
+          <nav class="bottom-nav">
+            <span class="nav-constellation"></span>
+            <span class="nav-home"></span>
+            <span class="nav-chat"></span>
+          </nav>
+        </div>
+      </article>
+
+      <article class="phone">
+        <div class="notch"></div>
+        <div class="screen">
+          <div class="status">
+            <div class="top-icons">
+              <div class="signal"><i></i><i></i><i></i><i></i></div>
+              <div class="wifi"><i></i><i></i><i></i></div>
+            </div>
+            <div class="top-icons">
+              <div class="signal"><i></i><i></i><i></i><i></i></div>
+              <div class="battery"><span></span></div>
+            </div>
+          </div>
+          <div class="screen-content">
+            <header class="advisor-bar">
+              <div class="title-icon">◌</div>
+              <div class="center">
+                <h1>Astro AI Advisor</h1>
+              </div>
+              <div class="title-icon">▢</div>
+            </header>
+
+            <section class="card chat-preview">Chat Preview &nbsp;&gt;</section>
+            <section class="card bubble">How can I help you with your astrology questions today?</section>
+
+            <section class="card astro-card">
+              <div class="avatar"></div>
+              <div class="astro-meta">
+                <h2>Sophia Sharma</h2>
+                <div class="astro-line">Vedic Astrology &nbsp;&nbsp;<strong>$3.99 / min</strong></div>
+                <div class="astro-copy">Expert in Vedic &amp;<br />Relationship Astrology</div>
+              </div>
+            </section>
+
+            <section class="card astro-card">
+              <div class="avatar male"></div>
+              <div class="astro-meta">
+                <h2>Daniel Cohen</h2>
+                <div class="astro-line">Western Astrology &nbsp;&nbsp;<strong>$4.49 / min</strong></div>
+                <div class="astro-copy">Specialist in<br />Career &amp; Life Path</div>
+              </div>
+            </section>
+
+            <button class="cta" style="width: 100%; margin-top: 6px;">Start Live Chat &nbsp;&gt;</button>
+            <div class="advisor-footer">Connect with top astrologers for<br />real-time guidance.</div>
+          </div>
+        </div>
+      </article>
+    </section>
+  </main>
+</body>
+</html>

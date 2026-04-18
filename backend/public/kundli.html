@@ -1,0 +1,118 @@
+<\!doctype html>
+<html lang="en"><head><meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Kundli Generator - AstroPath</title><link rel="stylesheet" href="/demo/static/app.css" /></head><body>
+<main class="container">
+<h1>Kundli generator</h1>
+<p class="muted">POST /v1/kundli/generate. Returns lagna, planet positions, Vimshottari dasha + antardashas, Navamsa/Dasamsa, and Manglik/Kaal Sarp/Pitra dosha analysis — all localized to the selected language.</p>
+
+<div class="panel">
+  <div class="row">
+    <div><label>Name</label><input id="name" value="Prasad" /></div>
+    <div><label>Birth date</label><input id="birthDate" type="date" value="1992-05-17" /></div>
+    <div><label>Birth time (HH:MM)</label><input id="birthTime" type="time" value="06:12" /></div>
+    <div><label>Latitude</label><input id="latitude" type="number" step="0.0001" value="18.5204" /></div>
+    <div><label>Longitude</label><input id="longitude" type="number" step="0.0001" value="73.8567" /></div>
+    <div><label>TZ offset (minutes, east of UTC)</label><input id="tz" type="number" value="330" /></div>
+  </div>
+  <div style="margin-top:12px;"><button id="go">Generate kundli</button></div>
+</div>
+
+<div id="out"></div>
+</main>
+<script src="/demo/static/app.js"></script>
+<script>
+AP.renderTopbar();
+const out = document.getElementById('out');
+document.getElementById('go').onclick = async () => {
+  out.innerHTML = '<div class="muted">Computing…</div>';
+  try {
+    const body = await AP.api('/v1/kundli/generate', {
+      method: 'POST',
+      body: {
+        name: document.getElementById('name').value,
+        birthDate: document.getElementById('birthDate').value,
+        birthTime: document.getElementById('birthTime').value,
+        latitude: Number(document.getElementById('latitude').value),
+        longitude: Number(document.getElementById('longitude').value),
+        tzOffsetMinutes: Number(document.getElementById('tz').value),
+      },
+    });
+    const k = body.data;
+    out.innerHTML = '';
+    out.appendChild(AP.el('div', { class: 'panel' }, AP.el('p', null, k.summary)));
+
+    out.appendChild(AP.el('h2', null, 'Lagna'));
+    out.appendChild(AP.kv({
+      Sign: k.lagna.sign,
+      'Degrees in sign': k.lagna.degrees,
+      'Sidereal longitude': k.lagna.siderealLong,
+      'Navamsa (D9)': k.lagna.navamsaSign,
+      'Dasamsa (D10)': k.lagna.dasamsaSign,
+      Ayanamsa: k.ayanamsa,
+      'Moon sign': k.moonSign,
+      'Sun sign': k.sunSign,
+      Nakshatra: k.nakshatra.name + ' pada ' + k.nakshatra.pada + ' (lord: ' + k.nakshatra.lord + ')',
+    }));
+
+    out.appendChild(AP.el('h2', null, 'Planet positions'));
+    const tbl = AP.el('table', null,
+      AP.el('thead', null, AP.el('tr', null,
+        AP.el('th', null, 'Planet'), AP.el('th', null, 'Sign'), AP.el('th', null, 'House'),
+        AP.el('th', null, 'Deg'), AP.el('th', null, 'Navamsa'), AP.el('th', null, 'Dasamsa')))
+    );
+    const tbody = AP.el('tbody');
+    for (const p of k.planetPositions) {
+      tbody.appendChild(AP.el('tr', null,
+        AP.el('td', null, p.planet),
+        AP.el('td', null, p.sign),
+        AP.el('td', null, String(p.house)),
+        AP.el('td', null, p.degrees + '°'),
+        AP.el('td', null, p.navamsaSign),
+        AP.el('td', null, p.dasamsaSign)
+      ));
+    }
+    tbl.appendChild(tbody);
+    out.appendChild(tbl);
+
+    out.appendChild(AP.el('h2', null, 'Current Vimshottari dasha'));
+    out.appendChild(AP.kv({
+      'Mahadasha planet': k.dasha.current.planet,
+      'Started on': k.dasha.current.startedOn,
+      'Ends on': k.dasha.current.endsOn,
+      'Total years': k.dasha.current.totalYears,
+      'Balance years': k.dasha.current.balanceYears,
+      'Current antardasha': k.dasha.currentAntardasha.planet + ' until ' + k.dasha.currentAntardasha.endsOn,
+    }));
+
+    out.appendChild(AP.el('h2', null, 'Antardashas inside current mahadasha'));
+    const atbl = AP.el('table', null,
+      AP.el('thead', null, AP.el('tr', null,
+        AP.el('th', null, 'Antardasha'), AP.el('th', null, 'Start'), AP.el('th', null, 'End'), AP.el('th', null, 'Years')))
+    );
+    const abody = AP.el('tbody');
+    for (const a of k.dasha.current.antardashas) {
+      abody.appendChild(AP.el('tr', null,
+        AP.el('td', null, a.planet), AP.el('td', null, a.startedOn),
+        AP.el('td', null, a.endsOn), AP.el('td', null, String(a.totalYears))));
+    }
+    atbl.appendChild(abody);
+    out.appendChild(atbl);
+
+    out.appendChild(AP.el('h2', null, 'Doshas'));
+    const dox = AP.el('div');
+    const pill = (label, on, reason) => AP.el('div', { style: 'margin:8px 0;' },
+      AP.el('span', { class: on ? 'pill danger' : 'pill success' }, label + ': ' + (on ? 'yes' : 'no')),
+      AP.el('span', { class: 'muted', style: 'margin-left:8px;' }, reason));
+    dox.appendChild(pill('Manglik', k.doshas.manglik, k.doshas.explanations.manglik));
+    dox.appendChild(pill('Kaal Sarp', k.doshas.kaalSarp, k.doshas.explanations.kaalSarp));
+    dox.appendChild(pill('Pitra', k.doshas.pitra, k.doshas.explanations.pitra));
+    out.appendChild(dox);
+
+    out.appendChild(AP.el('h2', null, 'Engine'));
+    out.appendChild(AP.kv({ version: k.engineVersion, accuracy: k.engineAccuracy, locale: k.locale }));
+
+    out.appendChild(AP.el('h2', null, 'Raw response'));
+    out.appendChild(AP.rawJson(body));
+  } catch (err) { AP.showError(out, err); }
+};
+</script></body></html>

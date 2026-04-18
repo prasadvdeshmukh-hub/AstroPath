@@ -1,0 +1,30 @@
+{
+  "name": "astropath-backend",
+  "version": "0.4.0",
+  "private": true,
+  "description": "AstroPath backend - Node.js + Express + Firestore. Claude-owned.",
+  "type": "commonjs",
+  "main": "src/index.js",
+  "engines": {
+    "node": ">=18.17"
+  },
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js",
+    "test": "node --test test/",
+    "smoke": "node test/smoke.js",
+    "smoke:logic": "node test/logic.js",
+    "smoke:astronomy": "node test/astronomy.js",
+    "smoke:antardasha": "node test/antardasha.js",
+    "smoke:divisional": "node test/divisional.js",
+    "smoke:panchang": "node test/panchang.js",
+    "smoke:transits": "node test/transits.js",
+    "smoke:i18n": "node test/i18n.js",
+    "smoke:all": "node test/logic.js && node test/astronomy.js && node test/antardasha.js && node test/divisional.js && node test/panchang.js && node test/transits.js && node test/i18n.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "firebase-admin": "^12.2.0"
+  }
+}

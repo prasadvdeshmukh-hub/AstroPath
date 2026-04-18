@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AstroPath — Guidelines & Policies</title>
+<link rel="stylesheet" href="./shared.css">
+<style>
+  /* Guidelines-specific layout — long-form prose inside a single full-width panel */
+  .guide-shell {
+    width: min(100%, 920px);
+    display: grid;
+    gap: 18px;
+  }
+  .guide-panel {
+    padding: 36px 40px;
+    background:
+      linear-gradient(180deg, rgba(52, 28, 82, 0.70), rgba(16, 8, 28, 0.92));
+    border: 1px solid var(--panel-line);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-deep);
+    backdrop-filter: blur(16px);
+  }
+  .guide-panel .eyebrow { color: var(--gold-2); letter-spacing: 0.22em; font-size: 0.72rem; text-transform: uppercase; }
+  .guide-panel h1 { font-size: 2rem; margin: 6px 0 6px; color: var(--text); line-height: 1.15; }
+  .guide-panel .lede { color: var(--muted); font-size: 0.95rem; max-width: 56ch; margin: 0; }
+  .guide-panel h2 {
+    color: var(--gold-3);
+    font-size: 1.08rem;
+    margin: 26px 0 10px;
+    letter-spacing: 0.02em;
+    border-top: 1px solid rgba(255,236,205,0.08);
+    padding-top: 18px;
+  }
+  .guide-panel h2:first-of-type { border-top: 0; padding-top: 0; }
+  .guide-panel p { color: var(--muted); line-height: 1.65; font-size: 0.92rem; margin: 6px 0; }
+  .guide-panel ul { padding-left: 22px; color: var(--muted); line-height: 1.65; font-size: 0.92rem; }
+  .guide-panel ul li { margin: 4px 0; }
+  .guide-panel strong { color: var(--gold-2); font-weight: 600; }
+  .guide-toc {
+    display: flex; gap: 8px; flex-wrap: wrap; margin: 18px 0 4px;
+  }
+  .guide-toc a {
+    padding: 6px 12px; border-radius: 999px; text-decoration: none;
+    color: var(--gold-3); font-size: 0.76rem;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,236,205,0.10);
+    transition: 180ms ease;
+  }
+  .guide-toc a:hover {
+    border-color: rgba(255, 213, 148, 0.4);
+    background: rgba(255, 213, 148, 0.12);
+  }
+  .guide-meta {
+    color: var(--muted-2); font-size: 0.78rem; letter-spacing: 0.04em;
+    margin-top: 26px;
+  }
+  .guide-actions {
+    display: flex; flex-wrap: wrap; gap: 10px; margin-top: 22px;
+  }
+  .guide-actions a {
+    padding: 10px 18px; border-radius: 999px; text-decoration: none;
+    font-size: 0.84rem; letter-spacing: 0.02em;
+    border: 1px solid rgba(255, 213, 148, 0.28);
+    color: var(--gold-3);
+    background: rgba(255, 213, 148, 0.08);
+    transition: 180ms ease;
+  }
+  .guide-actions a.is-primary {
+    background: linear-gradient(180deg, #ffd891, #ff9a3a);
+    color: #2d1204;
+    border-color: transparent;
+    font-weight: 700;
+  }
+  .guide-actions a:hover { transform: translateY(-1px); }
+  .callout {
+    padding: 14px 16px;
+    border-radius: 14px;
+    background: rgba(255, 213, 148, 0.06);
+    border: 1px solid rgba(255, 213, 148, 0.18);
+    color: var(--gold-3);
+    font-size: 0.88rem;
+    margin: 14px 0 6px;
+  }
+  .callout.is-warn {
+    background: rgba(255, 141, 166, 0.06);
+    border-color: rgba(255, 141, 166, 0.25);
+    color: var(--pink);
+  }
+  @media (max-width: 640px) {
+    .guide-panel { padding: 26px 22px; }
+    .guide-panel h1 { font-size: 1.6rem; }
+  }
+</style>
+</head>
+<body>
+<main class="scene" style="place-items: start;">
+  <section class="guide-shell" style="margin: 0 auto;">
+    <article class="guide-panel">
+      <a class="portal-link" href="./hub.html">← All previews</a>
+      <div class="eyebrow">AstroPath · Guidelines</div>
+      <h1>How we read the sky — and the lines we do not cross.</h1>
+      <p class="lede">
+        AstroPath offers advisory spiritual guidance drawn from Vedic astrology.
+        We are not a substitute for qualified medical, legal, or financial professionals.
+        Please read these notes before you rely on any reading, consultation, or AI reply.
+      </p>
+
+      <div class="guide-toc" role="navigation" aria-label="Guideline sections">
+        <a href="#terms">Terms of Use</a>
+        <a href="#privacy">Privacy</a>
+        <a href="#ai">AI Disclaimer</a>
+        <a href="#community">Community</a>
+        <a href="#consult">Consultations</a>
+        <a href="#refund">Refunds</a>
+        <a href="#wellbeing">Wellbeing</a>
+        <a href="#contact">Contact</a>
+      </div>
+
+      <h2 id="terms">1. Terms of Use</h2>
+      <p>
+        By creating an AstroPath account you agree to use the app for personal, non-commercial
+        guidance. You will not redistribute paid content, impersonate another user, or scrape
+        astrologer listings. You must be 18 years or older, or have your guardian's consent, to
+        book a paid consultation.
+      </p>
+      <p>
+        AstroPath content — horoscopes, kundli readings, panchang, muhurat windows, and AI replies
+        — is provided <strong>for reflection</strong>, not as a substitute for professional
+        judgment. Decisions you make in your life are yours; we only offer perspective.
+      </p>
+
+      <h2 id="privacy">2. Privacy</h2>
+      <p>
+        We store the minimum data needed to give you a reading: your name, birth date, birth time,
+        birth place, language preference, and chat history with the AI assistant. Consultations
+        with human astrologers are private between you and the astrologer; AstroPath holds a
+        transcript only for safety review and refund resolution.
+      </p>
+      <ul>
+        <li>We never sell your birth details or chart to advertisers.</li>
+        <li>Your chat with the AI lives locally on your device and in short-lived server memory for conversational continuity. You can clear it from Settings or by tapping "Clear chat" in the assistant.</li>
+        <li>We retain kundli records so you can re-open past readings; you can delete them from Settings at any time.</li>
+      </ul>
+
+      <h2 id="ai">3. AI Assistant Disclaimer</h2>
+      <p>
+        The AI assistant is a software layer over curated astrology content. It is
+        <strong>not deterministic</strong> and does not forecast specific events. It will decline
+        to give medical diagnoses, legal strategy, stock tips, or crisis counselling. If you ask
+        about self-harm, the assistant will pause and point you to helplines.
+      </p>
+      <div class="callout">
+        If you need support that goes beyond spiritual guidance — a diagnosis, a contract
+        review, a trade decision, or crisis help — please reach out to a qualified professional.
+        The assistant will always say so itself when a topic is outside its scope.
+      </div>
+
+      <h2 id="community">4. Community Standards</h2>
+      <ul>
+        <li>Speak respectfully with astrologers. Abusive language ends the session.</li>
+        <li>Do not share another person's birth details without their consent.</li>
+        <li>Do not request readings that are coercive (to pressure a specific person into a choice).</li>
+        <li>Report any astrologer who promises a guaranteed outcome, a cure, or pressures you to buy gemstones off-platform.</li>
+      </ul>
+
+      <h2 id="consult">5. Consultation Policy</h2>
+      <p>
+        Paid consultations start from your wallet balance. The per-minute rate is shown before
+        you connect. Calls and video sessions begin a 60-second trial; if either side disconnects
+        in that window you are not charged. Astrologers are independent practitioners; AstroPath
+        verifies credentials but does not control their individual advice.
+      </p>
+
+      <h2 id="refund">6. Refund Policy</h2>
+      <p>
+        Wallet top-ups are refundable within 7 days if unused. Completed consultations are
+        non-refundable, but we will review disputes in good faith if you flag the session within
+        48 hours and provide a reason. Partial refunds are common for technical failures or
+        dropped calls.
+      </p>
+
+      <h2 id="wellbeing">7. Wellbeing Note</h2>
+      <p>
+        Astrology can be a comforting frame, and it can also be misused to justify anxiety or
+        inaction. If a reading leaves you feeling worse, step away. Speak to someone you trust.
+        If you are in distress in India, <strong>iCall (9152987821)</strong> and
+        <strong>Vandrevala Foundation (1860-2662-345)</strong> offer confidential counselling.
+        For immediate danger, call <strong>112</strong>.
+      </p>
+      <div class="callout is-warn">
+        We will never ask you to perform a remedy that harms you, costs a large sum up-front, or
+        isolates you from family or professional support.
+      </div>
+
+      <h2 id="contact">8. Contact & Reporting</h2>
+      <p>
+        Reach us at <strong>hello@astropath.app</strong> for general queries, or
+        <strong>trust@astropath.app</strong> to report an astrologer, a refund issue, or a safety
+        concern. We aim to respond within two business days.
+      </p>
+
+      <p class="guide-meta">Last updated: April 2026 · Version 1.0</p>
+
+      <div class="guide-actions">
+        <a href="./dashboard.html" class="is-primary">Back to dashboard</a>
+        <a href="../login.html">Back to sign-in</a>
+        <a href="./settings.html">Settings</a>
+      </div>
+    </article>
+  </section>
+</main>
+
+<script src="./app.js"></script>
+<script>
+  (async function () {
+    const AP = window.AstroPath;
+    if (!AP) return;
+    // Guidelines is public — no redirect, just set nav active if we're inside the app
+    await AP.guard('public');
+  })();
+</script>
+</body>
+</html>

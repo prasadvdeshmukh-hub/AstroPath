@@ -1,0 +1,379 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AstroPath — Settings</title>
+<link rel="stylesheet" href="./shared.css">
+<style>
+  .profile {
+    display: flex; align-items: center; gap: 12px;
+    margin-top: 18px;
+    padding: 14px;
+    border-radius: 18px;
+    background:
+      radial-gradient(circle at 100% 0%, rgba(255, 188, 100, 0.14), transparent 50%),
+      linear-gradient(180deg, rgba(40,20,70,0.6), rgba(16,8,28,0.8));
+    border: 1px solid rgba(255, 213, 148, 0.18);
+  }
+  .p-ava {
+    width: 54px; height: 54px; border-radius: 50%;
+    background:
+      radial-gradient(circle at 30% 30%, rgba(255,235,190,0.85), rgba(255,180,100,0.5) 40%, transparent 70%),
+      linear-gradient(135deg, rgba(255,210,140,0.4), rgba(192,124,255,0.4));
+    border: 1px solid rgba(255, 235, 205, 0.24);
+  }
+  .p-name { font-weight: 700; color: var(--gold-3); font-size: 1.04rem; }
+  .p-meta { color: var(--muted); font-size: 0.8rem; }
+  .p-edit {
+    margin-left: auto;
+    padding: 8px 12px; border-radius: 999px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255, 213, 148, 0.24);
+    color: var(--gold-3); font-size: 0.78rem; text-decoration: none;
+  }
+
+  .group {
+    margin-top: 18px;
+    border-radius: 18px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255, 236, 205, 0.08);
+    overflow: hidden;
+  }
+  .grp-h {
+    padding: 10px 14px;
+    color: var(--gold-2);
+    font-size: 0.72rem; letter-spacing: 0.16em; text-transform: uppercase;
+    background: rgba(255,255,255,0.02);
+    border-bottom: 1px solid rgba(255,236,205,0.08);
+  }
+  .row {
+    display: grid; grid-template-columns: auto 1fr auto;
+    align-items: center; gap: 12px;
+    padding: 12px 14px;
+    border-bottom: 1px solid rgba(255,236,205,0.06);
+  }
+  .row:last-child { border-bottom: 0; }
+  .r-ico {
+    width: 30px; height: 30px; border-radius: 10px;
+    display: grid; place-items: center;
+    background: linear-gradient(135deg, rgba(255, 213, 148, 0.22), rgba(192,124,255,0.22));
+    color: var(--gold-3); font-weight: 700;
+  }
+  .r-title { font-size: 0.9rem; }
+  .r-sub { color: var(--muted); font-size: 0.74rem; margin-top: 2px; }
+  .r-action { color: var(--muted-2); font-size: 0.86rem; }
+  .r-action.gold { color: var(--gold-2); }
+
+  /* switch */
+  .sw { position: relative; width: 40px; height: 22px; }
+  .sw input { opacity: 0; width: 0; height: 0; }
+  .sw label {
+    position: absolute; inset: 0; cursor: pointer;
+    background: rgba(255,255,255,0.10);
+    border: 1px solid rgba(255,236,205,0.14);
+    border-radius: 999px;
+    transition: 180ms ease;
+  }
+  .sw label::after {
+    content: ""; position: absolute; top: 2px; left: 2px;
+    width: 16px; height: 16px; border-radius: 50%;
+    background: var(--muted);
+    transition: 180ms ease;
+  }
+  .sw input:checked + label { background: linear-gradient(135deg, var(--gold), var(--amber)); border-color: rgba(255, 213, 148, 0.4); }
+  .sw input:checked + label::after { left: 20px; background: #2b1308; }
+
+  .lang-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; padding: 10px; }
+  .lg {
+    padding: 10px; border-radius: 12px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,236,205,0.08);
+    display: flex; justify-content: space-between; align-items: center;
+    cursor: pointer;
+  }
+  .lg.is-selected {
+    background: linear-gradient(180deg, rgba(255, 213, 148, 0.22), rgba(255, 154, 58, 0.10));
+    border-color: rgba(255, 213, 148, 0.45);
+    color: var(--gold-3);
+  }
+  .lg small { color: var(--muted); font-size: 0.72rem; display: block; }
+  .lg.is-selected small { color: var(--gold-2); }
+
+  .consult-modes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; padding: 10px; }
+  .cm {
+    padding: 10px; border-radius: 12px; text-align: center;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,236,205,0.08);
+    color: var(--muted);
+    font-size: 0.76rem;
+    cursor: pointer;
+  }
+  .cm.is-selected {
+    background: linear-gradient(180deg, rgba(255, 213, 148, 0.25), rgba(255, 154, 58, 0.10));
+    border-color: rgba(255, 213, 148, 0.45);
+    color: var(--gold-3);
+  }
+  .cm b { display: block; font-size: 1rem; margin-bottom: 4px; }
+
+  .danger {
+    margin-top: 14px; padding: 12px 14px;
+    border-radius: 14px;
+    background: rgba(255,141,166,0.06);
+    border: 1px solid rgba(255,141,166,0.20);
+    color: var(--danger);
+    font-size: 0.82rem; text-align: center;
+    cursor: pointer;
+  }
+</style>
+</head>
+<body>
+<main class="scene">
+  <section class="shell">
+    <article class="panel hero">
+      <a class="portal-link" href="./hub.html">← All previews</a>
+      <div class="hero-top">
+        <span class="eyebrow">Settings</span>
+        <h1>Tune the cosmos<br>to your liking.</h1>
+        <p class="hero-copy">
+          Language, notifications, personalization, consultation mode, privacy, and trust. Per the PRD,
+          language switches flow through the entire app — dashboard, kundli, horoscope, panchang,
+          consultation, AI, and settings itself.
+        </p>
+      </div>
+      <div class="hero-grid">
+        <div class="stat"><span class="stat-label">Language</span><span class="stat-value">English</span></div>
+        <div class="stat"><span class="stat-label">Notifications</span><span class="stat-value">On · Daily</span></div>
+        <div class="stat"><span class="stat-label">Plan</span><span class="stat-value">Free tier</span></div>
+      </div>
+    </article>
+
+    <article class="panel form-wrap">
+      <div class="phone-frame">
+        <div class="phone-notch"></div>
+        <div class="phone-screen">
+          <div class="status-row">
+            <span>9:41</span>
+            <span><span class="status-dot"></span>Settings</span>
+          </div>
+
+          <div class="brand-lockup">
+            <div class="brand-icon">⚙</div>
+            <div class="brand-meta">
+              <strong>SETTINGS</strong>
+              <span>Control every cosmic preference</span>
+            </div>
+          </div>
+
+          <div class="profile">
+            <div class="p-ava"></div>
+            <div>
+              <div class="p-name" id="profileName">Vihaan Deshmukh</div>
+              <div class="p-meta" id="profileMeta">Meena Lagna · Kanya Moon · Free tier</div>
+            </div>
+            <a class="p-edit" href="#" id="editProfile">Edit</a>
+          </div>
+
+          <!-- Language -->
+          <div class="group">
+            <div class="grp-h">Language</div>
+            <div class="lang-grid" id="langGrid">
+              <div class="lg is-selected" data-lang="en">
+                <div>English<small>International</small></div>
+                <span>✓</span>
+              </div>
+              <div class="lg" data-lang="hi"><div>हिन्दी<small>Hindi</small></div></div>
+              <div class="lg" data-lang="mr"><div>मराठी<small>Marathi</small></div></div>
+              <div class="lg" data-lang="ta"><div>தமிழ்<small>Tamil · soon</small></div></div>
+            </div>
+          </div>
+
+          <!-- Notifications -->
+          <div class="group">
+            <div class="grp-h">Notifications</div>
+            <div class="row">
+              <div class="r-ico">✦</div>
+              <div><div class="r-title">Daily horoscope</div><div class="r-sub">Every morning at sunrise</div></div>
+              <span class="sw"><input id="s1" type="checkbox" checked><label for="s1"></label></span>
+            </div>
+            <div class="row">
+              <div class="r-ico">☼</div>
+              <div><div class="r-title">Panchang &amp; muhurat alerts</div><div class="r-sub">Favourable windows only</div></div>
+              <span class="sw"><input id="s2" type="checkbox" checked><label for="s2"></label></span>
+            </div>
+            <div class="row">
+              <div class="r-ico">💬</div>
+              <div><div class="r-title">Consultation replies</div><div class="r-sub">Astrologer messages</div></div>
+              <span class="sw"><input id="s3" type="checkbox" checked><label for="s3"></label></span>
+            </div>
+            <div class="row">
+              <div class="r-ico">🎁</div>
+              <div><div class="r-title">Offers &amp; promotions</div><div class="r-sub">Occasional</div></div>
+              <span class="sw"><input id="s4" type="checkbox"><label for="s4"></label></span>
+            </div>
+          </div>
+
+          <!-- Personalization -->
+          <div class="group">
+            <div class="grp-h">Personalization</div>
+            <div class="row">
+              <div class="r-ico">◎</div>
+              <div><div class="r-title">Focus areas</div><div class="r-sub">Career, Finance</div></div>
+              <a href="#" class="r-action gold">Edit</a>
+            </div>
+            <div class="row">
+              <div class="r-ico">✺</div>
+              <div><div class="r-title">Astrology system</div><div class="r-sub">Vedic (Lahiri)</div></div>
+              <a href="#" class="r-action gold">Change</a>
+            </div>
+            <div class="row">
+              <div class="r-ico">🎨</div>
+              <div><div class="r-title">Theme</div><div class="r-sub">Cosmic Dark</div></div>
+              <a href="#" class="r-action">Default</a>
+            </div>
+          </div>
+
+          <!-- Consultation mode -->
+          <div class="group">
+            <div class="grp-h">Default consultation mode</div>
+            <div class="consult-modes" id="consultModes">
+              <div class="cm is-selected" data-mode="chat"><b>💬</b>Chat</div>
+              <div class="cm" data-mode="call"><b>📞</b>Call</div>
+              <div class="cm" data-mode="video"><b>🎥</b>Video</div>
+            </div>
+          </div>
+
+          <!-- Privacy & trust -->
+          <div class="group">
+            <div class="grp-h">Trust, Privacy &amp; Disclaimer</div>
+            <a class="row" href="./guidelines.html#privacy" style="color: inherit; text-decoration: none;">
+              <div class="r-ico">🔒</div>
+              <div><div class="r-title">Privacy controls</div><div class="r-sub">Data, consent, export</div></div>
+              <span class="r-action">›</span>
+            </a>
+            <a class="row" href="./guidelines.html#ai" style="color: inherit; text-decoration: none;">
+              <div class="r-ico">📜</div>
+              <div><div class="r-title">Disclaimer &amp; AI policy</div><div class="r-sub">Spiritual guidance only — not medical / legal / financial advice</div></div>
+              <span class="r-action">›</span>
+            </a>
+            <a class="row" href="./guidelines.html#terms" style="color: inherit; text-decoration: none;">
+              <div class="r-ico">📄</div>
+              <div><div class="r-title">Terms &amp; community standards</div><div class="r-sub">How we handle reviews, refunds, reporting</div></div>
+              <span class="r-action">›</span>
+            </a>
+            <a class="row" href="./guidelines.html#wellbeing" style="color: inherit; text-decoration: none;">
+              <div class="r-ico">💛</div>
+              <div><div class="r-title">Wellbeing resources</div><div class="r-sub">Helplines + how to step away</div></div>
+              <span class="r-action">›</span>
+            </a>
+            <div class="row">
+              <div class="r-ico">i</div>
+              <div><div class="r-title">About AstroPath</div><div class="r-sub">v1.0.0 · build 42</div></div>
+              <a href="./guidelines.html" class="r-action">›</a>
+            </div>
+          </div>
+
+          <div class="danger" id="signOutBtn">Sign out</div>
+
+          <nav class="bottom-nav">
+            <a class="bn-item" href="./dashboard.html"><span class="bn-icon">☰</span>Home</a>
+            <a class="bn-item" href="./kundli.html"><span class="bn-icon">⊕</span>Kundli</a>
+            <a class="bn-item" href="./consultation.html"><span class="bn-icon">💬</span>Consult</a>
+            <a class="bn-item" href="./assistant.html"><span class="bn-icon">✶</span>AI</a>
+            <a class="bn-item is-active" href="./settings.html"><span class="bn-icon">⚙</span>More</a>
+          </nav>
+        </div>
+      </div>
+    </article>
+  </section>
+</main>
+
+<script src="./app.js"></script>
+<script>
+  const AP = window.AstroPath;
+
+  async function patch(p) {
+    try {
+      const prefs = await AP.api.patchPreferences(p);
+      if (prefs && prefs.languageCode) AP.state.locale = prefs.languageCode;
+      AP.dom.toast('Saved');
+    } catch (err) {
+      AP.dom.toast('Save failed: ' + (err && err.message ? err.message : ''));
+    }
+  }
+
+  // Language
+  document.querySelectorAll('#langGrid .lg').forEach(l => l.addEventListener('click', () => {
+    const lang = l.dataset.lang;
+    if (lang === 'ta') { AP.dom.toast('Tamil is coming soon.'); return; }
+    document.querySelectorAll('#langGrid .lg').forEach(x => x.classList.remove('is-selected'));
+    l.classList.add('is-selected');
+    if (['en','hi','mr'].includes(lang)) patch({ languageCode: lang });
+  }));
+
+  // Consultation mode
+  document.querySelectorAll('#consultModes .cm').forEach(m => m.addEventListener('click', () => {
+    document.querySelectorAll('#consultModes .cm').forEach(x => x.classList.remove('is-selected'));
+    m.classList.add('is-selected');
+    if (m.dataset.mode) patch({ consultationMode: m.dataset.mode });
+  }));
+
+  // Notification switches — the first one (s1 = daily horoscope) toggles notificationsEnabled
+  document.querySelectorAll('.sw input').forEach(sw => {
+    sw.addEventListener('change', () => {
+      if (sw.id === 's1') patch({ notificationsEnabled: sw.checked });
+    });
+  });
+
+  // Sign out
+  document.getElementById('signOutBtn').addEventListener('click', () => {
+    if (!confirm('Sign out of AstroPath on this device?')) return;
+    AP.state.signOut();
+    location.replace('../login.html');
+  });
+
+  document.getElementById('editProfile').addEventListener('click', (e) => {
+    e.preventDefault();
+    location.href = './onboarding.html';
+  });
+
+  (async function () {
+    if (!AP) return;
+    if (!(await AP.guard('app'))) return;
+
+    // Profile header from local state
+    const bi = AP.state.birthInfo;
+    const user = AP.state.user;
+    if (bi && bi.name) AP.dom.setText('#profileName', bi.name);
+    else if (user && user.email) AP.dom.setText('#profileName', user.email.split('@')[0]);
+
+    const k = AP.state.lastKundli;
+    if (k && k.summary) {
+      const meta = [k.summary.lagnaSign ? k.summary.lagnaSign + ' Lagna' : null,
+                    k.summary.moonSign  ? k.summary.moonSign  + ' Moon'  : null,
+                    'Free tier'].filter(Boolean).join(' · ');
+      if (meta) AP.dom.setText('#profileMeta', meta);
+    }
+
+    // Hydrate current preferences from backend
+    try {
+      const prefs = await AP.api.getPreferences();
+      if (prefs) {
+        if (prefs.languageCode) {
+          document.querySelectorAll('#langGrid .lg').forEach(x => {
+            x.classList.toggle('is-selected', x.dataset.lang === prefs.languageCode);
+          });
+        }
+        if (prefs.consultationMode) {
+          document.querySelectorAll('#consultModes .cm').forEach(x => {
+            x.classList.toggle('is-selected', x.dataset.mode === prefs.consultationMode);
+          });
+        }
+        const s1 = document.getElementById('s1');
+        if (s1 && typeof prefs.notificationsEnabled === 'boolean') s1.checked = prefs.notificationsEnabled;
+      }
+    } catch (_e) {}
+  })();
+</script>
+</body>
+</html>

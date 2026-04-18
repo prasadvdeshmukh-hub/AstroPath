@@ -1,0 +1,379 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AstroPath — Kundli</title>
+<link rel="stylesheet" href="./shared.css">
+<style>
+  /* kundli chart — South Indian 4x4 layout */
+  .kundli {
+    margin-top: 16px;
+    padding: 14px;
+    border-radius: 22px;
+    background:
+      radial-gradient(circle at 50% 50%, rgba(255, 176, 84, 0.10), transparent 60%),
+      linear-gradient(180deg, rgba(40,20,70,0.70), rgba(10,5,20,0.92));
+    border: 1px solid rgba(255, 213, 148, 0.24);
+  }
+  .chart-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: repeat(4, 1fr);
+    aspect-ratio: 1 / 1;
+    gap: 2px;
+    background: rgba(255, 213, 148, 0.30);
+    border-radius: 14px;
+    overflow: hidden;
+  }
+  .cell {
+    background: linear-gradient(180deg, rgba(30, 16, 52, 0.94), rgba(10,5,20,0.98));
+    padding: 6px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+  }
+  .cell .hnum {
+    font-size: 0.58rem; color: var(--muted-2);
+    letter-spacing: 0.12em; text-transform: uppercase;
+  }
+  .cell .sign {
+    font-size: 0.68rem; color: var(--gold-2); font-weight: 700; margin-top: 2px;
+  }
+  .cell .planets {
+    margin-top: auto;
+    display: flex; flex-wrap: wrap; gap: 3px;
+  }
+  .cell .planet {
+    font-size: 0.68rem; color: var(--text); font-weight: 700;
+    padding: 1px 4px; border-radius: 6px;
+    background: rgba(255, 213, 148, 0.16);
+    border: 1px solid rgba(255, 213, 148, 0.3);
+  }
+  .center {
+    grid-column: 2 / span 2;
+    grid-row: 2 / span 2;
+    display: grid; place-items: center;
+    text-align: center;
+    background: radial-gradient(circle, rgba(255,176,84,0.14), transparent 70%), rgba(6, 2, 14, 0.96);
+    padding: 10px;
+  }
+  .center-name {
+    color: var(--gold-3); font-weight: 700; font-size: 0.94rem; letter-spacing: 0.14em;
+  }
+  .center-sub { color: var(--muted); font-size: 0.72rem; margin-top: 6px; line-height: 1.5; }
+
+  .highlight-lagna { box-shadow: inset 0 0 0 2px var(--gold); }
+
+  /* planet list */
+  .planet-list { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+  .p-row {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 12px; border-radius: 14px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,236,205,0.08);
+  }
+  .p-left { display: flex; align-items: center; gap: 8px; }
+  .p-glyph {
+    width: 26px; height: 26px; border-radius: 8px;
+    background: linear-gradient(135deg, rgba(255, 213, 148, 0.25), rgba(192,124,255,0.25));
+    display: grid; place-items: center;
+    color: var(--gold-3); font-weight: 700; font-size: 0.78rem;
+  }
+  .p-name { font-size: 0.82rem; font-weight: 600; }
+  .p-sign { color: var(--muted); font-size: 0.74rem; }
+
+  /* dasha timeline */
+  .dasha-bar {
+    display: grid; grid-template-columns: 2fr 3fr 1fr 1.2fr 2fr;
+    height: 14px; border-radius: 7px; overflow: hidden;
+    border: 1px solid rgba(255,236,205,0.12);
+    margin-top: 8px;
+  }
+  .dasha-bar span {
+    display: block; height: 100%;
+    border-right: 1px solid rgba(0,0,0,0.25);
+  }
+  .d-sun    { background: linear-gradient(90deg, #ff9a3a, #ffc15e); }
+  .d-moon   { background: linear-gradient(90deg, #c8a8f4, #e8d2ff); }
+  .d-mars   { background: linear-gradient(90deg, #ff6a6a, #ff9a3a); }
+  .d-rahu   { background: linear-gradient(90deg, #6a4fff, #c87bff); }
+  .d-jup    { background: linear-gradient(90deg, #ffd891, #fff5dc); }
+
+  .dasha-legend {
+    display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px;
+    margin-top: 8px; font-size: 0.68rem;
+  }
+  .dasha-legend span b { color: var(--gold-3); font-weight: 700; display: block; }
+  .dasha-legend span { color: var(--muted-2); }
+
+  /* doshas */
+  .dosha-row { display: flex; gap: 8px; flex-wrap: wrap; }
+</style>
+</head>
+<body>
+<main class="scene">
+  <section class="shell">
+    <article class="panel hero">
+      <a class="portal-link" href="./hub.html">← All previews</a>
+
+      <div class="hero-top">
+        <span class="eyebrow">Natal Chart</span>
+        <h1>Your sky,<br>at the moment you arrived.</h1>
+        <p class="hero-copy">
+          The Kundli screen renders the computed Lagna chart, planet-sign-house positions, nakshatra + pada,
+          Vimshottari dasha timeline, and any doshas flagged by the engine. Built to be tapable and
+          explorable — not a static PDF.
+        </p>
+      </div>
+
+      <div class="hero-grid">
+        <div class="stat">
+          <span class="stat-label">Lagna</span>
+          <span class="stat-value">Meena</span>
+        </div>
+        <div class="stat">
+          <span class="stat-label">Nakshatra</span>
+          <span class="stat-value">Revati · Pada 2</span>
+        </div>
+        <div class="stat">
+          <span class="stat-label">Mahadasha</span>
+          <span class="stat-value">Moon · 3y left</span>
+        </div>
+      </div>
+    </article>
+
+    <article class="panel form-wrap">
+      <div class="phone-frame">
+        <div class="phone-notch"></div>
+        <div class="phone-screen">
+          <div class="status-row">
+            <span>9:41</span>
+            <span><span class="status-dot"></span>Kundli</span>
+          </div>
+
+          <div class="brand-lockup" style="margin-top: 16px;">
+            <div class="brand-icon">⊕</div>
+            <div class="brand-meta">
+              <strong>KUNDLI</strong>
+              <span id="kundliMeta">Vihaan · 08 Aug 2001 · 04:32 AM · Pune</span>
+            </div>
+          </div>
+
+          <div class="tabs" style="margin-top: 18px;">
+            <button class="tab is-active">Lagna</button>
+            <button class="tab">Navamsa</button>
+            <button class="tab">Chandra</button>
+          </div>
+
+          <!-- Lagna chart (South-Indian style 4x4) -->
+          <div class="kundli">
+            <div class="chart-grid">
+              <!-- row 1 : H1 H2 H3 H4 -->
+              <div class="cell highlight-lagna">
+                <div class="hnum">H1 · Lagna</div>
+                <div class="sign">Meena</div>
+                <div class="planets"><span class="planet">As</span></div>
+              </div>
+              <div class="cell">
+                <div class="hnum">H2</div>
+                <div class="sign">Mesha</div>
+                <div class="planets"><span class="planet">Ke</span></div>
+              </div>
+              <div class="cell">
+                <div class="hnum">H3</div>
+                <div class="sign">Vrishabha</div>
+                <div class="planets"></div>
+              </div>
+              <div class="cell">
+                <div class="hnum">H4</div>
+                <div class="sign">Mithuna</div>
+                <div class="planets"><span class="planet">Sa</span></div>
+              </div>
+              <!-- row 2 col 1 : H12 -->
+              <div class="cell">
+                <div class="hnum">H12</div>
+                <div class="sign">Kumbha</div>
+                <div class="planets"><span class="planet">Ma</span></div>
+              </div>
+              <!-- center spans rows 2-3, cols 2-3 -->
+              <div class="center">
+                <div>
+                  <div class="center-name" id="centerName">VIHAAN D.</div>
+                  <div class="center-sub" id="centerSub">Lagna: Meena<br>Moon: Kanya<br>Sun: Simha</div>
+                </div>
+              </div>
+              <!-- row 2 col 4 : H5 -->
+              <div class="cell">
+                <div class="hnum">H5</div>
+                <div class="sign">Karka</div>
+                <div class="planets"><span class="planet">Ju</span></div>
+              </div>
+              <!-- row 3 col 1 : H11 -->
+              <div class="cell">
+                <div class="hnum">H11</div>
+                <div class="sign">Makara</div>
+                <div class="planets"></div>
+              </div>
+              <!-- row 3 col 4 : H6 -->
+              <div class="cell">
+                <div class="hnum">H6</div>
+                <div class="sign">Simha</div>
+                <div class="planets"><span class="planet">Su</span><span class="planet">Ve</span></div>
+              </div>
+              <!-- row 4 : H10 H9 H8 H7 -->
+              <div class="cell">
+                <div class="hnum">H10</div>
+                <div class="sign">Dhanu</div>
+                <div class="planets"><span class="planet">Ra</span></div>
+              </div>
+              <div class="cell">
+                <div class="hnum">H9</div>
+                <div class="sign">Vrishchika</div>
+                <div class="planets"></div>
+              </div>
+              <div class="cell">
+                <div class="hnum">H8</div>
+                <div class="sign">Tula</div>
+                <div class="planets"><span class="planet">Me</span></div>
+              </div>
+              <div class="cell">
+                <div class="hnum">H7</div>
+                <div class="sign">Kanya</div>
+                <div class="planets"><span class="planet">Mo</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="section-h">
+            <h3>Planet Positions</h3>
+            <a href="#">Details</a>
+          </div>
+          <div class="planet-list">
+            <div class="p-row">
+              <div class="p-left"><div class="p-glyph">Su</div>
+                <div><div class="p-name">Sun</div><div class="p-sign">Simha · H6</div></div>
+              </div>
+              <div class="pill pill--gold">Exalted</div>
+            </div>
+            <div class="p-row">
+              <div class="p-left"><div class="p-glyph">Mo</div>
+                <div><div class="p-name">Moon</div><div class="p-sign">Kanya · H7</div></div>
+              </div>
+              <div class="pill">Neutral</div>
+            </div>
+            <div class="p-row">
+              <div class="p-left"><div class="p-glyph">Ma</div>
+                <div><div class="p-name">Mars</div><div class="p-sign">Kumbha · H12</div></div>
+              </div>
+              <div class="pill">Debilit.</div>
+            </div>
+            <div class="p-row">
+              <div class="p-left"><div class="p-glyph">Me</div>
+                <div><div class="p-name">Mercury</div><div class="p-sign">Tula · H8</div></div>
+              </div>
+              <div class="pill pill--teal">Friend</div>
+            </div>
+            <div class="p-row">
+              <div class="p-left"><div class="p-glyph">Ju</div>
+                <div><div class="p-name">Jupiter</div><div class="p-sign">Karka · H5</div></div>
+              </div>
+              <div class="pill pill--gold">Exalted</div>
+            </div>
+            <div class="p-row">
+              <div class="p-left"><div class="p-glyph">Sa</div>
+                <div><div class="p-name">Saturn</div><div class="p-sign">Mithuna · H4</div></div>
+              </div>
+              <div class="pill pill--plasma">Retro</div>
+            </div>
+          </div>
+
+          <div class="section-h">
+            <h3>Vimshottari Dasha</h3>
+            <a href="#">Full timeline</a>
+          </div>
+          <div class="dasha-bar" aria-label="Dasha periods">
+            <span class="d-sun"   title="Sun 6y"></span>
+            <span class="d-moon"  title="Moon 10y · current"></span>
+            <span class="d-mars"  title="Mars 7y"></span>
+            <span class="d-rahu"  title="Rahu 18y"></span>
+            <span class="d-jup"   title="Jupiter 16y"></span>
+          </div>
+          <div class="dasha-legend">
+            <span><b>Sun</b>6y</span>
+            <span><b>Moon</b>now · 3y left</span>
+            <span><b>Mars</b>7y</span>
+            <span><b>Rahu</b>18y</span>
+            <span><b>Jup</b>16y</span>
+          </div>
+
+          <div class="section-h">
+            <h3>Doshas</h3>
+            <a href="#">Remedies</a>
+          </div>
+          <div class="dosha-row">
+            <span class="pill pill--gold">Mangal Dosha · weak</span>
+            <span class="pill">Kaal Sarp · none</span>
+            <span class="pill">Pitra Dosha · none</span>
+          </div>
+
+          <nav class="bottom-nav">
+            <a class="bn-item" href="./dashboard.html"><span class="bn-icon">☰</span>Home</a>
+            <a class="bn-item is-active" href="./kundli.html"><span class="bn-icon">⊕</span>Kundli</a>
+            <a class="bn-item" href="./consultation.html"><span class="bn-icon">💬</span>Consult</a>
+            <a class="bn-item" href="./assistant.html"><span class="bn-icon">✶</span>AI</a>
+            <a class="bn-item" href="./settings.html"><span class="bn-icon">⚙</span>More</a>
+          </nav>
+        </div>
+      </div>
+    </article>
+  </section>
+</main>
+
+<script src="./app.js"></script>
+<script>
+  (async function () {
+    const AP = window.AstroPath;
+    if (!AP) return;
+    if (!(await AP.guard('app'))) return;
+
+    const bi = AP.state.birthInfo;
+    let k = AP.state.lastKundli;
+
+    // If the user has birth info but no cached chart (or it's stale), regenerate.
+    if (bi && (!k || !k.planets)) {
+      try {
+        k = await AP.api.generateKundli({
+          name: bi.name,
+          birthDate: bi.birthDate,
+          birthTime: bi.birthTime,
+          latitude: bi.latitude,
+          longitude: bi.longitude,
+          tzOffsetMinutes: bi.tzOffsetMinutes,
+        });
+        AP.state.lastKundli = k;
+      } catch (e) { /* keep the static preview */ }
+    }
+
+    // Header line
+    if (bi) {
+      const dStr = (bi.birthDate || '').replace(/-/g, ' ');
+      AP.dom.setText('#kundliMeta', [bi.name, dStr, bi.birthTime, bi.place || 'Pune'].filter(Boolean).join(' · '));
+      if (bi.name) AP.dom.setText('#centerName', bi.name.split(' ')[0].toUpperCase() + '.');
+    }
+
+    // Hydrate center-sub with backend-provided lagna/moon/sun if shape matches.
+    if (k && k.summary) {
+      const summary = k.summary;
+      const html = [
+        summary.lagnaSign ? 'Lagna: ' + summary.lagnaSign : null,
+        summary.moonSign  ? 'Moon: '  + summary.moonSign  : null,
+        summary.sunSign   ? 'Sun: '   + summary.sunSign   : null,
+      ].filter(Boolean).join('<br>');
+      const c = document.getElementById('centerSub');
+      if (c && html) c.innerHTML = html;
+    }
+  })();
+</script>
+</body>
+</html>

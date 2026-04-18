@@ -1,0 +1,67 @@
+<\!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>AstroPath Dev UI</title>
+<link rel="stylesheet" href="/demo/static/app.css" />
+</head>
+<body>
+<main class="container">
+<h1>AstroPath Dev UI</h1>
+<p class="muted">Developer-facing pages that exercise every backend endpoint end-to-end. Language picker in the top bar switches the API locale across the whole app. Production user flow lives in the Flutter mobile_app; these pages are for testing the backend.</p>
+
+<div class="grid">
+  <a class="card" href="/demo/login.html" style="text-decoration:none;color:inherit;">
+    <div class="title">Login / Session</div>
+    <div class="sub">POST /v1/auth/session</div>
+  </a>
+  <a class="card" href="/demo/dashboard.html" style="text-decoration:none;color:inherit;">
+    <div class="title">Dashboard</div>
+    <div class="sub">GET /v1/dashboard</div>
+  </a>
+  <a class="card" href="/demo/kundli.html" style="text-decoration:none;color:inherit;">
+    <div class="title">Kundli Generator</div>
+    <div class="sub">POST /v1/kundli/generate</div>
+  </a>
+  <a class="card" href="/demo/panchang.html" style="text-decoration:none;color:inherit;">
+    <div class="title">Panchang</div>
+    <div class="sub">GET /v1/panchang</div>
+  </a>
+  <a class="card" href="/demo/horoscope.html" style="text-decoration:none;color:inherit;">
+    <div class="title">Horoscope</div>
+    <div class="sub">GET /v1/horoscope/:range</div>
+  </a>
+  <a class="card" href="/demo/transits.html" style="text-decoration:none;color:inherit;">
+    <div class="title">Transits</div>
+    <div class="sub">GET /v1/transits</div>
+  </a>
+  <a class="card" href="/demo/consultations.html" style="text-decoration:none;color:inherit;">
+    <div class="title">Astrologer Marketplace</div>
+    <div class="sub">GET /v1/consultations/hub</div>
+  </a>
+  <a class="card" href="/demo/assistant.html" style="text-decoration:none;color:inherit;">
+    <div class="title">AI Assistant</div>
+    <div class="sub">GET snapshot / POST query</div>
+  </a>
+  <a class="card" href="/demo/muhurat.html" style="text-decoration:none;color:inherit;">
+    <div class="title">Muhurat Finder</div>
+    <div class="sub">POST /v1/muhurat/search</div>
+  </a>
+  <a class="card" href="/demo/compatibility.html" style="text-decoration:none;color:inherit;">
+    <div class="title">Compatibility</div>
+    <div class="sub">POST /v1/compatibility/match</div>
+  </a>
+  <a class="card" href="/demo/preferences.html" style="text-decoration:none;color:inherit;">
+    <div class="title">Preferences</div>
+    <div class="sub">GET/PATCH /v1/profile/preferences</div>
+  </a>
+</div>
+
+<h2>How the language picker works</h2>
+<p class="muted">Each page calls the backend with <code>?lang=&lt;code&gt;</code> and an <code>Accept-Language</code> header. The resolved locale is echoed back in <code>meta.locale</code> of every response. Try switching the picker in the top bar and reloading any page.</p>
+</main>
+<script src="/demo/static/app.js"></script>
+<script>AP.renderTopbar();</script>
+</body>
+</html>

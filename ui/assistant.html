@@ -1,0 +1,323 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AstroPath — AI Assistant</title>
+<link rel="stylesheet" href="./shared.css">
+<style>
+  .welcome {
+    margin-top: 16px;
+    padding: 18px;
+    border-radius: 22px;
+    background:
+      radial-gradient(circle at 0% 0%, rgba(200, 123, 255, 0.22), transparent 46%),
+      radial-gradient(circle at 100% 100%, rgba(255, 188, 100, 0.14), transparent 50%),
+      linear-gradient(180deg, rgba(40,20,70,0.80), rgba(10,5,20,0.92));
+    border: 1px solid rgba(200, 123, 255, 0.24);
+  }
+  .welcome h3 {
+    margin: 0; font-size: 1.15rem; color: var(--gold-3);
+    display: flex; align-items: center; gap: 8px;
+  }
+  .welcome h3::before {
+    content: "✶";
+    width: 28px; height: 28px; border-radius: 50%;
+    display: grid; place-items: center;
+    background: linear-gradient(135deg, var(--plasma), var(--gold));
+    color: #1a0b30;
+  }
+  .welcome p { margin: 10px 0 0; color: var(--muted); font-size: 0.88rem; line-height: 1.55; }
+
+  .disclaimer {
+    display: flex; align-items: center; gap: 8px;
+    margin-top: 10px; padding: 10px 12px;
+    border-radius: 14px;
+    background: rgba(255,141,166,0.08);
+    border: 1px solid rgba(255,141,166,0.20);
+    color: #ffc2d2;
+    font-size: 0.76rem;
+    line-height: 1.45;
+  }
+  .disclaimer::before { content: "⚠"; color: #ffb36b; font-size: 0.9rem; }
+
+  .suggest {
+    display: flex; gap: 8px; overflow-x: auto; padding-bottom: 6px; margin-top: 10px;
+    -webkit-overflow-scrolling: touch;
+  }
+  .suggest::-webkit-scrollbar { height: 4px; }
+  .suggest::-webkit-scrollbar-thumb { background: rgba(255,213,148,0.3); border-radius: 4px; }
+  .chip {
+    flex: 0 0 auto;
+    padding: 10px 14px; border-radius: 999px;
+    background: linear-gradient(180deg, rgba(255, 213, 148, 0.16), rgba(255, 154, 58, 0.06));
+    border: 1px solid rgba(255, 213, 148, 0.22);
+    color: var(--gold-3);
+    font-size: 0.82rem;
+    cursor: pointer;
+    transition: 180ms ease;
+  }
+  .chip:hover { transform: translateY(-1px); border-color: rgba(255, 213, 148, 0.45); }
+
+  .chat {
+    margin-top: 14px;
+    padding: 14px;
+    border-radius: 18px;
+    background: rgba(8, 4, 16, 0.5);
+    border: 1px solid rgba(255,236,205,0.08);
+    min-height: 220px;
+    display: flex; flex-direction: column; gap: 10px;
+  }
+  .msg { display: flex; gap: 8px; max-width: 88%; }
+  .msg .bubble {
+    padding: 10px 12px; border-radius: 14px;
+    font-size: 0.86rem; line-height: 1.5;
+  }
+  .msg.bot .bubble {
+    background: linear-gradient(180deg, rgba(200, 123, 255, 0.16), rgba(200, 123, 255, 0.06));
+    border: 1px solid rgba(200, 123, 255, 0.22);
+    color: #f0dcff;
+    border-top-left-radius: 4px;
+  }
+  .msg.user { align-self: flex-end; }
+  .msg.user .bubble {
+    background: linear-gradient(180deg, rgba(255, 213, 148, 0.20), rgba(255, 154, 58, 0.06));
+    border: 1px solid rgba(255, 213, 148, 0.30);
+    color: var(--gold-3);
+    border-top-right-radius: 4px;
+  }
+  .avatar-s {
+    width: 26px; height: 26px; border-radius: 50%;
+    background: linear-gradient(135deg, rgba(200, 123, 255, 0.6), rgba(255, 213, 148, 0.6));
+    border: 1px solid rgba(255, 235, 205, 0.24);
+    flex-shrink: 0;
+    display: grid; place-items: center;
+    font-size: 0.7rem; color: #1a0b30; font-weight: 700;
+  }
+
+  .composer {
+    margin-top: 12px;
+    display: grid; grid-template-columns: 1fr auto; gap: 8px;
+    padding: 8px;
+    border-radius: 16px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255, 213, 148, 0.20);
+  }
+  .composer input {
+    border: 0; background: transparent; color: var(--text);
+    padding: 10px 10px;
+    font: inherit; outline: none;
+  }
+  .composer input::placeholder { color: rgba(218,200,218,0.58); }
+  .send {
+    border: 0; border-radius: 12px; padding: 8px 14px;
+    background: linear-gradient(135deg, var(--gold), var(--amber));
+    color: #2b1308; font-weight: 700; cursor: pointer;
+  }
+</style>
+</head>
+<body>
+<main class="scene">
+  <section class="shell">
+    <article class="panel hero">
+      <a class="portal-link" href="./hub.html">← All previews</a>
+      <div class="hero-top">
+        <span class="eyebrow">AstroPath AI</span>
+        <h1>A guide that<br>remembers your chart.</h1>
+        <p class="hero-copy">
+          The AI assistant answers user questions in the voice of a Vedic guide — advisory, not deterministic —
+          grounded in the user's kundli data already loaded in the session. Suggestion chips prime
+          the most common questions; send opens a conversation.
+        </p>
+      </div>
+      <div class="hero-grid">
+        <div class="stat"><span class="stat-label">Tone</span><span class="stat-value">Advisory</span></div>
+        <div class="stat"><span class="stat-label">Grounded in</span><span class="stat-value">Your chart</span></div>
+        <div class="stat"><span class="stat-label">Disclaimer</span><span class="stat-value">Not medical / legal</span></div>
+      </div>
+    </article>
+
+    <article class="panel form-wrap">
+      <div class="phone-frame">
+        <div class="phone-notch"></div>
+        <div class="phone-screen">
+          <div class="status-row">
+            <span>9:41</span>
+            <span><span class="status-dot"></span>AI Guru</span>
+          </div>
+
+          <div class="brand-lockup">
+            <div class="brand-icon">✶</div>
+            <div class="brand-meta">
+              <strong>ASTROPATH AI</strong>
+              <span>Grounded in your kundli · private</span>
+            </div>
+          </div>
+
+          <div class="welcome">
+            <h3>Namaste, Vihaan.</h3>
+            <p>Ask me anything about your chart, today's energies, relationships, career,
+              remedies, or a decision you're weighing. I'll ground every answer in your birth data.</p>
+          </div>
+
+          <div class="disclaimer">
+            AI guidance is advisory. Not a substitute for medical, legal, or financial advice.
+            <a href="./guidelines.html#ai" style="color: var(--gold-3); text-decoration: underline; margin-left: 4px;">Read policy</a>
+          </div>
+
+          <div class="section-h"><h3>Try asking</h3><a href="#">More</a></div>
+          <div class="suggest">
+            <div class="chip" data-prompt="What does my Saturn return mean for 2026?">Saturn return</div>
+            <div class="chip" data-prompt="Is this a good week to start my new venture?">Good muhurat</div>
+            <div class="chip" data-prompt="Explain my Mangal Dosha and remedies">Mangal dosha</div>
+            <div class="chip" data-prompt="Break down my dasha into practical advice">Dasha advice</div>
+            <div class="chip" data-prompt="Compatibility with an Aries moon">Compatibility</div>
+          </div>
+
+          <div class="chat" id="chat">
+            <div class="msg bot">
+              <div class="avatar-s">AI</div>
+              <div class="bubble">I see your Moon in Kanya and a strong Jupiter in your 5th house — what's on your mind today?</div>
+            </div>
+            <div class="msg bot">
+              <div class="avatar-s">AI</div>
+              <div class="bubble">Tip: pick a chip above, or type freely in English, हिन्दी, or मराठी.</div>
+            </div>
+          </div>
+
+          <div class="composer">
+            <input id="composerInput" type="text" placeholder="Ask a question…" aria-label="Ask the AI">
+            <button class="send" id="sendBtn">Send</button>
+          </div>
+
+          <nav class="bottom-nav" style="margin-top: 14px;">
+            <a class="bn-item" href="./dashboard.html"><span class="bn-icon">☰</span>Home</a>
+            <a class="bn-item" href="./kundli.html"><span class="bn-icon">⊕</span>Kundli</a>
+            <a class="bn-item" href="./consultation.html"><span class="bn-icon">💬</span>Consult</a>
+            <a class="bn-item is-active" href="./assistant.html"><span class="bn-icon">✶</span>AI</a>
+            <a class="bn-item" href="./settings.html"><span class="bn-icon">⚙</span>More</a>
+          </nav>
+        </div>
+      </div>
+    </article>
+  </section>
+</main>
+
+<script src="./app.js"></script>
+<script>
+  const chat = document.getElementById('chat');
+  const input = document.getElementById('composerInput');
+  const sendBtn = document.getElementById('sendBtn');
+
+  function addMsg(text, who) {
+    const row = document.createElement('div');
+    row.className = 'msg ' + (who === 'user' ? 'user' : 'bot');
+    if (who === 'bot') {
+      const av = document.createElement('div'); av.className = 'avatar-s'; av.textContent = 'AI'; row.appendChild(av);
+    }
+    const b = document.createElement('div');
+    b.className = 'bubble';
+    b.textContent = text;
+    row.appendChild(b);
+    chat.appendChild(row);
+    chat.scrollTop = chat.scrollHeight;
+  }
+
+  async function send(text) {
+    const t = (text || '').trim();
+    if (!t) return;
+    const AP = window.AstroPath;
+    addMsg(t, 'user');
+    AP.state.appendChat({ role: 'user', text: t });
+    input.value = '';
+    sendBtn.disabled = true;
+
+    // Typing indicator
+    const typing = document.createElement('div');
+    typing.className = 'msg bot';
+    typing.innerHTML = '<div class="avatar-s">AI</div><div class="bubble">…</div>';
+    chat.appendChild(typing);
+    chat.scrollTop = chat.scrollHeight;
+
+    try {
+      const history = AP.state.chat.slice(-8).map(m => ({ role: m.role, text: m.text }));
+      const data = await AP.api.assistantQuery(t, history);
+      typing.remove();
+      const reply = (data && data.reply) || 'I couldn\'t read the stars clearly — please try again.';
+      addMsg(reply, 'bot');
+      AP.state.appendChat({ role: 'assistant', text: reply });
+
+      if (data && Array.isArray(data.suggestedActions) && data.suggestedActions.length) {
+        const wrap = document.createElement('div');
+        wrap.className = 'msg bot';
+        const ava = document.createElement('div'); ava.className = 'avatar-s'; ava.textContent = 'AI';
+        const bub = document.createElement('div'); bub.className = 'bubble';
+        bub.innerHTML = 'You might want to: ' +
+          data.suggestedActions.map(a => '<a href="#" data-action="' + a.id + '" style="color: var(--gold-3); text-decoration: underline;">' + a.label + '</a>').join(' · ');
+        wrap.appendChild(ava); wrap.appendChild(bub);
+        chat.appendChild(wrap);
+        chat.scrollTop = chat.scrollHeight;
+      }
+    } catch (err) {
+      typing.remove();
+      addMsg('Connection wobble — try again in a moment.', 'bot');
+    } finally {
+      sendBtn.disabled = false;
+      input.focus();
+    }
+  }
+
+  sendBtn.addEventListener('click', () => send(input.value));
+  input.addEventListener('keydown', e => { if (e.key === 'Enter') send(input.value); });
+  document.querySelectorAll('.chip').forEach(c =>
+    c.addEventListener('click', () => { input.value = c.dataset.prompt; input.focus(); }));
+
+  // Click handler for suggestedAction links
+  chat.addEventListener('click', (e) => {
+    const a = e.target.closest('[data-action]');
+    if (!a) return;
+    e.preventDefault();
+    const id = a.dataset.action;
+    if (id === 'read-horoscope') location.href = './horoscope.html';
+    if (id === 'book-consultation') location.href = './consultation.html';
+  });
+
+  (async function () {
+    const AP = window.AstroPath;
+    if (!AP) return;
+    if (!(await AP.guard('app'))) return;
+
+    // Restore prior chat (last 10 messages) so the user doesn't lose context across reloads
+    const prior = AP.state.chat.slice(-10);
+    if (prior.length) {
+      // wipe the two seed bot messages only if we have real history
+      chat.innerHTML = '';
+      prior.forEach(m => addMsg(m.text, m.role === 'user' ? 'user' : 'bot'));
+    } else {
+      // Use backend's localized snapshot for the starter messages if available
+      try {
+        const snap = await AP.api.assistantSnapshot();
+        if (snap && Array.isArray(snap.starterMessages) && snap.starterMessages.length) {
+          chat.innerHTML = '';
+          snap.starterMessages.forEach(m => addMsg(m.text, m.isUser ? 'user' : 'bot'));
+        }
+        if (snap && Array.isArray(snap.suggestions) && snap.suggestions.length) {
+          const container = document.querySelector('.suggest');
+          if (container) {
+            container.innerHTML = '';
+            snap.suggestions.forEach(s => {
+              const chip = document.createElement('div');
+              chip.className = 'chip';
+              chip.dataset.prompt = s.prompt;
+              chip.textContent = s.label;
+              chip.addEventListener('click', () => { input.value = chip.dataset.prompt; input.focus(); });
+              container.appendChild(chip);
+            });
+          }
+        }
+      } catch (_e) {}
+    }
+  })();
+</script>
+</body>
+</html>

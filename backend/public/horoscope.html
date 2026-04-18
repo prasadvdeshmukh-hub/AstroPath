@@ -1,0 +1,51 @@
+<\!doctype html>
+<html lang="en"><head><meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Horoscope - AstroPath</title><link rel="stylesheet" href="/demo/static/app.css" /></head><body>
+<main class="container">
+<h1>Horoscope</h1>
+<p class="muted">GET /v1/horoscope/:range. Daily / weekly / monthly / yearly guidance across love, career, finance, health.</p>
+
+<div class="panel">
+  <div class="row">
+    <div><label>Range</label>
+      <select id="range">
+        <option value="daily">daily</option>
+        <option value="weekly">weekly</option>
+        <option value="monthly">monthly</option>
+        <option value="yearly">yearly</option>
+      </select>
+    </div>
+  </div>
+  <div style="margin-top:12px;"><button id="go">Fetch horoscope</button></div>
+</div>
+
+<div id="out"></div>
+</main>
+<script src="/demo/static/app.js"></script>
+<script>
+AP.renderTopbar();
+const out = document.getElementById('out');
+async function fetchIt() {
+  out.innerHTML = '<div class="muted">Loading…</div>';
+  try {
+    const range = document.getElementById('range').value;
+    const body = await AP.api('/v1/horoscope/' + range);
+    const h = body.data;
+    out.innerHTML = '';
+    out.appendChild(AP.el('div', { class: 'muted' }, h.range + ' · asOf ' + h.asOf));
+    const grid = AP.el('div', { class: 'grid' });
+    for (const c of h.categories) {
+      grid.appendChild(AP.el('div', { class: 'card' },
+        AP.el('div', { class: 'title' }, c.category.toUpperCase() + ' · score ' + c.score),
+        AP.el('div', { class: 'sub' }, c.headline),
+        AP.el('p', { style: 'margin-top:8px;' }, c.body)
+      ));
+    }
+    out.appendChild(grid);
+    out.appendChild(AP.el('h2', null, 'Raw response'));
+    out.appendChild(AP.rawJson(body));
+  } catch (err) { AP.showError(out, err); }
+}
+document.getElementById('go').onclick = fetchIt;
+fetchIt();
+</script></body></html>

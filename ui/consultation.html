@@ -1,0 +1,378 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AstroPath — Consultation Marketplace</title>
+<link rel="stylesheet" href="./shared.css">
+<style>
+  .wallet {
+    position: relative;
+    margin-top: 16px;
+    padding: 18px;
+    border-radius: 22px;
+    background:
+      radial-gradient(circle at 100% 0%, rgba(255, 188, 100, 0.22), transparent 50%),
+      radial-gradient(circle at 0% 100%, rgba(200, 123, 255, 0.18), transparent 50%),
+      linear-gradient(180deg, rgba(40,20,70,0.80), rgba(16,8,28,0.92));
+    border: 1px solid rgba(255, 213, 148, 0.22);
+    overflow: hidden;
+  }
+  .wallet::after {
+    content: ""; position: absolute; right: -50px; top: -50px; width: 160px; height: 160px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255,188,100,0.45) 0%, rgba(255,188,100,0.08) 45%, transparent 70%);
+    filter: blur(6px);
+  }
+  .wallet-label { color: var(--gold-3); font-size: 0.72rem; letter-spacing: 0.18em; text-transform: uppercase; }
+  .wallet-bal {
+    display: flex; align-items: baseline; gap: 10px;
+    margin-top: 6px;
+    color: var(--gold-3); font-weight: 700; font-size: 1.8rem; letter-spacing: -0.02em;
+  }
+  .wallet-bal small { color: var(--muted); font-size: 0.76rem; font-weight: 400; }
+  .wallet-body { color: var(--muted); font-size: 0.84rem; line-height: 1.55; margin: 8px 0 14px; }
+  .wallet-row { display: flex; gap: 8px; }
+  .wallet-row .primary-button { flex: 1; }
+  .wallet-row .pill-button { flex: 0 0 auto; }
+
+  .cats { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .c-tile {
+    padding: 12px; border-radius: 16px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,236,205,0.10);
+    display: flex; align-items: center; gap: 10px;
+    cursor: pointer;
+    transition: 180ms ease;
+  }
+  .c-tile:hover { border-color: rgba(255, 213, 148, 0.30); }
+  .c-icon {
+    width: 36px; height: 36px; border-radius: 12px;
+    background: linear-gradient(135deg, rgba(255, 213, 148, 0.25), rgba(192,124,255,0.25));
+    color: var(--gold-3); display: grid; place-items: center; font-weight: 700;
+  }
+  .c-title { font-weight: 700; font-size: 0.88rem; }
+  .c-sub { color: var(--muted); font-size: 0.74rem; }
+
+  .astro {
+    padding: 14px; border-radius: 18px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,236,205,0.10);
+  }
+  .astro + .astro { margin-top: 10px; }
+  .a-top { display: flex; align-items: center; gap: 10px; }
+  .a-ava {
+    width: 46px; height: 46px; border-radius: 50%;
+    background:
+      radial-gradient(circle at 30% 30%, rgba(255,235,190,0.75), rgba(255,180,100,0.45) 40%, transparent 70%),
+      linear-gradient(135deg, rgba(255,210,140,0.4), rgba(192,124,255,0.4));
+    border: 1px solid rgba(255, 235, 205, 0.2);
+    position: relative;
+  }
+  .a-ava::after {
+    content: ""; position: absolute; right: 0; bottom: 0;
+    width: 10px; height: 10px; border-radius: 50%;
+    background: var(--teal); border: 2px solid #0b0518;
+  }
+  .a-name { font-weight: 700; font-size: 0.94rem; color: var(--gold-3); }
+  .a-spec { color: var(--muted); font-size: 0.78rem; }
+  .a-rating { margin-left: auto; text-align: right; }
+  .a-rating b { color: var(--gold-2); font-size: 0.92rem; }
+  .a-rating small { color: var(--muted-2); font-size: 0.68rem; display: block; }
+  .a-meta { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px; }
+  .a-focus { color: var(--muted); font-size: 0.78rem; margin: 10px 0 12px; line-height: 1.5; }
+  .a-actions { display: flex; gap: 8px; align-items: center; }
+  .a-actions .primary-button { flex: 1; padding: 10px; font-size: 0.86rem; }
+  .a-modes { display: flex; gap: 4px; }
+  .mode {
+    width: 32px; height: 32px; border-radius: 10px;
+    display: grid; place-items: center;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,236,205,0.10);
+    color: var(--muted);
+    font-size: 0.82rem;
+    cursor: pointer;
+  }
+  .mode.on { color: var(--gold-3); border-color: rgba(255, 213, 148, 0.3); background: rgba(255, 213, 148, 0.08); }
+
+  .review {
+    padding: 14px; border-radius: 16px;
+    background: rgba(255,255,255,0.035);
+    border: 1px solid rgba(255,236,205,0.08);
+  }
+  .review + .review { margin-top: 10px; }
+  .r-head { display: flex; align-items: center; justify-content: space-between; }
+  .r-name { font-weight: 700; font-size: 0.86rem; }
+  .r-stars { color: var(--gold); font-size: 0.82rem; }
+  .r-quote { color: var(--muted); font-size: 0.82rem; margin: 6px 0 0; line-height: 1.5; font-style: italic; }
+</style>
+</head>
+<body>
+<main class="scene">
+  <section class="shell">
+    <article class="panel hero">
+      <a class="portal-link" href="./hub.html">← All previews</a>
+      <div class="hero-top">
+        <span class="eyebrow">Consultation Marketplace</span>
+        <h1>Talk to a real<br>astrologer, now.</h1>
+        <p class="hero-copy">
+          Wallet hero at the top, four categories, then a list of verified astrologers with rating, specialty,
+          per-minute price, online status, and chat / call / video booking chips. Reviews at the bottom
+          build trust.
+        </p>
+      </div>
+      <div class="hero-grid">
+        <div class="stat"><span class="stat-label">Wallet</span><span class="stat-value">₹ 1,240</span></div>
+        <div class="stat"><span class="stat-label">Live</span><span class="stat-value">48 astrologers</span></div>
+        <div class="stat"><span class="stat-label">First chat</span><span class="stat-value">5 min free</span></div>
+      </div>
+    </article>
+
+    <article class="panel form-wrap">
+      <div class="phone-frame">
+        <div class="phone-notch"></div>
+        <div class="phone-screen">
+          <div class="status-row">
+            <span>9:41</span>
+            <span><span class="status-dot"></span>Consult</span>
+          </div>
+
+          <div class="brand-lockup">
+            <div class="brand-icon">💬</div>
+            <div class="brand-meta">
+              <strong>CONSULT</strong>
+              <span>Verified astrologers · safe + private</span>
+            </div>
+          </div>
+
+          <div class="wallet" style="position: relative; z-index: 1;">
+            <div class="wallet-label">Your Wallet</div>
+            <div class="wallet-bal"><span id="walletBal">₹ 1,240</span> <small id="walletBonus">+ ₹ 200 bonus</small></div>
+            <p class="wallet-body" id="walletBody">First chat is on us — your 5-minute free credit never expires. Top up for call or video time.</p>
+            <div class="wallet-row">
+              <button class="primary-button" id="topUpBtn">Top up</button>
+              <button class="pill-button" id="historyBtn">History</button>
+            </div>
+          </div>
+
+          <div class="section-h"><h3>Browse by concern</h3><a href="#">All</a></div>
+          <div class="cats">
+            <div class="c-tile"><div class="c-icon">♡</div><div><div class="c-title">Love</div><div class="c-sub">16 online</div></div></div>
+            <div class="c-tile"><div class="c-icon">◎</div><div><div class="c-title">Career</div><div class="c-sub">22 online</div></div></div>
+            <div class="c-tile"><div class="c-icon">₹</div><div><div class="c-title">Finance</div><div class="c-sub">9 online</div></div></div>
+            <div class="c-tile"><div class="c-icon">✺</div><div><div class="c-title">Remedies</div><div class="c-sub">11 online</div></div></div>
+          </div>
+
+          <div class="section-h"><h3>Top astrologers</h3><a href="#">Filter</a></div>
+
+          <div id="astroList"></div>
+          <div id="astroStatic">
+          <article class="astro">
+            <div class="a-top">
+              <div class="a-ava"></div>
+              <div>
+                <div class="a-name">Pandit R. Verma</div>
+                <div class="a-spec">Vedic · KP · Palmistry</div>
+              </div>
+              <div class="a-rating"><b>★ 4.9</b><small>2.1k sessions</small></div>
+            </div>
+            <div class="a-meta">
+              <span class="pill pill--teal">Online</span>
+              <span class="pill pill--gold">₹ 28 / min</span>
+              <span class="pill">12 yr exp</span>
+              <span class="pill">≈ 1 min wait</span>
+            </div>
+            <p class="a-focus">Known for measured, no-nonsense career guidance. Speaks Hindi, Marathi, English.</p>
+            <div class="a-actions">
+              <div class="a-modes">
+                <div class="mode on" title="Chat">💬</div>
+                <div class="mode on" title="Call">📞</div>
+                <div class="mode" title="Video">🎥</div>
+              </div>
+              <button class="primary-button">Book chat →</button>
+            </div>
+          </article>
+
+          <article class="astro">
+            <div class="a-top">
+              <div class="a-ava"></div>
+              <div>
+                <div class="a-name">Acharya Meera S.</div>
+                <div class="a-spec">Tarot · Numerology</div>
+              </div>
+              <div class="a-rating"><b>★ 4.8</b><small>1.4k sessions</small></div>
+            </div>
+            <div class="a-meta">
+              <span class="pill pill--teal">Online</span>
+              <span class="pill pill--gold">₹ 22 / min</span>
+              <span class="pill">8 yr exp</span>
+              <span class="pill">≈ 3 min wait</span>
+            </div>
+            <p class="a-focus">Warm, intuitive readings focused on love &amp; relationships. English, Hindi, Tamil.</p>
+            <div class="a-actions">
+              <div class="a-modes">
+                <div class="mode on" title="Chat">💬</div>
+                <div class="mode on" title="Call">📞</div>
+                <div class="mode on" title="Video">🎥</div>
+              </div>
+              <button class="primary-button">Book chat →</button>
+            </div>
+          </article>
+
+          <article class="astro">
+            <div class="a-top">
+              <div class="a-ava" style="filter: saturate(0.6);"></div>
+              <div>
+                <div class="a-name">Guru S. Iyer</div>
+                <div class="a-spec">Vedic · Muhurat</div>
+              </div>
+              <div class="a-rating"><b>★ 4.9</b><small>3.2k sessions</small></div>
+            </div>
+            <div class="a-meta">
+              <span class="pill">Offline · back 6 PM</span>
+              <span class="pill pill--gold">₹ 48 / min</span>
+              <span class="pill">20 yr exp</span>
+            </div>
+            <p class="a-focus">Senior astrologer. Marriage, business start, griha pravesh muhurat specialist.</p>
+            <div class="a-actions">
+              <div class="a-modes">
+                <div class="mode" title="Chat">💬</div>
+                <div class="mode" title="Call">📞</div>
+                <div class="mode" title="Video">🎥</div>
+              </div>
+              <button class="ghost-button" style="flex:1; padding:10px; font-size:0.86rem;">Notify me</button>
+            </div>
+          </article>
+
+          </div>
+
+          <div class="section-h"><h3>Recent reviews</h3><a href="#">All</a></div>
+
+          <div id="reviewList">
+            <div class="review">
+              <div class="r-head"><div class="r-name">Ananya P.</div><div class="r-stars">★★★★★</div></div>
+              <p class="r-quote">"Pandit ji was calm and gave me a plan I could actually follow. Career shift booked for after 24th."</p>
+            </div>
+            <div class="review">
+              <div class="r-head"><div class="r-name">Rohan K.</div><div class="r-stars">★★★★☆</div></div>
+              <p class="r-quote">"Meera's tarot reading hit exactly where I was stuck. Worth the 12 minutes."</p>
+            </div>
+          </div>
+
+          <nav class="bottom-nav">
+            <a class="bn-item" href="./dashboard.html"><span class="bn-icon">☰</span>Home</a>
+            <a class="bn-item" href="./kundli.html"><span class="bn-icon">⊕</span>Kundli</a>
+            <a class="bn-item is-active" href="./consultation.html"><span class="bn-icon">💬</span>Consult</a>
+            <a class="bn-item" href="./assistant.html"><span class="bn-icon">✶</span>AI</a>
+            <a class="bn-item" href="./settings.html"><span class="bn-icon">⚙</span>More</a>
+          </nav>
+        </div>
+      </div>
+    </article>
+  </section>
+</main>
+
+<script src="./app.js"></script>
+<script>
+  function astroCard(a) {
+    const online = a.isOnline;
+    const wait = a.waitMinutes != null ? '≈ ' + a.waitMinutes + ' min wait' : '';
+    const exp  = a.experienceYears != null ? a.experienceYears + ' yr exp' : '';
+    const mode = (a.modes || []).map(m => {
+      const label = m === 'chat' ? '💬' : m === 'call' ? '📞' : '🎥';
+      return '<div class="mode on" title="' + m + '">' + label + '</div>';
+    }).join('');
+    const offlineTag = online ? '' : 'Offline';
+    const focus = a.focusLine || a.specialty || '';
+    return `
+      <article class="astro" data-astrologer="${a.id}">
+        <div class="a-top">
+          <div class="a-ava${online ? '' : '" style="filter: saturate(0.6);'}"></div>
+          <div>
+            <div class="a-name">${a.name}</div>
+            <div class="a-spec">${a.specialty || ''}</div>
+          </div>
+          <div class="a-rating"><b>★ ${a.rating != null ? a.rating : ''}</b><small>${(a.languages || []).join(', ')}</small></div>
+        </div>
+        <div class="a-meta">
+          <span class="pill ${online ? 'pill--teal' : ''}">${online ? 'Online' : offlineTag}</span>
+          <span class="pill pill--gold">₹ ${a.pricePerMinute || a.ratePerMinute} / min</span>
+          <span class="pill">${exp}</span>
+          ${online && wait ? '<span class="pill">' + wait + '</span>' : ''}
+        </div>
+        <p class="a-focus">${focus}</p>
+        <div class="a-actions">
+          <div class="a-modes">${mode}</div>
+          <button class="primary-button" data-book="${a.id}" data-mode="chat" ${online ? '' : 'disabled'}>
+            ${online ? 'Book chat →' : 'Notify me'}
+          </button>
+        </div>
+      </article>`;
+  }
+
+  function reviewCard(r) {
+    return `
+      <div class="review">
+        <div class="r-head"><div class="r-name">${r.author}</div><div class="r-stars">★★★★★</div></div>
+        <p class="r-quote">"${r.quote}"</p>
+      </div>`;
+  }
+
+  (async function () {
+    const AP = window.AstroPath;
+    if (!AP) return;
+    if (!(await AP.guard('app'))) return;
+
+    const list    = document.getElementById('astroList');
+    const staticL = document.getElementById('astroStatic');
+    const reviews = document.getElementById('reviewList');
+
+    try {
+      const data = await AP.api.consultationHub();
+      if (!data) return;
+
+      if (data.walletBalance != null) AP.dom.setText('#walletBal', '₹ ' + data.walletBalance.toLocaleString('en-IN'));
+      if (data.walletBonus != null)   AP.dom.setText('#walletBonus', '+ ₹ ' + data.walletBonus + ' bonus');
+      if (data.walletBody)            AP.dom.setText('#walletBody', data.walletBody);
+
+      if (Array.isArray(data.astrologers) && data.astrologers.length) {
+        list.innerHTML = data.astrologers.map(astroCard).join('');
+        staticL.hidden = true;
+        list.querySelectorAll('[data-book]').forEach(btn => {
+          btn.addEventListener('click', async () => {
+            btn.disabled = true;
+            const prev = btn.textContent;
+            btn.textContent = 'Connecting…';
+            try {
+              const session = await AP.api.bookConsultation({
+                astrologerId: btn.dataset.book,
+                mode: btn.dataset.mode || 'chat',
+              });
+              AP.dom.toast('Session queued · wait ' + (session.estimatedWaitMinutes || 3) + ' min');
+              btn.textContent = 'Queued';
+            } catch (err) {
+              AP.dom.toast('Booking failed: ' + (err && err.message ? err.message : 'unknown'));
+              btn.textContent = prev;
+              btn.disabled = false;
+            }
+          });
+        });
+      }
+
+      if (Array.isArray(data.reviews) && data.reviews.length) {
+        reviews.innerHTML = data.reviews.map(reviewCard).join('');
+      }
+    } catch (err) {
+      console.warn('Consult hub load failed:', err && err.message);
+    }
+
+    document.getElementById('topUpBtn').addEventListener('click', () => {
+      AP.dom.toast('Top-up flow will open your payment gateway.');
+    });
+    document.getElementById('historyBtn').addEventListener('click', () => {
+      AP.dom.toast('Session history coming soon.');
+    });
+  })();
+</script>
+</body>
+</html>

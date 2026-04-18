@@ -1,0 +1,410 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AstroPath — Onboarding</title>
+<link rel="stylesheet" href="./shared.css">
+<style>
+  .progress {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px;
+    margin-top: 20px;
+  }
+  .progress span {
+    height: 4px;
+    border-radius: 4px;
+    background: rgba(255, 236, 205, 0.12);
+  }
+  .progress span.is-done { background: linear-gradient(90deg, var(--gold), var(--amber)); }
+
+  .step { display: none; margin-top: 18px; }
+  .step.is-active { display: block; animation: fade-in 220ms ease; }
+
+  .choice-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 12px;
+  }
+  .choice {
+    padding: 14px;
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 236, 205, 0.10);
+    color: var(--text);
+    cursor: pointer;
+    transition: 180ms ease;
+  }
+  .choice:hover { border-color: rgba(255, 213, 148, 0.30); background: rgba(255,255,255,0.06); }
+  .choice.is-selected {
+    background: linear-gradient(180deg, rgba(255, 213, 148, 0.22), rgba(255, 154, 58, 0.10));
+    border-color: rgba(255, 213, 148, 0.45);
+  }
+  .choice-icon { font-size: 1.4rem; margin-bottom: 6px; color: var(--gold-2); }
+  .choice-title { font-weight: 700; font-size: 0.94rem; }
+  .choice-sub { font-size: 0.78rem; color: var(--muted); margin-top: 2px; }
+
+  .lang-list { display: grid; gap: 8px; margin-top: 12px; }
+  .lang {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 12px 14px;
+    border-radius: 14px;
+    background: rgba(255,255,255,0.035);
+    border: 1px solid rgba(255, 236, 205, 0.09);
+    cursor: pointer;
+    transition: 180ms ease;
+  }
+  .lang.is-selected {
+    background: linear-gradient(180deg, rgba(255, 213, 148, 0.22), rgba(255, 154, 58, 0.10));
+    border-color: rgba(255, 213, 148, 0.45);
+  }
+  .lang-name { font-weight: 700; }
+  .lang-native { color: var(--muted); font-size: 0.86rem; }
+  .lang-check { color: var(--gold); opacity: 0; transition: 180ms ease; }
+  .lang.is-selected .lang-check { opacity: 1; }
+
+  .nav-row { display: flex; gap: 10px; margin-top: 18px; }
+  .nav-row .ghost-button { width: auto; flex: 0 0 44%; }
+  .nav-row .primary-button { width: auto; flex: 1; }
+</style>
+</head>
+<body>
+<main class="scene">
+  <section class="shell">
+    <article class="panel hero">
+      <a class="portal-link" href="./hub.html">← All previews</a>
+
+      <div class="hero-top">
+        <span class="eyebrow">Cosmic Onboarding</span>
+        <h1>Begin the path. Align the stars.</h1>
+        <p class="hero-copy">
+          A four-step ritual welcomes each user into their AstroPath journey — choose a focus, pick a language,
+          and share the exact birth moment that anchors every kundli and horoscope in the app.
+        </p>
+      </div>
+
+      <div class="hero-grid">
+        <div class="stat">
+          <span class="stat-label">Step 1</span>
+          <span class="stat-value">Welcome</span>
+        </div>
+        <div class="stat">
+          <span class="stat-label">Step 2</span>
+          <span class="stat-value">Focus + Language</span>
+        </div>
+        <div class="stat">
+          <span class="stat-label">Step 4</span>
+          <span class="stat-value">Birth Details</span>
+        </div>
+      </div>
+    </article>
+
+    <article class="panel form-wrap">
+      <div class="phone-frame">
+        <div class="phone-notch"></div>
+        <div class="phone-screen">
+          <div class="toast" id="toast"></div>
+
+          <div class="status-row">
+            <span>9:41</span>
+            <span><span class="status-dot"></span>Secure</span>
+          </div>
+
+          <div class="brand-lockup">
+            <div class="brand-icon">✦</div>
+            <div class="brand-meta">
+              <strong>ASTROPATH</strong>
+              <span>Step <span id="stepIdx">1</span> of 4</span>
+            </div>
+          </div>
+
+          <div class="progress" id="progress">
+            <span class="is-done"></span>
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+
+          <!-- Step 1: Welcome -->
+          <section class="step is-active" data-step="1">
+            <strong class="panel-title">Welcome,<br>seeker.</strong>
+            <p class="panel-subtitle">
+              AstroPath turns your birth chart into a living daily guide — horoscope, panchang, rituals,
+              and real astrologers. Ready to decode your destiny?
+            </p>
+
+            <div class="pill-row" style="margin-bottom: 10px;">
+              <span class="pill pill--gold">Vedic</span>
+              <span class="pill pill--plasma">AI-guided</span>
+              <span class="pill pill--teal">Private</span>
+            </div>
+
+            <div class="card" style="margin-top: 14px;">
+              <h4 class="card-title">Three things this week</h4>
+              <p class="card-body">Personalised kundli · Daily cosmic energy · One free AI consult to try.</p>
+            </div>
+
+            <div class="nav-row">
+              <button class="primary-button" data-next="2">Begin the ritual</button>
+            </div>
+          </section>
+
+          <!-- Step 2: Focus -->
+          <section class="step" data-step="2">
+            <strong class="panel-title">Where do you seek guidance?</strong>
+            <p class="panel-subtitle">Pick one or more focus areas — we'll tune horoscopes, reminders, and rituals around them.</p>
+
+            <div class="choice-grid" data-group="focus">
+              <div class="choice is-selected" data-value="career">
+                <div class="choice-icon">◎</div>
+                <div class="choice-title">Career</div>
+                <div class="choice-sub">Direction & growth</div>
+              </div>
+              <div class="choice" data-value="love">
+                <div class="choice-icon">♡</div>
+                <div class="choice-title">Love</div>
+                <div class="choice-sub">Relationships & match</div>
+              </div>
+              <div class="choice" data-value="finance">
+                <div class="choice-icon">₹</div>
+                <div class="choice-title">Finance</div>
+                <div class="choice-sub">Wealth & decisions</div>
+              </div>
+              <div class="choice" data-value="spiritual">
+                <div class="choice-icon">✺</div>
+                <div class="choice-title">Spiritual</div>
+                <div class="choice-sub">Rituals & practice</div>
+              </div>
+            </div>
+
+            <div class="nav-row">
+              <button class="ghost-button" data-next="1">Back</button>
+              <button class="primary-button" data-next="3">Continue</button>
+            </div>
+          </section>
+
+          <!-- Step 3: Language -->
+          <section class="step" data-step="3">
+            <strong class="panel-title">Choose your language</strong>
+            <p class="panel-subtitle">The whole app — dashboard, kundli, horoscope, consultations — will switch to your pick. Change any time from Settings.</p>
+
+            <div class="lang-list" data-group="lang">
+              <div class="lang is-selected" data-value="en">
+                <div>
+                  <div class="lang-name">English</div>
+                  <div class="lang-native">International</div>
+                </div>
+                <div class="lang-check">✓</div>
+              </div>
+              <div class="lang" data-value="hi">
+                <div>
+                  <div class="lang-name">हिन्दी</div>
+                  <div class="lang-native">Hindi</div>
+                </div>
+                <div class="lang-check">✓</div>
+              </div>
+              <div class="lang" data-value="mr">
+                <div>
+                  <div class="lang-name">मराठी</div>
+                  <div class="lang-native">Marathi</div>
+                </div>
+                <div class="lang-check">✓</div>
+              </div>
+              <div class="lang" data-value="ta">
+                <div>
+                  <div class="lang-name">தமிழ்</div>
+                  <div class="lang-native">Tamil · coming soon</div>
+                </div>
+                <div class="lang-check">✓</div>
+              </div>
+            </div>
+
+            <div class="nav-row">
+              <button class="ghost-button" data-next="2">Back</button>
+              <button class="primary-button" data-next="4">Continue</button>
+            </div>
+          </section>
+
+          <!-- Step 4: Birth Details -->
+          <section class="step" data-step="4">
+            <strong class="panel-title">Your birth moment</strong>
+            <p class="panel-subtitle">The kundli engine uses Lahiri Ayanamsa and your exact time + place to compute Lagna, nakshatra, and dashas.</p>
+
+            <div class="field-stack">
+              <div class="field">
+                <label class="label" for="fullName">Full Name</label>
+                <input id="fullName" type="text" placeholder="Vihaan Deshmukh">
+              </div>
+              <div class="field-row">
+                <div class="field">
+                  <label class="label" for="dob">Date of Birth</label>
+                  <input id="dob" type="text" placeholder="08 Aug 2001">
+                </div>
+                <div class="field">
+                  <label class="label" for="tob">Time of Birth</label>
+                  <input id="tob" type="text" placeholder="04:32 AM">
+                </div>
+              </div>
+              <div class="field">
+                <label class="label" for="place">Place of Birth</label>
+                <input id="place" type="text" placeholder="Pune, Maharashtra, India">
+              </div>
+            </div>
+
+            <p class="panel-subtitle" style="margin-top: 14px; font-size: 0.8rem;">
+              🔒 Locked inside your profile. Used only for kundli &amp; horoscope computations.
+            </p>
+
+            <div class="nav-row">
+              <button class="ghost-button" data-next="3">Back</button>
+              <button class="primary-button" id="finishBtn">Cast my kundli</button>
+            </div>
+          </section>
+
+          <div class="footer-links">
+            <a href="./hub.html">All previews</a>
+            <a href="#">Privacy</a>
+            <a href="#">Terms</a>
+          </div>
+        </div>
+      </div>
+    </article>
+  </section>
+</main>
+
+<script src="./app.js"></script>
+<script>
+  const steps = document.querySelectorAll('.step');
+  const progress = document.getElementById('progress').children;
+  const stepIdx = document.getElementById('stepIdx');
+  const toast = document.getElementById('toast');
+  let toastTimer;
+
+  function show(n) {
+    steps.forEach(s => s.classList.toggle('is-active', Number(s.dataset.step) === n));
+    for (let i = 0; i < progress.length; i++) {
+      progress[i].classList.toggle('is-done', i < n);
+    }
+    stepIdx.textContent = n;
+  }
+  function showToast(msg) {
+    toast.textContent = msg;
+    toast.classList.add('is-visible');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toast.classList.remove('is-visible'), 2200);
+  }
+
+  document.querySelectorAll('[data-next]').forEach(btn => {
+    btn.addEventListener('click', () => show(Number(btn.dataset.next)));
+  });
+
+  // multi-select focus
+  document.querySelectorAll('[data-group="focus"] .choice').forEach(c => {
+    c.addEventListener('click', () => c.classList.toggle('is-selected'));
+  });
+
+  // single-select language
+  document.querySelectorAll('[data-group="lang"] .lang').forEach(l => {
+    l.addEventListener('click', () => {
+      document.querySelectorAll('[data-group="lang"] .lang').forEach(x => x.classList.remove('is-selected'));
+      l.classList.add('is-selected');
+    });
+  });
+
+  // Auth gate: if the user isn't signed in, kick back to login.
+  (async function () {
+    const AP = window.AstroPath;
+    if (!AP) return;
+    await AP.guard('onboarding');
+    // Pre-populate name from stored user if any
+    const user = AP.state.user;
+    if (user && user.email) {
+      const name = document.getElementById('fullName');
+      if (name && !name.value) name.placeholder = user.email.split('@')[0];
+    }
+  })();
+
+  function parseBirthInputs() {
+    const name = (document.getElementById('fullName').value || '').trim();
+    const dob  = (document.getElementById('dob').value  || '').trim();
+    const tob  = (document.getElementById('tob').value  || '').trim();
+    const place= (document.getElementById('place').value|| '').trim();
+
+    // Forgiving parsing. Accept "08 Aug 2001", "2001-08-08", "8/8/2001".
+    let isoDate = null;
+    const tryDate = new Date(dob);
+    if (!isNaN(tryDate.getTime())) {
+      isoDate = tryDate.toISOString().slice(0, 10);
+    }
+
+    // Accept "4:32 AM", "04:32", "16:05"
+    let isoTime = null;
+    const m = tob.match(/(\d{1,2}):(\d{2})\s*(am|pm)?/i);
+    if (m) {
+      let h = parseInt(m[1], 10), mm = m[2];
+      const ampm = (m[3] || '').toLowerCase();
+      if (ampm === 'pm' && h < 12) h += 12;
+      if (ampm === 'am' && h === 12) h = 0;
+      isoTime = String(h).padStart(2, '0') + ':' + mm;
+    }
+
+    return { name, isoDate, isoTime, place };
+  }
+
+  document.getElementById('finishBtn').addEventListener('click', async () => {
+    const AP = window.AstroPath;
+    if (!AP) { showToast('Client not ready.'); return; }
+
+    const parsed = parseBirthInputs();
+    if (!parsed.name)    return showToast('Please enter your full name.');
+    if (!parsed.isoDate) return showToast('Date of birth looks off — try "08 Aug 2001".');
+    if (!parsed.isoTime) return showToast('Time of birth needs to be like "04:32 AM".');
+
+    // Gather focus + language
+    const focuses = Array.from(document.querySelectorAll('[data-group="focus"] .choice.is-selected'))
+      .map(c => c.dataset.value).filter(Boolean);
+    const langEl = document.querySelector('[data-group="lang"] .lang.is-selected');
+    const lang = (langEl && langEl.dataset.value) || 'en';
+
+    // Pune default coords; the real app would geocode.
+    const payload = {
+      name: parsed.name,
+      birthDate: parsed.isoDate,
+      birthTime: parsed.isoTime,
+      latitude: 18.5204,
+      longitude: 73.8567,
+      tzOffsetMinutes: 330,
+    };
+
+    showToast('Casting your kundli…');
+    try {
+      // Persist locale + focus on backend preferences.
+      const patch = {};
+      if (['en','hi','mr'].includes(lang)) patch.languageCode = lang;
+      if (focuses.includes('career'))      patch.focusArea = 'career';
+      else if (focuses.includes('love'))   patch.focusArea = 'love';
+      else if (focuses.includes('finance'))patch.focusArea = 'finance';
+      else if (focuses.includes('spiritual')) patch.focusArea = 'spiritual';
+      else patch.focusArea = 'balance';
+      if (Object.keys(patch).length > 0) {
+        try { await AP.api.patchPreferences(patch); } catch (_e) {}
+      }
+
+      const kundli = await AP.api.generateKundli(payload);
+
+      AP.state.locale = lang;
+      AP.state.birthInfo = { ...payload, place: parsed.place, focuses };
+      AP.state.lastKundli = kundli;
+      AP.state.onboardingComplete = true;
+
+      showToast('Your kundli is ready.');
+      setTimeout(() => { location.href = './dashboard.html'; }, 650);
+    } catch (err) {
+      showToast('Could not cast kundli: ' + (err && err.message ? err.message : 'unknown'));
+    }
+  });
+</script>
+</body>
+</html>

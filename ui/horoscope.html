@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AstroPath — Horoscope</title>
+<link rel="stylesheet" href="./shared.css">
+<style>
+  .rashi-strip {
+    display: flex; gap: 8px; overflow-x: auto;
+    padding-bottom: 6px; margin-top: 14px;
+    -webkit-overflow-scrolling: touch;
+  }
+  .rashi-strip::-webkit-scrollbar { height: 4px; }
+  .rashi-strip::-webkit-scrollbar-thumb { background: rgba(255,213,148,0.3); border-radius: 4px; }
+  .rashi {
+    flex: 0 0 auto;
+    display: flex; flex-direction: column; align-items: center; gap: 4px;
+    padding: 10px 10px; border-radius: 14px;
+    background: rgba(255,255,255,0.035);
+    border: 1px solid rgba(255,236,205,0.08);
+    color: var(--muted);
+    min-width: 62px;
+    cursor: pointer;
+    transition: 180ms ease;
+  }
+  .rashi.is-active {
+    background: linear-gradient(180deg, rgba(255, 213, 148, 0.25), rgba(255, 154, 58, 0.10));
+    border-color: rgba(255, 213, 148, 0.45);
+    color: var(--gold-3);
+  }
+  .rashi-glyph { font-size: 1.1rem; color: var(--gold-2); }
+  .rashi-name { font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase; }
+
+  .period-card {
+    margin-top: 14px;
+    padding: 18px;
+    border-radius: 22px;
+    background:
+      radial-gradient(circle at 100% 0%, rgba(255, 188, 100, 0.20), transparent 50%),
+      radial-gradient(circle at 0% 100%, rgba(200, 123, 255, 0.16), transparent 46%),
+      linear-gradient(180deg, rgba(40,20,70,0.80), rgba(16,8,28,0.92));
+    border: 1px solid rgba(255, 213, 148, 0.22);
+  }
+  .pc-head { display: flex; justify-content: space-between; align-items: baseline; }
+  .pc-sign { color: var(--gold-3); font-weight: 700; font-size: 1.1rem; }
+  .pc-date { color: var(--muted); font-size: 0.76rem; }
+  .pc-body { color: var(--muted); margin: 10px 0 12px; font-size: 0.88rem; line-height: 1.6; }
+  .pc-meta { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .pc-meta div { text-align: center; padding: 8px; border-radius: 12px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,236,205,0.08); }
+  .pc-meta b { display: block; color: var(--gold-2); font-size: 0.94rem; }
+  .pc-meta span { color: var(--muted-2); font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase; }
+
+  .cat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .cat {
+    padding: 14px;
+    border-radius: 18px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,236,205,0.10);
+  }
+  .cat-top { display: flex; align-items: center; gap: 8px; }
+  .cat-icon {
+    width: 28px; height: 28px; border-radius: 10px;
+    display: grid; place-items: center;
+    background: linear-gradient(135deg, rgba(255, 213, 148, 0.25), rgba(192,124,255,0.25));
+    color: var(--gold-3); font-weight: 700;
+  }
+  .cat-title { font-weight: 700; font-size: 0.88rem; }
+  .cat-score { margin-top: 10px; display: flex; gap: 2px; }
+  .cat-score span { flex: 1; height: 4px; border-radius: 4px; background: rgba(255,255,255,0.08); }
+  .cat-score span.on { background: linear-gradient(90deg, var(--gold), var(--amber)); }
+  .cat-line { color: var(--muted); font-size: 0.76rem; margin-top: 8px; line-height: 1.45; }
+
+  .lucky-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .lucky { padding: 10px; border-radius: 14px; background: rgba(255,255,255,0.035); border: 1px solid rgba(255,236,205,0.08); text-align: center; }
+  .lucky b { display: block; color: var(--gold-2); font-size: 0.94rem; margin-top: 4px; }
+  .lucky span { color: var(--muted-2); font-size: 0.66rem; letter-spacing: 0.1em; text-transform: uppercase; }
+</style>
+</head>
+<body>
+<main class="scene">
+  <section class="shell">
+    <article class="panel hero">
+      <a class="portal-link" href="./hub.html">← All previews</a>
+      <div class="hero-top">
+        <span class="eyebrow">Daily · Weekly · Monthly · Yearly</span>
+        <h1>Read the sky,<br>for any span.</h1>
+        <p class="hero-copy">
+          Four period tabs and four life categories — Love, Career, Finance, Health — each with its own
+          score and narrative. Users scroll rashis horizontally and re-anchor the reading to any sign in a tap.
+        </p>
+      </div>
+      <div class="hero-grid">
+        <div class="stat">
+          <span class="stat-label">Today</span>
+          <span class="stat-value">76 · Favourable</span>
+        </div>
+        <div class="stat">
+          <span class="stat-label">Love</span>
+          <span class="stat-value">★★★★☆</span>
+        </div>
+        <div class="stat">
+          <span class="stat-label">Finance</span>
+          <span class="stat-value">Caution</span>
+        </div>
+      </div>
+    </article>
+
+    <article class="panel form-wrap">
+      <div class="phone-frame">
+        <div class="phone-notch"></div>
+        <div class="phone-screen">
+          <div class="status-row">
+            <span>9:41</span>
+            <span><span class="status-dot"></span>Horoscope</span>
+          </div>
+
+          <div class="brand-lockup">
+            <div class="brand-icon">☼</div>
+            <div class="brand-meta">
+              <strong>HOROSCOPE</strong>
+              <span>For your Moon sign · Kanya (Virgo)</span>
+            </div>
+          </div>
+
+          <div class="tabs" style="margin-top: 18px;">
+            <button class="tab is-active" data-tab="day">Day</button>
+            <button class="tab" data-tab="week">Week</button>
+            <button class="tab" data-tab="month">Month</button>
+            <button class="tab" data-tab="year">Year</button>
+          </div>
+
+          <div class="rashi-strip" aria-label="Rashi selector">
+            <div class="rashi"><span class="rashi-glyph">♈</span><span class="rashi-name">Mesha</span></div>
+            <div class="rashi"><span class="rashi-glyph">♉</span><span class="rashi-name">Vrsh</span></div>
+            <div class="rashi"><span class="rashi-glyph">♊</span><span class="rashi-name">Mith</span></div>
+            <div class="rashi"><span class="rashi-glyph">♋</span><span class="rashi-name">Karka</span></div>
+            <div class="rashi"><span class="rashi-glyph">♌</span><span class="rashi-name">Simha</span></div>
+            <div class="rashi is-active"><span class="rashi-glyph">♍</span><span class="rashi-name">Kanya</span></div>
+            <div class="rashi"><span class="rashi-glyph">♎</span><span class="rashi-name">Tula</span></div>
+            <div class="rashi"><span class="rashi-glyph">♏</span><span class="rashi-name">Vrsch</span></div>
+            <div class="rashi"><span class="rashi-glyph">♐</span><span class="rashi-name">Dhanu</span></div>
+            <div class="rashi"><span class="rashi-glyph">♑</span><span class="rashi-name">Makar</span></div>
+            <div class="rashi"><span class="rashi-glyph">♒</span><span class="rashi-name">Kumbh</span></div>
+            <div class="rashi"><span class="rashi-glyph">♓</span><span class="rashi-name">Meena</span></div>
+          </div>
+
+          <div class="period-card">
+            <div class="pc-head">
+              <div class="pc-sign">Kanya · Today</div>
+              <div class="pc-date">Sat, 18 Apr</div>
+            </div>
+            <p class="pc-body" id="periodBody">
+              The Sun transits your second house and illuminates conversations about value — your own and what
+              you owe others. A career opportunity surfaces after 3 PM; accept only what lets you stay in
+              motion, not what anchors you to the past.
+            </p>
+            <div class="pc-meta">
+              <div><b>76</b><span>Energy</span></div>
+              <div><b>High</b><span>Focus</span></div>
+              <div><b>3 PM</b><span>Peak hour</span></div>
+            </div>
+          </div>
+
+          <div class="section-h">
+            <h3>Areas</h3>
+            <a href="#">Explain</a>
+          </div>
+          <div class="cat-grid">
+            <div class="cat">
+              <div class="cat-top"><div class="cat-icon">♡</div><div class="cat-title">Love</div></div>
+              <div class="cat-score"><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span></span></div>
+              <div class="cat-line">Gentle reconciliation is possible tonight. Soften language.</div>
+            </div>
+            <div class="cat">
+              <div class="cat-top"><div class="cat-icon">◎</div><div class="cat-title">Career</div></div>
+              <div class="cat-score"><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span></div>
+              <div class="cat-line">A senior opens a door. Prepare your one-line pitch by noon.</div>
+            </div>
+            <div class="cat">
+              <div class="cat-top"><div class="cat-icon">₹</div><div class="cat-title">Finance</div></div>
+              <div class="cat-score"><span class="on"></span><span class="on"></span><span></span><span></span><span></span></div>
+              <div class="cat-line">Defer major commitments until Mercury stabilises tomorrow.</div>
+            </div>
+            <div class="cat">
+              <div class="cat-top"><div class="cat-icon">✚</div><div class="cat-title">Health</div></div>
+              <div class="cat-score"><span class="on"></span><span class="on"></span><span class="on"></span><span></span><span></span></div>
+              <div class="cat-line">Hydrate + sunrise walk. Avoid heavy meals after 8 PM.</div>
+            </div>
+          </div>
+
+          <div class="section-h">
+            <h3>Lucky for today</h3>
+            <a href="#">Why</a>
+          </div>
+          <div class="lucky-grid">
+            <div class="lucky"><span>Colour</span><b>Amber</b></div>
+            <div class="lucky"><span>Number</span><b>7</b></div>
+            <div class="lucky"><span>Direction</span><b>East</b></div>
+          </div>
+
+          <nav class="bottom-nav">
+            <a class="bn-item" href="./dashboard.html"><span class="bn-icon">☰</span>Home</a>
+            <a class="bn-item" href="./kundli.html"><span class="bn-icon">⊕</span>Kundli</a>
+            <a class="bn-item" href="./consultation.html"><span class="bn-icon">💬</span>Consult</a>
+            <a class="bn-item" href="./assistant.html"><span class="bn-icon">✶</span>AI</a>
+            <a class="bn-item" href="./settings.html"><span class="bn-icon">⚙</span>More</a>
+          </nav>
+        </div>
+      </div>
+    </article>
+  </section>
+</main>
+
+<script src="./app.js"></script>
+<script>
+  const TAB_TO_RANGE = { day: 'daily', week: 'weekly', month: 'monthly', year: 'yearly' };
+  const cache = {}; // range -> response
+
+  const tabs = document.querySelectorAll('[data-tab]');
+  const body = document.getElementById('periodBody');
+
+  function renderCategories(categories) {
+    const cats = document.querySelectorAll('.cat');
+    if (!categories || !categories.length) return;
+    const byCat = {};
+    categories.forEach(c => { byCat[c.category] = c; });
+    // Map DOM cats by their title text
+    cats.forEach(el => {
+      const title = (el.querySelector('.cat-title') || {}).textContent || '';
+      const key = title.toLowerCase();
+      const rec = byCat[key];
+      if (!rec) return;
+      const line = el.querySelector('.cat-line');
+      if (line && rec.body) line.textContent = rec.body;
+      const scoreDots = el.querySelectorAll('.cat-score span');
+      const dots = Math.min(5, Math.round((rec.score || 50) / 20));
+      scoreDots.forEach((s, i) => s.classList.toggle('on', i < dots));
+    });
+  }
+
+  async function loadRange(tabKey) {
+    const range = TAB_TO_RANGE[tabKey] || 'daily';
+    if (cache[range]) return cache[range];
+    const AP = window.AstroPath;
+    try {
+      const data = await AP.api.horoscope(range);
+      cache[range] = data;
+      return data;
+    } catch (err) {
+      return null;
+    }
+  }
+
+  async function activate(tabKey) {
+    tabs.forEach(x => x.classList.toggle('is-active', x.dataset.tab === tabKey));
+    const data = await loadRange(tabKey);
+    if (data && data.categories && data.categories.length) {
+      // Use first category's body as the headline paragraph (career is strongest signal).
+      const lead = data.categories.find(c => c.category === 'career') || data.categories[0];
+      if (body) body.textContent = lead.body;
+      renderCategories(data.categories);
+    }
+  }
+
+  tabs.forEach(t => t.addEventListener('click', () => activate(t.dataset.tab)));
+
+  document.querySelectorAll('.rashi').forEach(r => r.addEventListener('click', () => {
+    document.querySelectorAll('.rashi').forEach(x => x.classList.remove('is-active'));
+    r.classList.add('is-active');
+  }));
+
+  (async function () {
+    const AP = window.AstroPath;
+    if (!AP) return;
+    if (!(await AP.guard('app'))) return;
+    await activate('day');
+  })();
+</script>
+</body>
+</html>
