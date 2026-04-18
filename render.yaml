@@ -1,0 +1,26 @@
+# Render blueprint for AstroPath — https://render.com
+# One-click deploy: in the Render dashboard, click "New +" -> "Blueprint",
+# point it at the prasadvdeshmukh-hub/AstroPath repo, and Render will read
+# this file and provision the service automatically.
+services:
+  - type: web
+    name: astropath-prasad     # unique-ish so the generated subdomain doesn't collide
+    runtime: node
+    region: singapore       # change to oregon / frankfurt / ohio if preferred
+    plan: free              # free tier sleeps after 15 min idle; upgrade to starter for always-on
+    rootDir: backend
+    buildCommand: npm install
+    startCommand: node src/index.js
+    healthCheckPath: /health
+    autoDeploy: true        # redeploys on every push to main
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: AUTH_MODE
+        value: bypass       # switch to "firebase" once you add a service account
+      - key: FIRESTORE_MODE
+        value: memory       # switch to "firestore" for persistent data
+      - key: PUBLIC_UI_DIR
+        value: /opt/render/project/src   # serves the UI bundle from repo root
+      - key: CORS_ORIGINS
+        value: "*"
