@@ -3,6 +3,9 @@
 const path = require('path');
 const express = require('express');
 const cors = require('cors');
+const helmet = require('helmet');
+const compression = require('compression');
+const rateLimit = require('express-rate-limit');
 
 const requestId = require('./middleware/requestId');
 const logger = require('./middleware/logger');
@@ -27,6 +30,34 @@ function buildApp(env) {
   const app = express();
 
   app.disable('x-powered-by');
+  // Behind Render / Railway / Fly / Cloud Run / Heroku there is a reverse proxy.
+  // Trust it so req.ip, req.protocol, and HSTS detection all work correctly.
+  app.set('trust proxy', 1);
+
+  // --- Security + performance middleware -----------------------------------
+  // helmet: sensible HTTP security headers. We relax CSP for the inline-script
+  // UI (no build step) by allowing 'unsafe-inline' for scripts + styles; the
+  // rest of the defaults (Referrer-Policy, X-Content-Type-Options, etc.) stay.
+  app.use(
+    helmet({
+      contentSecurityPolicy: {
+        useDefaults: true,
+        directives: {
+          'default-src': ["'self'"],
+          'script-src': ["'self'", "'unsafe-inline'"],
+          'style-src': ["'self'", "'unsafe-inline'"],
+          'img-src': ["'self'", 'data:', 'blob:'],
+          'connect-src': ["'self'"],
+          'font-src': ["'self'", 'data:'],
+          'object-src': ["'none'"],
+          'frame-ancestors': ["'none'"],
+        },
+      },
+      crossOriginEmbedderPolicy: false,
+      crossOriginResourcePolicy: { policy: 'cross-origin' },
+    })
+  );
+  app.use(compression());
   app.use(express.json({ limit: '1mb' }));
 
   const corsOptions =
@@ -39,6 +70,29 @@ function buildApp(env) {
   app.use(logger());
   app.use(localeMiddleware());
 
+  // --- Rate limits ---------------------------------------------------------
+  // Liberal global limit; tighter limits for auth and assistant (the two
+  // endpoints worth abusing — login brute force and LLM-ish cost).
+  const globalLimiter = rateLimit({
+    windowMs: 60 * 1000,
+    max: 120, // 120 req / minute / IP
+    standardHeaders: 'draft-7',
+    legacyHeaders: false,
+    skip: (req) => req.path === '/health',
+  });
+  const authLimiter = rateLimit({
+    windowMs: 60 * 1000,
+    max: 10,
+    standardHeaders: 'draft-7',
+    legacyHeaders: false,
+  });
+  const assistantLimiter = rateLimit({
+    windowMs: 60 * 1000,
+    max: 20,
+    standardHeaders: 'draft-7',
+    legacyHeaders: false,
+  });
+
   // Dev-only demo pages. Served under /demo so they never shadow the API.
   app.use('/demo', express.static(path.join(__dirname, '..', 'public'), {
     extensions: ['html'],
@@ -47,18 +101,37 @@ function buildApp(env) {
 
   // Production UI (cosmic-themed HTML bundle). Mounted at /app when the
   // operator points PUBLIC_UI_DIR at the AstroPath root folder.
+  //
+  // Block internal dev preview files so they can never be served to end users:
+  //   - AstroPath.html / AstroPath_legacy.html (stitched multi-page previews)
+  //   - ui/hub.html / ui/journey.html          (internal preview index)
+  // Anything else under PUBLIC_UI_DIR is served normally.
   if (env.PUBLIC_UI_DIR) {
+    const BLOCKED_PREVIEWS = new Set([
+      '/astropath.html',
+      '/astropath_legacy.html',
+      '/ui/hub.html',
+      '/ui/journey.html',
+    ]);
+    app.use('/app', (req, res, next) => {
+      if (BLOCKED_PREVIEWS.has(req.path.toLowerCase())) {
+        return res.redirect('/app/');
+      }
+      next();
+    });
     app.use('/app', express.static(env.PUBLIC_UI_DIR, {
       extensions: ['html'],
       index: 'index.html',
+      maxAge: env.NODE_ENV === 'production' ? '1h' : 0,
     }));
   }
 
   // Public API
   app.use('/health', healthRoutes);
-  app.use('/v1/auth', authRoutes(env));
+  app.use('/v1/auth', authLimiter, authRoutes(env));
 
-  // Everything under /v1 (other than /v1/auth) requires auth.
+  // Everything under /v1 (other than /v1/auth) is rate-limited + authenticated.
+  app.use('/v1', globalLimiter);
   app.use('/v1', authMiddleware(env));
   app.use('/v1/dashboard', dashboardRoutes);
   app.use('/v1/profile/preferences', preferencesRoutes);
@@ -68,7 +141,7 @@ function buildApp(env) {
   app.use('/v1/muhurat', muhuratRoutes);
   app.use('/v1/compatibility', compatibilityRoutes);
   app.use('/v1/consultations', consultationsRoutes);
-  app.use('/v1/assistant', assistantRoutes);
+  app.use('/v1/assistant', assistantLimiter, assistantRoutes);
   app.use('/v1/transits', transitsRoutes);
 
   // Root: HTML browsers go to the production UI (if mounted), otherwise
@@ -79,7 +152,7 @@ function buildApp(env) {
     res.json({
       data: {
         service: 'astropath-backend',
-        version: '0.4.0',
+        version: '1.0.0',
         env: env.NODE_ENV,
         endpoints: [
           'GET /health',
