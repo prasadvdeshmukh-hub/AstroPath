@@ -86,13 +86,18 @@
 
   .shell {
     position: relative;
-    width: min(100%, 1140px);
+    width: min(100%, 520px);
     display: grid;
-    grid-template-columns: 1.02fr 0.98fr;
-    gap: 24px;
+    grid-template-columns: 1fr;
+    gap: 0;
     align-items: stretch;
     z-index: 1;
+    margin-inline: auto;
   }
+
+  /* Hide the hero "marketing" panel on login — landing lives on index.html.
+     Login shows only the form panel. */
+  .panel.hero { display: none !important; }
 
   .panel {
     position: relative;
