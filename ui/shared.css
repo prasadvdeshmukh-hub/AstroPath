@@ -99,13 +99,20 @@ body { position: relative; }
 
 .shell {
   position: relative;
-  width: min(100%, 1180px);
+  /* Single, centered column at every viewport — phone-frame is the whole experience.
+     Marketing hero panels are intentionally hidden so only one "page" is in view. */
+  width: min(100%, 480px);
   display: grid;
-  grid-template-columns: 1.02fr 0.98fr;
+  grid-template-columns: 1fr;
   gap: 24px;
   align-items: stretch;
+  margin-inline: auto;
   z-index: 1;
 }
+
+/* Belt-and-braces: any leftover marketing hero panel is hidden globally so the
+   single-view rule holds even if a screen still has the old markup. */
+.shell .panel.hero { display: none !important; }
 
 /* ---------- panels ---------- */
 .panel {
@@ -741,6 +748,143 @@ body { position: relative; }
   z-index: 9999;
 }
 .astro-toast.is-visible { opacity: 1; transform: translate(-50%, 0); }
+
+/* ---------- session menu ---------- */
+.session-trigger {
+  width: 44px;
+  height: 44px;
+  border: 1px solid rgba(255, 236, 205, 0.16);
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 30% 30%, rgba(255,235,190,0.92), rgba(255,180,100,0.55) 38%, transparent 68%),
+    linear-gradient(135deg, rgba(255,210,140,0.3), rgba(192,124,255,0.36));
+  box-shadow: 0 12px 22px rgba(0, 0, 0, 0.26);
+  color: #3f1b08;
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.session-trigger--floating {
+  position: absolute;
+  top: 58px;
+  right: 18px;
+  z-index: 6;
+}
+
+.session-sheet-backdrop {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  align-items: end;
+  padding: 18px;
+  background: rgba(4, 2, 10, 0.58);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 200ms ease;
+  z-index: 10001;
+}
+
+.session-sheet-backdrop.is-visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.session-sheet {
+  position: relative;
+  width: min(100%, 420px);
+  margin: 0 auto;
+  padding: 20px 20px 18px;
+  border-radius: 28px;
+  background:
+    radial-gradient(circle at top right, rgba(255, 192, 106, 0.18), transparent 34%),
+    linear-gradient(180deg, rgba(44, 24, 61, 0.96), rgba(13, 7, 23, 0.98));
+  border: 1px solid rgba(255, 236, 205, 0.14);
+  box-shadow: 0 28px 80px rgba(0, 0, 0, 0.45);
+  transform: translateY(18px);
+  transition: transform 220ms ease;
+}
+
+.session-sheet-backdrop.is-visible .session-sheet {
+  transform: translateY(0);
+}
+
+.session-sheet__close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 34px;
+  height: 34px;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.06);
+  color: var(--gold-2);
+  cursor: pointer;
+  font: inherit;
+  font-size: 1.1rem;
+}
+
+.session-sheet__avatar {
+  width: 58px;
+  height: 58px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 32% 32%, rgba(255,240,201,0.95), rgba(255,180,100,0.58) 38%, transparent 68%),
+    linear-gradient(135deg, rgba(255,210,140,0.34), rgba(192,124,255,0.38));
+  color: #3f1b08;
+  font-size: 1rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.session-sheet__name {
+  margin-top: 14px;
+  color: var(--gold-3);
+  font-size: 1.08rem;
+  font-weight: 700;
+}
+
+.session-sheet__meta {
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 0.84rem;
+}
+
+.session-sheet__actions {
+  display: grid;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.session-sheet__link,
+.session-sheet__logout {
+  width: 100%;
+  padding: 14px 16px;
+  border-radius: 16px;
+  text-align: left;
+  text-decoration: none;
+  font: inherit;
+  font-weight: 600;
+}
+
+.session-sheet__link {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255, 236, 205, 0.12);
+  color: var(--text);
+}
+
+.session-sheet__logout {
+  border: 1px solid rgba(255,141,166,0.26);
+  background: rgba(255,141,166,0.08);
+  color: var(--danger);
+  cursor: pointer;
+}
 
 /* ---------- skeleton loader ---------- */
 .skel {

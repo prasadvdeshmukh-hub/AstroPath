@@ -648,35 +648,6 @@
 <body>
   <main class="scene">
     <section class="shell">
-      <article class="panel hero">
-        <a class="portal-link" href="./index.html">← Back to portal</a>
-
-        <div class="hero-top">
-          <span class="eyebrow">Cosmic Sign In</span>
-          <h1>Enter your daily guidance space.</h1>
-          <p class="hero-copy">
-            Step into AstroPath with the same celestial visual language as your landing portal.
-            This first screen turns the old dev preview into a premium mobile auth experience
-            with phone, email, and social entry points.
-          </p>
-        </div>
-
-        <div class="hero-grid">
-          <div class="stat">
-            <span class="stat-label">Daily Focus</span>
-            <span class="stat-value">Horoscope + rituals</span>
-          </div>
-          <div class="stat">
-            <span class="stat-label">AstroPath AI</span>
-            <span class="stat-value">Guided insights</span>
-          </div>
-          <div class="stat">
-            <span class="stat-label">Consultations</span>
-            <span class="stat-value">Verified astrologers</span>
-          </div>
-        </div>
-      </article>
-
       <article class="panel form-wrap">
         <div class="phone-frame">
           <div class="phone-notch"></div>
@@ -780,19 +751,6 @@
               <button class="primary-button" type="button" data-success="Magic link preview ready">Send magic link</button>
             </section>
 
-            <div class="pill-row">
-              <span class="pill">Daily Horoscope</span>
-              <span class="pill">Kundli Preview</span>
-              <span class="pill">AstroPath AI</span>
-            </div>
-
-            <div class="trust-card">
-              <strong>Why this screen works</strong>
-              <p>
-                It preserves the cosmic gold and nebula mood from the landing overlay, but turns it into a practical mobile auth UI that is ready to wire into backend or Flutter flows later.
-              </p>
-            </div>
-
             <div class="footer-links">
               <a href="./index.html">Portal</a>
               <a href="./ui/guidelines.html#privacy">Privacy</a>
@@ -830,26 +788,51 @@
     tab.addEventListener("click", () => showPanel(tab.dataset.tab));
   });
 
-  // Real sign-in: hit the backend /v1/auth/session (bypass mode issues a dev identity).
-  // Any of the auth buttons starts the same flow for demo purposes; in production these
-  // would fork into phone-OTP, email+password, Google/Apple/WhatsApp OAuth.
+  // Real sign-in: hit the backend /v1/auth/session.
+  // - On the Email panel we read #emailAddress + #password and send them in the body.
+  // - On other panels we send an empty body (bypass mode returns the dev user;
+  //   firebase mode would require the relevant OAuth/OTP token, not yet wired).
+  // After a successful explicit sign-in we set a localStorage flag so future visits
+  // to /login can short-circuit straight to the app.
+  function readEmailPanelCreds() {
+    const panel = document.querySelector('[data-panel="email"]');
+    if (!panel || !panel.classList.contains("is-active")) return null;
+    const email = (document.getElementById("emailAddress").value || "").trim();
+    const password = document.getElementById("password").value || "";
+    if (!email) { showToast("Please enter your email."); return { error: true }; }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      showToast("Please enter a valid email."); return { error: true };
+    }
+    if (!password) { showToast("Please enter your password."); return { error: true }; }
+    if (password.length < 6) {
+      showToast("Password must be at least 6 characters."); return { error: true };
+    }
+    return { email: email, password: password };
+  }
+
   async function doSignIn(providerLabel) {
     const AP = window.AstroPath;
     if (!AP) { showToast("Client not ready. Reload the page."); return; }
+
+    const creds = readEmailPanelCreds();
+    if (creds && creds.error) return; // toast already shown
+    const body = creds ? { email: creds.email, password: creds.password } : {};
+
     try {
       showToast(providerLabel + "...");
-      const data = await AP.api.session();
+      const data = await AP.api.session(body);
       if (data && data.user)    AP.state.user = data.user;
       if (data && data.profile) AP.state.profile = data.profile;
       if (data && data.profile && data.profile.preferences && data.profile.preferences.languageCode) {
         AP.state.locale = data.profile.preferences.languageCode;
       }
-      // If we've got stored birth info, skip onboarding; else send them there.
+      try { window.localStorage.setItem("astropath.signedInExplicitly", "1"); } catch (_e) {}
       const next = AP.state.onboardingComplete ? "./ui/dashboard.html" : "./ui/onboarding.html";
-      showToast("Welcome back — opening " + (AP.state.onboardingComplete ? "dashboard" : "setup"));
+      showToast("Welcome — opening " + (AP.state.onboardingComplete ? "dashboard" : "setup"));
       setTimeout(function () { location.href = next; }, 550);
     } catch (err) {
-      showToast("Sign-in failed: " + (err && err.message ? err.message : "unknown"));
+      const msg = err && err.message ? err.message : "unknown";
+      showToast("Sign-in failed: " + msg);
     }
   }
 
@@ -857,11 +840,15 @@
     button.addEventListener("click", () => doSignIn(button.dataset.success));
   });
 
-  // If already signed in, skip the login screen.
+  // Skip the login screen only for users who have already explicitly signed in
+  // before. Without this guard, dev-bypass would auto-redirect every visitor on
+  // page load, hiding the login form they're trying to use.
   (async function redirectIfAuthed() {
     const AP = window.AstroPath;
     if (!AP) return;
-    // Try a silent bootstrap so dev-bypass populates the user automatically.
+    let alreadySignedIn = false;
+    try { alreadySignedIn = window.localStorage.getItem("astropath.signedInExplicitly") === "1"; } catch (_e) {}
+    if (!alreadySignedIn) return;
     await AP.bootstrap();
     if (AP.state.isAuthenticated()) {
       const dest = AP.state.onboardingComplete ? "./ui/dashboard.html" : "./ui/onboarding.html";

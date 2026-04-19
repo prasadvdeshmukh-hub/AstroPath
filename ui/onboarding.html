@@ -68,39 +68,60 @@
   .nav-row { display: flex; gap: 10px; margin-top: 18px; }
   .nav-row .ghost-button { width: auto; flex: 0 0 44%; }
   .nav-row .primary-button { width: auto; flex: 1; }
+
+  /* Time-of-birth dropdowns: Hour / Minute / AM-PM in one row */
+  .time-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px;
+  }
+
+  /* Normalize native <select> appearance so it matches <input> tiles */
+  .field select {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image:
+      linear-gradient(45deg, transparent 50%, rgba(255, 213, 148, 0.75) 50%),
+      linear-gradient(135deg, rgba(255, 213, 148, 0.75) 50%, transparent 50%);
+    background-position:
+      calc(100% - 18px) 55%,
+      calc(100% - 13px) 55%;
+    background-size: 5px 5px, 5px 5px;
+    background-repeat: no-repeat;
+    padding-right: 34px;
+  }
+  .field select:disabled { opacity: 0.45; cursor: not-allowed; }
+  .field select option { background: #1a1028; color: var(--text); }
+
+  /* Date input: native calendar picker in dark mode. Make the whole field feel clickable
+     and force the calendar glyph to pure white so it's visible against the dark input. */
+  .field input[type="date"] {
+    color-scheme: dark;
+    cursor: pointer;
+  }
+  .field input[type="date"]::-webkit-calendar-picker-indicator {
+    /* brightness(0) flattens the glyph to black, invert(1) flips it to pure white */
+    filter: brightness(0) invert(1);
+    opacity: 1;
+    cursor: pointer;
+    margin-right: 2px;
+    padding: 4px;
+    width: 20px;
+    height: 20px;
+  }
+
+  /* Required-field indicator: small red star next to the label / heading text */
+  .req {
+    color: #ff6b6b;
+    margin-left: 4px;
+    font-weight: 700;
+  }
 </style>
 </head>
 <body>
 <main class="scene">
   <section class="shell">
-    <article class="panel hero">
-      <a class="portal-link" href="./hub.html">← All previews</a>
-
-      <div class="hero-top">
-        <span class="eyebrow">Cosmic Onboarding</span>
-        <h1>Begin the path. Align the stars.</h1>
-        <p class="hero-copy">
-          A four-step ritual welcomes each user into their AstroPath journey — choose a focus, pick a language,
-          and share the exact birth moment that anchors every kundli and horoscope in the app.
-        </p>
-      </div>
-
-      <div class="hero-grid">
-        <div class="stat">
-          <span class="stat-label">Step 1</span>
-          <span class="stat-value">Welcome</span>
-        </div>
-        <div class="stat">
-          <span class="stat-label">Step 2</span>
-          <span class="stat-value">Focus + Language</span>
-        </div>
-        <div class="stat">
-          <span class="stat-label">Step 4</span>
-          <span class="stat-value">Birth Details</span>
-        </div>
-      </div>
-    </article>
-
     <article class="panel form-wrap">
       <div class="phone-frame">
         <div class="phone-notch"></div>
@@ -147,14 +168,14 @@
             </div>
 
             <div class="nav-row">
-              <button class="primary-button" data-next="2">Begin the ritual</button>
+              <button type="button" class="primary-button" data-next="2">Next</button>
             </div>
           </section>
 
           <!-- Step 2: Focus -->
           <section class="step" data-step="2">
-            <strong class="panel-title">Where do you seek guidance?</strong>
-            <p class="panel-subtitle">Pick one or more focus areas — we'll tune horoscopes, reminders, and rituals around them.</p>
+            <strong class="panel-title">Where do you seek guidance?<span class="req" aria-hidden="true">*</span></strong>
+            <p class="panel-subtitle">Pick one or more focus areas — we'll tune horoscopes, reminders, and rituals around them. <span class="req" aria-hidden="true">*</span> required.</p>
 
             <div class="choice-grid" data-group="focus">
               <div class="choice is-selected" data-value="career">
@@ -180,15 +201,15 @@
             </div>
 
             <div class="nav-row">
-              <button class="ghost-button" data-next="1">Back</button>
-              <button class="primary-button" data-next="3">Continue</button>
+              <button type="button" class="ghost-button" data-next="1">Back</button>
+              <button type="button" class="primary-button" data-next="3">Next</button>
             </div>
           </section>
 
           <!-- Step 3: Language -->
           <section class="step" data-step="3">
-            <strong class="panel-title">Choose your language</strong>
-            <p class="panel-subtitle">The whole app — dashboard, kundli, horoscope, consultations — will switch to your pick. Change any time from Settings.</p>
+            <strong class="panel-title">Choose your language<span class="req" aria-hidden="true">*</span></strong>
+            <p class="panel-subtitle">The whole app — dashboard, kundli, horoscope, consultations — will switch to your pick. Change any time from Settings. <span class="req" aria-hidden="true">*</span> required.</p>
 
             <div class="lang-list" data-group="lang">
               <div class="lang is-selected" data-value="en">
@@ -222,8 +243,8 @@
             </div>
 
             <div class="nav-row">
-              <button class="ghost-button" data-next="2">Back</button>
-              <button class="primary-button" data-next="4">Continue</button>
+              <button type="button" class="ghost-button" data-next="2">Back</button>
+              <button type="button" class="primary-button" data-next="4">Next</button>
             </div>
           </section>
 
@@ -234,22 +255,40 @@
 
             <div class="field-stack">
               <div class="field">
-                <label class="label" for="fullName">Full Name</label>
-                <input id="fullName" type="text" placeholder="Vihaan Deshmukh">
+                <label class="label" for="fullName">Full Name<span class="req" aria-hidden="true">*</span></label>
+                <input id="fullName" type="text" placeholder="Vihaan Deshmukh" required>
+              </div>
+
+              <div class="field">
+                <label class="label" for="dob">Date of Birth<span class="req" aria-hidden="true">*</span></label>
+                <input id="dob" type="date" required>
+              </div>
+
+              <div class="field">
+                <label class="label">Time of Birth<span class="req" aria-hidden="true">*</span></label>
+                <div class="field-row time-row">
+                  <select id="tobHour" aria-label="Hour" required></select>
+                  <select id="tobMinute" aria-label="Minute" required></select>
+                  <select id="tobPeriod" aria-label="AM or PM" required>
+                    <option value="AM">AM</option>
+                    <option value="PM">PM</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="field">
+                <label class="label" for="country">Country<span class="req" aria-hidden="true">*</span></label>
+                <select id="country" required><option value="">Select country</option></select>
               </div>
               <div class="field-row">
                 <div class="field">
-                  <label class="label" for="dob">Date of Birth</label>
-                  <input id="dob" type="text" placeholder="08 Aug 2001">
+                  <label class="label" for="state">State<span class="req" aria-hidden="true">*</span></label>
+                  <select id="state" disabled required><option value="">Select state</option></select>
                 </div>
                 <div class="field">
-                  <label class="label" for="tob">Time of Birth</label>
-                  <input id="tob" type="text" placeholder="04:32 AM">
+                  <label class="label" for="city">City<span class="req" aria-hidden="true">*</span></label>
+                  <select id="city" disabled required><option value="">Select city</option></select>
                 </div>
-              </div>
-              <div class="field">
-                <label class="label" for="place">Place of Birth</label>
-                <input id="place" type="text" placeholder="Pune, Maharashtra, India">
               </div>
             </div>
 
@@ -258,8 +297,8 @@
             </p>
 
             <div class="nav-row">
-              <button class="ghost-button" data-next="3">Back</button>
-              <button class="primary-button" id="finishBtn">Cast my kundli</button>
+              <button type="button" class="ghost-button" data-next="3">Back</button>
+              <button type="button" class="primary-button" id="finishBtn">Next</button>
             </div>
           </section>
 
@@ -297,8 +336,32 @@
   }
 
   document.querySelectorAll('[data-next]').forEach(btn => {
-    btn.addEventListener('click', () => show(Number(btn.dataset.next)));
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      show(Number(btn.dataset.next));
+    });
   });
+
+  // DOB: open the native calendar popover when the user taps anywhere on the input.
+  // Some browsers only trigger it on the tiny indicator icon otherwise.
+  (function wireDobPicker() {
+    const dob = document.getElementById('dob');
+    if (!dob) return;
+    const openPicker = () => {
+      if (typeof dob.showPicker === 'function') {
+        try { dob.showPicker(); } catch (_e) { /* user gesture required on some browsers */ }
+      }
+    };
+    dob.addEventListener('focus', openPicker);
+    dob.addEventListener('click', openPicker);
+  })();
+
+  // Failsafe: if the auth splash overlay is still on screen 2s after load (e.g., network
+  // hiccup during bootstrap), force-hide it so clicks reach the buttons.
+  setTimeout(() => {
+    const s = document.querySelector('.auth-splash');
+    if (s) { s.classList.remove('is-visible'); s.style.pointerEvents = 'none'; s.style.opacity = '0'; }
+  }, 2000);
 
   // multi-select focus
   document.querySelectorAll('[data-group="focus"] .choice').forEach(c => {
@@ -326,29 +389,175 @@
     }
   })();
 
+  // -------- Time-of-birth: Hour / Minute / AM-PM dropdowns ----------------
+  (function initTimeDropdowns() {
+    const hourSel = document.getElementById('tobHour');
+    const minSel  = document.getElementById('tobMinute');
+    if (!hourSel || !minSel) return;
+
+    hourSel.appendChild(new Option('HH', '', true, true));
+    hourSel.options[0].disabled = true;
+    for (let h = 1; h <= 12; h++) {
+      hourSel.appendChild(new Option(String(h).padStart(2, '0'), String(h)));
+    }
+
+    minSel.appendChild(new Option('MM', '', true, true));
+    minSel.options[0].disabled = true;
+    for (let m = 0; m < 60; m++) {
+      minSel.appendChild(new Option(String(m).padStart(2, '0'), String(m).padStart(2, '0')));
+    }
+  })();
+
+  // -------- Place of Birth: cascading Country / State / City --------------
+  const PLACE_DATA = {
+    'India': {
+      'Maharashtra': ['Pune', 'Mumbai', 'Nagpur', 'Nashik', 'Aurangabad', 'Thane', 'Solapur', 'Kolhapur'],
+      'Karnataka': ['Bengaluru', 'Mysuru', 'Mangaluru', 'Hubballi', 'Belagavi'],
+      'Tamil Nadu': ['Chennai', 'Coimbatore', 'Madurai', 'Tiruchirappalli', 'Salem'],
+      'Delhi': ['New Delhi', 'Delhi'],
+      'Uttar Pradesh': ['Lucknow', 'Kanpur', 'Varanasi', 'Agra', 'Noida', 'Ghaziabad', 'Prayagraj'],
+      'Gujarat': ['Ahmedabad', 'Surat', 'Vadodara', 'Rajkot'],
+      'West Bengal': ['Kolkata', 'Howrah', 'Siliguri', 'Durgapur'],
+      'Telangana': ['Hyderabad', 'Warangal', 'Nizamabad'],
+      'Andhra Pradesh': ['Visakhapatnam', 'Vijayawada', 'Guntur', 'Tirupati'],
+      'Kerala': ['Kochi', 'Thiruvananthapuram', 'Kozhikode', 'Thrissur'],
+      'Rajasthan': ['Jaipur', 'Jodhpur', 'Udaipur', 'Kota', 'Ajmer'],
+      'Punjab': ['Amritsar', 'Ludhiana', 'Jalandhar', 'Patiala'],
+      'Haryana': ['Gurugram', 'Faridabad', 'Panipat', 'Karnal'],
+      'Madhya Pradesh': ['Bhopal', 'Indore', 'Gwalior', 'Jabalpur', 'Ujjain'],
+      'Bihar': ['Patna', 'Gaya', 'Muzaffarpur', 'Bhagalpur'],
+      'Odisha': ['Bhubaneswar', 'Cuttack', 'Rourkela', 'Puri'],
+      'Assam': ['Guwahati', 'Dibrugarh', 'Silchar'],
+      'Jharkhand': ['Ranchi', 'Jamshedpur', 'Dhanbad'],
+      'Chhattisgarh': ['Raipur', 'Bilaspur', 'Bhilai'],
+      'Uttarakhand': ['Dehradun', 'Haridwar', 'Nainital'],
+      'Goa': ['Panaji', 'Margao', 'Vasco da Gama'],
+      'Chandigarh': ['Chandigarh'],
+      'Jammu and Kashmir': ['Srinagar', 'Jammu'],
+    },
+    'United States': {
+      'California': ['Los Angeles', 'San Francisco', 'San Diego', 'San Jose', 'Sacramento', 'Oakland'],
+      'New York': ['New York City', 'Buffalo', 'Rochester', 'Albany'],
+      'Texas': ['Houston', 'Dallas', 'Austin', 'San Antonio', 'Fort Worth'],
+      'Florida': ['Miami', 'Orlando', 'Tampa', 'Jacksonville'],
+      'Illinois': ['Chicago', 'Aurora', 'Springfield', 'Naperville'],
+      'Washington': ['Seattle', 'Spokane', 'Tacoma', 'Bellevue'],
+      'New Jersey': ['Jersey City', 'Newark', 'Edison'],
+      'Massachusetts': ['Boston', 'Cambridge', 'Worcester'],
+    },
+    'United Kingdom': {
+      'England': ['London', 'Manchester', 'Birmingham', 'Liverpool', 'Leeds', 'Bristol'],
+      'Scotland': ['Edinburgh', 'Glasgow', 'Aberdeen', 'Dundee'],
+      'Wales': ['Cardiff', 'Swansea', 'Newport'],
+      'Northern Ireland': ['Belfast', 'Derry'],
+    },
+    'Canada': {
+      'Ontario': ['Toronto', 'Ottawa', 'Mississauga', 'Hamilton', 'Brampton'],
+      'British Columbia': ['Vancouver', 'Victoria', 'Surrey', 'Burnaby'],
+      'Quebec': ['Montreal', 'Quebec City', 'Laval'],
+      'Alberta': ['Calgary', 'Edmonton'],
+      'Manitoba': ['Winnipeg'],
+    },
+    'Australia': {
+      'New South Wales': ['Sydney', 'Newcastle', 'Wollongong'],
+      'Victoria': ['Melbourne', 'Geelong'],
+      'Queensland': ['Brisbane', 'Gold Coast', 'Cairns'],
+      'Western Australia': ['Perth', 'Fremantle'],
+      'South Australia': ['Adelaide'],
+    },
+    'United Arab Emirates': {
+      'Dubai': ['Dubai'],
+      'Abu Dhabi': ['Abu Dhabi', 'Al Ain'],
+      'Sharjah': ['Sharjah'],
+    },
+    'Singapore': { 'Singapore': ['Singapore'] },
+    'Nepal': {
+      'Bagmati': ['Kathmandu', 'Lalitpur', 'Bhaktapur'],
+      'Gandaki': ['Pokhara'],
+      'Lumbini': ['Butwal', 'Nepalgunj'],
+    },
+    'Sri Lanka': {
+      'Western': ['Colombo', 'Negombo'],
+      'Central': ['Kandy'],
+      'Southern': ['Galle'],
+    },
+    'Malaysia': {
+      'Kuala Lumpur': ['Kuala Lumpur'],
+      'Selangor': ['Shah Alam', 'Petaling Jaya'],
+      'Penang': ['George Town'],
+    },
+  };
+
+  (function initPlaceCascade() {
+    const cEl = document.getElementById('country');
+    const sEl = document.getElementById('state');
+    const ciEl = document.getElementById('city');
+    if (!cEl || !sEl || !ciEl) return;
+
+    // Populate countries
+    Object.keys(PLACE_DATA).sort().forEach(c => {
+      cEl.appendChild(new Option(c, c));
+    });
+
+    function resetSelect(el, placeholder) {
+      el.innerHTML = '';
+      el.appendChild(new Option(placeholder, ''));
+      el.disabled = true;
+    }
+
+    cEl.addEventListener('change', () => {
+      resetSelect(sEl, 'Select state');
+      resetSelect(ciEl, 'Select city');
+      const country = cEl.value;
+      if (!country || !PLACE_DATA[country]) return;
+      Object.keys(PLACE_DATA[country]).sort().forEach(st => {
+        sEl.appendChild(new Option(st, st));
+      });
+      sEl.disabled = false;
+    });
+
+    sEl.addEventListener('change', () => {
+      resetSelect(ciEl, 'Select city');
+      const country = cEl.value;
+      const state = sEl.value;
+      if (!country || !state || !PLACE_DATA[country][state]) return;
+      PLACE_DATA[country][state].slice().sort().forEach(ci => {
+        ciEl.appendChild(new Option(ci, ci));
+      });
+      ciEl.disabled = false;
+    });
+  })();
+
   function parseBirthInputs() {
     const name = (document.getElementById('fullName').value || '').trim();
     const dob  = (document.getElementById('dob').value  || '').trim();
-    const tob  = (document.getElementById('tob').value  || '').trim();
-    const place= (document.getElementById('place').value|| '').trim();
 
-    // Forgiving parsing. Accept "08 Aug 2001", "2001-08-08", "8/8/2001".
+    // dob from <input type="date"> already comes as YYYY-MM-DD
     let isoDate = null;
-    const tryDate = new Date(dob);
-    if (!isNaN(tryDate.getTime())) {
-      isoDate = tryDate.toISOString().slice(0, 10);
+    if (dob) {
+      const tryDate = new Date(dob);
+      if (!isNaN(tryDate.getTime())) {
+        isoDate = tryDate.toISOString().slice(0, 10);
+      }
     }
 
-    // Accept "4:32 AM", "04:32", "16:05"
+    // Assemble time from dropdowns (12-hour + AM/PM) → 24-hour HH:MM
+    const hourRaw   = document.getElementById('tobHour').value;
+    const minRaw    = document.getElementById('tobMinute').value;
+    const periodRaw = document.getElementById('tobPeriod').value;
     let isoTime = null;
-    const m = tob.match(/(\d{1,2}):(\d{2})\s*(am|pm)?/i);
-    if (m) {
-      let h = parseInt(m[1], 10), mm = m[2];
-      const ampm = (m[3] || '').toLowerCase();
-      if (ampm === 'pm' && h < 12) h += 12;
-      if (ampm === 'am' && h === 12) h = 0;
-      isoTime = String(h).padStart(2, '0') + ':' + mm;
+    if (hourRaw && minRaw) {
+      let h = parseInt(hourRaw, 10);
+      if (periodRaw === 'PM' && h < 12) h += 12;
+      if (periodRaw === 'AM' && h === 12) h = 0;
+      isoTime = String(h).padStart(2, '0') + ':' + minRaw;
     }
+
+    // Place = "City, State, Country" from the cascading selects
+    const country = document.getElementById('country').value;
+    const state   = document.getElementById('state').value;
+    const city    = document.getElementById('city').value;
+    const place = [city, state, country].filter(Boolean).join(', ');
 
     return { name, isoDate, isoTime, place };
   }
@@ -359,8 +568,9 @@
 
     const parsed = parseBirthInputs();
     if (!parsed.name)    return showToast('Please enter your full name.');
-    if (!parsed.isoDate) return showToast('Date of birth looks off — try "08 Aug 2001".');
-    if (!parsed.isoTime) return showToast('Time of birth needs to be like "04:32 AM".');
+    if (!parsed.isoDate) return showToast('Please pick your date of birth.');
+    if (!parsed.isoTime) return showToast('Please pick hour, minute, and AM/PM.');
+    if (!parsed.place)   return showToast('Please pick country, state, and city.');
 
     // Gather focus + language
     const focuses = Array.from(document.querySelectorAll('[data-group="focus"] .choice.is-selected'))

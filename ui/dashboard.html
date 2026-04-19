@@ -20,6 +20,7 @@
       radial-gradient(circle at 30% 30%, rgba(255,235,190,0.85), rgba(255,180,100,0.5) 40%, transparent 70%),
       linear-gradient(135deg, rgba(255,210,140,0.4), rgba(192,124,255,0.4));
     border: 1px solid rgba(255, 235, 205, 0.2);
+    cursor: pointer;
   }
 
   /* today horoscope card */
@@ -157,35 +158,6 @@
 <body>
 <main class="scene">
   <section class="shell">
-    <article class="panel hero">
-      <a class="portal-link" href="./hub.html">← All previews</a>
-
-      <div class="hero-top">
-        <span class="eyebrow">Daily Cosmos</span>
-        <h1>One glance.<br>Today's whole sky.</h1>
-        <p class="hero-copy">
-          The dashboard is the user's morning ritual — greeting, today's horoscope, energy score,
-          quick actions for kundli / panchang / consultation, current moon phase, and fresh notifications —
-          all in a single scroll.
-        </p>
-      </div>
-
-      <div class="hero-grid">
-        <div class="stat">
-          <span class="stat-label">Energy</span>
-          <span class="stat-value">76%</span>
-        </div>
-        <div class="stat">
-          <span class="stat-label">Moon</span>
-          <span class="stat-value">Waxing Gibbous</span>
-        </div>
-        <div class="stat">
-          <span class="stat-label">Next Muhurat</span>
-          <span class="stat-value">04:58 AM</span>
-        </div>
-      </div>
-    </article>
-
     <article class="panel form-wrap">
       <div class="phone-frame">
         <div class="phone-notch"></div>
@@ -200,7 +172,7 @@
               <h2 id="greeting">Good morning, Vihaan ✦</h2>
               <div class="greet-sub" id="greetingSub">Saturday, 18 April · Chitra Nakshatra</div>
             </div>
-            <div class="avatar" aria-hidden="true"></div>
+            <button class="avatar" id="dashboardSessionTrigger" data-session-trigger type="button" aria-label="Open profile menu"></button>
           </div>
 
           <div class="horoscope">

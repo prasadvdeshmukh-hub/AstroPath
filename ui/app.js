@@ -25,6 +25,7 @@
 
   const LS_KEYS = Object.freeze({
     token:       'astropath.token',
+    refreshToken:'astropath.refreshToken',
     user:        'astropath.user',
     profile:     'astropath.profile',
     onboarding:  'astropath.onboarding',
@@ -62,6 +63,9 @@
   const state = {
     get token()     { return storage.get(LS_KEYS.token, null); },
     set token(v)    { v ? storage.set(LS_KEYS.token, v) : storage.remove(LS_KEYS.token); },
+
+    get refreshToken() { return storage.get(LS_KEYS.refreshToken, null); },
+    set refreshToken(v){ v ? storage.set(LS_KEYS.refreshToken, v) : storage.remove(LS_KEYS.refreshToken); },
 
     get user()      { return storage.get(LS_KEYS.user, null); },
     set user(v)     { v ? storage.set(LS_KEYS.user, v) : storage.remove(LS_KEYS.user); },
@@ -130,7 +134,8 @@
     health()               { return fetchJson('/health'); },
 
     // Auth + session
-    session()              { return fetchJson('/v1/auth/session', { method: 'POST', body: {} }); },
+    authConfig()           { return fetchJson('/v1/auth/config'); },
+    session(body)          { return fetchJson('/v1/auth/session', { method: 'POST', body: body || {} }); },
 
     // Dashboard + preferences
     dashboard()            { return fetchJson('/v1/dashboard'); },
@@ -172,10 +177,32 @@
       storage.set(LS_KEYS.bootstrapped, true);
       return data;
     } catch (err) {
+      if (err && err.status === 401) {
+        state.token = null;
+        state.refreshToken = null;
+        state.user = null;
+        state.profile = null;
+      }
       // In firebase mode without a token we'll get 401; UI should show /login.
       return null;
     }
   }
+
+  function isUiPage() {
+    return location.pathname.replace(/\\/g, '/').includes('/ui/');
+  }
+
+  function buildPath(rootName, uiName) {
+    return isUiPage() ? '../' + rootName : './' + (uiName || rootName);
+  }
+
+  const paths = Object.freeze({
+    landing: () => buildPath('index.html'),
+    login: () => buildPath('login.html'),
+    dashboard: () => buildPath('ui/dashboard.html', 'dashboard.html'),
+    onboarding: () => buildPath('ui/onboarding.html', 'onboarding.html'),
+    settings: () => buildPath('ui/settings.html', 'settings.html'),
+  });
 
   // ------------------------------------------------------------------
   // Splash overlay — shown during bootstrap so no flash of unauthed content
@@ -213,32 +240,47 @@
   // ------------------------------------------------------------------
   async function guard(page) {
     const here = location.pathname.split('/').pop() || '';
-    const needsBootstrap = !state.user;
+    const needsBootstrap = !state.user || !!state.token;
 
     if (needsBootstrap && page !== 'public') showSplash('Aligning the stars…');
 
     // Always try to bootstrap so token/dev-bypass identity is fresh
     if (needsBootstrap) await bootstrapSession();
 
-    if (page === 'public') { hideSplash(); setActiveNav(); return true; }
+    if (page === 'public') {
+      hideSplash();
+      setActiveNav();
+      normalizeNavIcons();
+      hydrateStatusRow();
+      return true;
+    }
 
     if (!state.isAuthenticated()) {
       // Avoid loops: don't redirect away from index/login
       if (!['index.html', 'login.html', ''].includes(here)) {
-        location.replace('./login.html');
+        location.replace(paths.login());
       }
       hideSplash();
       return false;
     }
-    if (page === 'onboarding') { hideSplash(); setActiveNav(); return true; }
+    if (page === 'onboarding') {
+      hideSplash();
+      setActiveNav();
+      normalizeNavIcons();
+      hydrateStatusRow();
+      return true;
+    }
 
     if (page === 'app' && !state.onboardingComplete) {
-      if (here !== 'onboarding.html') location.replace('./onboarding.html');
+      if (here !== 'onboarding.html') location.replace(paths.onboarding());
       hideSplash();
       return false;
     }
     hideSplash();
     setActiveNav();
+    normalizeNavIcons();
+    hydrateStatusRow();
+    mountSessionMenu();
     return true;
   }
 
@@ -271,6 +313,25 @@
       );
       node.classList.toggle('is-active', !!match);
     });
+  }
+
+  function normalizeNavIcons() {
+    document.querySelectorAll('.bn-item').forEach((node) => {
+      const label = (node.textContent || '').trim().toLowerCase();
+      const icon = node.querySelector('.bn-icon');
+      if (icon && label.startsWith('home')) icon.innerHTML = '&#8962;';
+    });
+  }
+
+  function hydrateStatusRow() {
+    const row = document.querySelector('.status-row');
+    if (!row) return;
+    const left = row.querySelector('span:first-child');
+    if (!left) return;
+    const now = new Date();
+    const time = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    const date = now.toLocaleDateString([], { day: 'numeric', month: 'short' });
+    left.textContent = time + ' - ' + date;
   }
 
   function navigate(path, opts) {
@@ -318,6 +379,122 @@
     },
   };
 
+  let sessionMenuMounted = false;
+  let sessionSheetEl = null;
+
+  function displayName() {
+    const birthInfo = state.birthInfo;
+    if (birthInfo && birthInfo.name) return birthInfo.name;
+    if (state.profile && state.profile.displayName) return state.profile.displayName;
+    if (state.user && state.user.email) return state.user.email.split('@')[0];
+    return 'Cosmic seeker';
+  }
+
+  function displayMeta() {
+    if (state.user && state.user.email) return state.user.email;
+    if (state.user && state.user.provider) return 'Signed in with ' + state.user.provider;
+    return 'AstroPath session';
+  }
+
+  function initialsFor(name) {
+    return String(name || 'A')
+      .split(/\s+/)
+      .filter(Boolean)
+      .slice(0, 2)
+      .map((part) => part.charAt(0).toUpperCase())
+      .join('') || 'A';
+  }
+
+  function closeSessionMenu() {
+    if (sessionSheetEl) sessionSheetEl.classList.remove('is-visible');
+  }
+
+  function renderSessionSheet() {
+    if (sessionSheetEl) return sessionSheetEl;
+    sessionSheetEl = document.createElement('div');
+    sessionSheetEl.className = 'session-sheet-backdrop';
+    sessionSheetEl.innerHTML =
+      '<div class="session-sheet" role="dialog" aria-modal="true" aria-label="Profile menu">' +
+        '<button class="session-sheet__close" type="button" aria-label="Close profile menu">&times;</button>' +
+        '<div class="session-sheet__avatar"></div>' +
+        '<div class="session-sheet__name"></div>' +
+        '<div class="session-sheet__meta"></div>' +
+        '<div class="session-sheet__actions">' +
+          '<a class="session-sheet__link" data-session-link="settings" href="#">Settings</a>' +
+          '<a class="session-sheet__link" data-session-link="profile" href="#">Edit profile</a>' +
+          '<button class="session-sheet__logout" type="button">Log out</button>' +
+        '</div>' +
+      '</div>';
+    document.body.appendChild(sessionSheetEl);
+    sessionSheetEl.addEventListener('click', (event) => {
+      if (event.target === sessionSheetEl) closeSessionMenu();
+    });
+    sessionSheetEl.querySelector('.session-sheet__close').addEventListener('click', closeSessionMenu);
+    sessionSheetEl.querySelector('[data-session-link="settings"]').addEventListener('click', (event) => {
+      event.preventDefault();
+      closeSessionMenu();
+      location.href = paths.settings();
+    });
+    sessionSheetEl.querySelector('[data-session-link="profile"]').addEventListener('click', (event) => {
+      event.preventDefault();
+      closeSessionMenu();
+      location.href = paths.onboarding();
+    });
+    sessionSheetEl.querySelector('.session-sheet__logout').addEventListener('click', () => {
+      state.signOut();
+      closeSessionMenu();
+      location.replace(paths.login());
+    });
+    return sessionSheetEl;
+  }
+
+  function openSessionMenu() {
+    const sheet = renderSessionSheet();
+    const name = displayName();
+    dom.setText(sheet.querySelector('.session-sheet__name'), name);
+    dom.setText(sheet.querySelector('.session-sheet__meta'), displayMeta());
+    dom.setText(sheet.querySelector('.session-sheet__avatar'), initialsFor(name));
+    sheet.classList.add('is-visible');
+  }
+
+  function decorateSessionTrigger(trigger) {
+    if (!trigger || trigger.dataset.sessionBound === 'true') return;
+    const name = displayName();
+    trigger.dataset.sessionBound = 'true';
+    trigger.classList.add('session-trigger');
+    if (!trigger.textContent.trim()) trigger.textContent = initialsFor(name);
+    trigger.setAttribute('type', trigger.getAttribute('type') || 'button');
+    trigger.setAttribute('aria-label', 'Open profile menu');
+    trigger.addEventListener('click', openSessionMenu);
+  }
+
+  function pageIsPublic() {
+    const here = location.pathname.split('/').pop() || '';
+    return ['index.html', 'login.html', 'guidelines.html', 'hub.html', 'journey.html', ''].includes(here);
+  }
+
+  function mountSessionMenu() {
+    if (pageIsPublic()) return;
+    const here = location.pathname.split('/').pop() || '';
+    const explicitTrigger = document.querySelector('[data-session-trigger]');
+    if (explicitTrigger) {
+      decorateSessionTrigger(explicitTrigger);
+      sessionMenuMounted = true;
+      return;
+    }
+    if (here === 'settings.html' || sessionMenuMounted) return;
+    const phoneScreen = document.querySelector('.phone-screen');
+    if (!phoneScreen) return;
+    const floating = document.createElement('button');
+    floating.className = 'session-trigger session-trigger--floating';
+    phoneScreen.appendChild(floating);
+    decorateSessionTrigger(floating);
+    sessionMenuMounted = true;
+  }
+
+  normalizeNavIcons();
+  hydrateStatusRow();
+
   // ------------------------------------------------------------------
   // Public surface
   // ------------------------------------------------------------------
@@ -331,6 +508,8 @@
     bootstrap: bootstrapSession,
     guard,
     dom,
+    paths,
     nav: { navigate, setActive: setActiveNav, showSplash, hideSplash },
+    sessionMenu: { open: openSessionMenu, close: closeSessionMenu, mount: mountSessionMenu },
   });
 })();

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>AstroPath — Panchang & Muhurat</title>
+<title>AstroPath - Panchang & Muhurat</title>
 <link rel="stylesheet" href="./shared.css">
 <style>
   .sun-arc {
@@ -19,51 +19,148 @@
   }
   .sun-arc svg { width: 100%; height: auto; display: block; }
   .sun-times {
-    display: flex; justify-content: space-between;
-    margin-top: 8px; color: var(--muted-2);
-    font-size: 0.74rem; letter-spacing: 0.12em; text-transform: uppercase;
+    display: flex;
+    justify-content: space-between;
+    margin-top: 8px;
+    color: var(--muted-2);
+    font-size: 0.74rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
   }
-  .sun-times b { color: var(--gold-3); font-weight: 700; font-size: 0.84rem; letter-spacing: 0.02em; text-transform: none; display: block; }
+  .sun-times b {
+    color: var(--gold-3);
+    font-weight: 700;
+    font-size: 0.84rem;
+    letter-spacing: 0.02em;
+    text-transform: none;
+    display: block;
+  }
 
   .panch-grid {
-    display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 6px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin-top: 6px;
   }
   .tile {
-    padding: 10px; border-radius: 14px;
+    padding: 10px;
+    border-radius: 14px;
     background: rgba(255,255,255,0.04);
     border: 1px solid rgba(255,236,205,0.10);
   }
-  .tile span { color: var(--muted-2); font-size: 0.64rem; letter-spacing: 0.14em; text-transform: uppercase; }
-  .tile b { display: block; color: var(--gold-2); font-size: 0.84rem; margin-top: 4px; }
-  .tile small { display: block; color: var(--muted); font-size: 0.68rem; margin-top: 2px; }
+  .tile span {
+    color: var(--muted-2);
+    font-size: 0.64rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+  .tile b {
+    display: block;
+    color: var(--gold-2);
+    font-size: 0.84rem;
+    margin-top: 4px;
+  }
+  .tile small {
+    display: block;
+    color: var(--muted);
+    font-size: 0.68rem;
+    margin-top: 2px;
+  }
 
   .muhurat {
-    display: grid; gap: 8px;
+    display: grid;
+    gap: 8px;
   }
   .m-item {
-    display: grid; grid-template-columns: auto 1fr auto; gap: 10px; align-items: center;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 10px;
+    align-items: center;
     padding: 12px;
     border-radius: 14px;
     background: rgba(255,255,255,0.04);
     border: 1px solid rgba(255,236,205,0.08);
   }
   .m-icon {
-    width: 32px; height: 32px; border-radius: 10px;
+    width: 32px;
+    height: 32px;
+    border-radius: 10px;
     background: linear-gradient(135deg, rgba(255, 213, 148, 0.25), rgba(192,124,255,0.25));
-    color: var(--gold-3); font-weight: 700;
-    display: grid; place-items: center; font-size: 0.9rem;
+    color: var(--gold-3);
+    font-weight: 700;
+    display: grid;
+    place-items: center;
+    font-size: 0.9rem;
   }
   .m-body b { display: block; font-size: 0.88rem; }
   .m-body span { color: var(--muted); font-size: 0.74rem; }
 
-  .choi-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; margin-top: 12px; }
+  .muhurat-range {
+    display: grid;
+    gap: 8px;
+    margin-top: 12px;
+  }
+  .range-option {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 10px;
+    align-items: center;
+    padding: 12px;
+    border-radius: 16px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,236,205,0.09);
+    cursor: pointer;
+  }
+  .range-option.is-selected {
+    background: linear-gradient(180deg, rgba(255, 213, 148, 0.18), rgba(255, 154, 58, 0.08));
+    border-color: rgba(255, 213, 148, 0.36);
+  }
+  .range-option input {
+    margin: 0;
+    accent-color: var(--gold);
+  }
+  .range-copy strong {
+    display: block;
+    color: var(--gold-3);
+    font-size: 0.86rem;
+  }
+  .range-copy span {
+    color: var(--muted);
+    font-size: 0.74rem;
+  }
+  .range-stepper {
+    display: inline-flex;
+    gap: 6px;
+  }
+  .range-arrow {
+    width: 32px;
+    height: 32px;
+    border: 1px solid rgba(255,236,205,0.12);
+    border-radius: 10px;
+    background: rgba(255,255,255,0.05);
+    color: var(--gold-2);
+    cursor: pointer;
+    font: inherit;
+    font-size: 1rem;
+  }
+
+  .choi-row {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 6px;
+    margin-top: 12px;
+  }
   .choi {
-    padding: 8px 4px; border-radius: 12px; text-align: center;
+    padding: 10px 6px;
+    border-radius: 12px;
+    text-align: center;
     background: rgba(255,255,255,0.04);
     border: 1px solid rgba(255,236,205,0.09);
     color: var(--muted);
-    font-size: 0.7rem;
-    cursor: pointer; transition: 180ms ease;
+    font: inherit;
+    font-size: 0.76rem;
+    cursor: pointer;
+    transition: 180ms ease;
   }
   .choi.is-active {
     background: linear-gradient(180deg, rgba(255, 213, 148, 0.25), rgba(255, 154, 58, 0.10));
@@ -75,33 +172,6 @@
 <body>
 <main class="scene">
   <section class="shell">
-    <article class="panel hero">
-      <a class="portal-link" href="./hub.html">← All previews</a>
-      <div class="hero-top">
-        <span class="eyebrow">Vedic Almanac</span>
-        <h1>Today's sky,<br>measured in Panchang.</h1>
-        <p class="hero-copy">
-          Tithi, Nakshatra, Yoga, Karana, Vara — plus sunrise / sunset / moonrise / moonset with a live
-          arc. Scroll down to a Muhurat finder that suggests the best windows for marriage, business,
-          griha pravesh, travel, or naming.
-        </p>
-      </div>
-      <div class="hero-grid">
-        <div class="stat">
-          <span class="stat-label">Tithi</span>
-          <span class="stat-value">Shukla Dvitiya</span>
-        </div>
-        <div class="stat">
-          <span class="stat-label">Nakshatra</span>
-          <span class="stat-value">Chitra</span>
-        </div>
-        <div class="stat">
-          <span class="stat-label">Sunrise</span>
-          <span class="stat-value">06:18</span>
-        </div>
-      </div>
-    </article>
-
     <article class="panel form-wrap">
       <div class="phone-frame">
         <div class="phone-notch"></div>
@@ -112,10 +182,10 @@
           </div>
 
           <div class="brand-lockup">
-            <div class="brand-icon">☼</div>
+            <div class="brand-icon">&#9728;</div>
             <div class="brand-meta">
               <strong>PANCHANG</strong>
-              <span id="panchangMeta">Sat 18 Apr 2026 · Pune</span>
+              <span id="panchangMeta">Sat 18 Apr 2026 - Pune</span>
             </div>
           </div>
 
@@ -129,10 +199,9 @@
                 </linearGradient>
               </defs>
               <path d="M 10 100 Q 130 -30 250 100" fill="none" stroke="url(#arc)" stroke-width="2" stroke-linecap="round"/>
-              <!-- sun marker at ~40% -->
               <circle cx="112" cy="40" r="9" fill="#ffd891"/>
               <circle cx="112" cy="40" r="16" fill="none" stroke="rgba(255,216,145,0.35)" stroke-width="1"/>
-              <circle cx="10"  cy="100" r="3" fill="#ff9a3a"/>
+              <circle cx="10" cy="100" r="3" fill="#ff9a3a"/>
               <circle cx="250" cy="100" r="3" fill="#c87bff"/>
             </svg>
             <div class="sun-times">
@@ -149,7 +218,7 @@
             <div class="tile" data-key="nakshatra"><span>Nakshatra</span><b>Chitra</b><small>to 03:08 AM</small></div>
             <div class="tile" data-key="yoga"><span>Yoga</span><b>Siddha</b><small>success-giving</small></div>
             <div class="tile" data-key="karana"><span>Karana</span><b>Balava</b><small>movable</small></div>
-            <div class="tile" data-key="rahu"><span>Rahu kaal</span><b>09:12–10:48</b><small>avoid</small></div>
+            <div class="tile" data-key="rahu"><span>Rahu kaal</span><b>09:12-10:48</b><small>avoid</small></div>
           </div>
 
           <div class="section-h"><h3>Moon today</h3><a href="#">Phase</a></div>
@@ -160,38 +229,47 @@
           </div>
 
           <div class="section-h"><h3>Muhurat Finder</h3><a href="#">Custom</a></div>
-          <div class="choi-row">
-            <div class="choi is-active">💍<br>Marriage</div>
-            <div class="choi">◎<br>Business</div>
-            <div class="choi">🏠<br>Griha</div>
-            <div class="choi">✈<br>Travel</div>
-            <div class="choi">✍<br>Naming</div>
+          <div class="muhurat-range" id="muhuratRange">
+            <label class="range-option is-selected" data-range-option="month">
+              <input type="radio" name="muhuratScope" value="month" checked>
+              <div class="range-copy">
+                <strong id="monthValue">April</strong>
+                <span>Option 1 - Browse the current month</span>
+              </div>
+              <div class="range-stepper">
+                <button class="range-arrow" type="button" data-range-target="month" data-range-nav="prev">&#8249;</button>
+                <button class="range-arrow" type="button" data-range-target="month" data-range-nav="next">&#8250;</button>
+              </div>
+            </label>
+            <label class="range-option" data-range-option="year">
+              <input type="radio" name="muhuratScope" value="year">
+              <div class="range-copy">
+                <strong id="yearValue">2026</strong>
+                <span>Option 2 - Browse the current year</span>
+              </div>
+              <div class="range-stepper">
+                <button class="range-arrow" type="button" data-range-target="year" data-range-nav="prev">&#8249;</button>
+                <button class="range-arrow" type="button" data-range-target="year" data-range-nav="next">&#8250;</button>
+              </div>
+            </label>
           </div>
 
-          <div class="muhurat" style="margin-top: 12px;">
-            <div class="m-item">
-              <div class="m-icon">💍</div>
-              <div class="m-body"><b>Abhijit Muhurat</b><span>12:02 PM – 12:54 PM · highly favourable</span></div>
-              <span class="pill pill--teal">◎</span>
-            </div>
-            <div class="m-item">
-              <div class="m-icon">💍</div>
-              <div class="m-body"><b>Amrit Kaal</b><span>04:11 PM – 05:48 PM · auspicious</span></div>
-              <span class="pill pill--gold">◎</span>
-            </div>
-            <div class="m-item">
-              <div class="m-icon">⚠</div>
-              <div class="m-body"><b>Rahu Kaal (avoid)</b><span>09:12 AM – 10:48 AM</span></div>
-              <span class="pill" style="color: var(--danger); border-color: rgba(255,141,166,0.3); background: rgba(255,141,166,0.08);">✗</span>
-            </div>
+          <div class="choi-row">
+            <button class="choi is-active" type="button" data-muhurat-type="marriage">Marriage</button>
+            <button class="choi" type="button" data-muhurat-type="business">Business</button>
+            <button class="choi" type="button" data-muhurat-type="griha">Griha</button>
+            <button class="choi" type="button" data-muhurat-type="travel">Travel</button>
+            <button class="choi" type="button" data-muhurat-type="naming">Naming</button>
           </div>
+
+          <div class="muhurat" id="muhuratList" style="margin-top: 12px;"></div>
 
           <nav class="bottom-nav">
-            <a class="bn-item" href="./dashboard.html"><span class="bn-icon">☰</span>Home</a>
-            <a class="bn-item" href="./kundli.html"><span class="bn-icon">⊕</span>Kundli</a>
-            <a class="bn-item" href="./consultation.html"><span class="bn-icon">💬</span>Consult</a>
-            <a class="bn-item" href="./assistant.html"><span class="bn-icon">✶</span>AI</a>
-            <a class="bn-item" href="./settings.html"><span class="bn-icon">⚙</span>More</a>
+            <a class="bn-item" href="./dashboard.html"><span class="bn-icon">&#8962;</span>Home</a>
+            <a class="bn-item" href="./kundli.html"><span class="bn-icon">&#8854;</span>Kundli</a>
+            <a class="bn-item" href="./consultation.html"><span class="bn-icon">&#128172;</span>Consult</a>
+            <a class="bn-item" href="./assistant.html"><span class="bn-icon">&#10038;</span>AI</a>
+            <a class="bn-item" href="./settings.html"><span class="bn-icon">&#9881;</span>More</a>
           </nav>
         </div>
       </div>
@@ -209,30 +287,148 @@
     const nowFmt = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     AP.dom.setText('#nowTime', nowFmt);
     const today = new Date();
-    const dateStr = today.toLocaleDateString(undefined, { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
-    AP.dom.setText('#panchangMeta', dateStr + ' · Pune');
+    const dateStr = today.toLocaleDateString(undefined, {
+      weekday: 'short',
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric',
+    });
+    AP.dom.setText('#panchangMeta', dateStr + ' - Pune');
 
-    function setTile(key, b, small) {
+    function setTile(key, strongText, smallText) {
       const tile = document.querySelector('[data-key="' + key + '"]');
       if (!tile) return;
-      if (b)     { const bEl = tile.querySelector('b');     if (bEl)     bEl.textContent = b; }
-      if (small) { const sEl = tile.querySelector('small'); if (sEl) sEl.textContent = small; }
+      const strongEl = tile.querySelector('b');
+      const smallEl = tile.querySelector('small');
+      if (strongEl && strongText) strongEl.textContent = strongText;
+      if (smallEl && smallText) smallEl.textContent = smallText;
     }
 
     try {
       const data = await AP.api.panchangToday();
-      if (!data) return;
-      if (data.sunrise) AP.dom.setText('#sunriseTime', data.sunrise);
-      if (data.sunset)  AP.dom.setText('#sunsetTime', data.sunset);
-      if (data.vara)      setTile('vara', data.vara.name, data.vara.deity || 'Saturn day');
-      if (data.tithi)     setTile('tithi', data.tithi.name, data.tithi.endsAt ? 'to ' + data.tithi.endsAt : null);
-      if (data.nakshatra) setTile('nakshatra', data.nakshatra.name, data.nakshatra.endsAt ? 'to ' + data.nakshatra.endsAt : null);
-      if (data.yoga)      setTile('yoga', data.yoga.name, data.yoga.nature || null);
-      if (data.karana)    setTile('karana', data.karana.name, data.karana.nature || null);
-      if (data.rahuKaal)  setTile('rahu', data.rahuKaal.window || data.rahuKaal, 'avoid');
+      if (data) {
+        if (data.sunrise) AP.dom.setText('#sunriseTime', data.sunrise);
+        if (data.sunset) AP.dom.setText('#sunsetTime', data.sunset);
+        if (data.vara) setTile('vara', data.vara.name, data.vara.deity || 'Saturn day');
+        if (data.tithi) setTile('tithi', data.tithi.name, data.tithi.endsAt ? 'to ' + data.tithi.endsAt : null);
+        if (data.nakshatra) setTile('nakshatra', data.nakshatra.name, data.nakshatra.endsAt ? 'to ' + data.nakshatra.endsAt : null);
+        if (data.yoga) setTile('yoga', data.yoga.name, data.yoga.nature || null);
+        if (data.karana) setTile('karana', data.karana.name, data.karana.nature || null);
+        if (data.rahuKaal) setTile('rahu', data.rahuKaal.window || data.rahuKaal, 'avoid');
+      }
     } catch (err) {
       console.warn('Panchang fetch failed:', err && err.message);
     }
+
+    const scopeState = {
+      selected: 'month',
+      monthIndex: today.getMonth(),
+      year: today.getFullYear(),
+    };
+    const monthNames = [
+      'January', 'February', 'March', 'April', 'May', 'June',
+      'July', 'August', 'September', 'October', 'November', 'December'
+    ];
+
+    const muhuratCatalog = {
+      marriage: [
+        { icon: 'M', title: 'Abhijit Muhurat', detail: '12:02 PM - 12:54 PM · highly favourable', pill: 'pill pill--teal', mark: 'Yes' },
+        { icon: 'M', title: 'Amrit Kaal', detail: '04:11 PM - 05:48 PM · auspicious', pill: 'pill pill--gold', mark: 'Best' },
+        { icon: '!', title: 'Rahu Kaal (avoid)', detail: '09:12 AM - 10:48 AM', pillStyle: 'color: var(--danger); border-color: rgba(255,141,166,0.3); background: rgba(255,141,166,0.08);', mark: 'No' },
+      ],
+      business: [
+        { icon: 'B', title: 'Labh Choghadiya', detail: '10:16 AM - 11:42 AM · strong for launches', pill: 'pill pill--teal', mark: 'Go' },
+        { icon: 'B', title: 'Shubh Window', detail: '02:18 PM - 03:32 PM · ideal for agreements', pill: 'pill pill--gold', mark: 'Prime' },
+        { icon: '!', title: 'Gulika Kaal (avoid)', detail: '01:08 PM - 02:02 PM', pillStyle: 'color: var(--danger); border-color: rgba(255,141,166,0.3); background: rgba(255,141,166,0.08);', mark: 'No' },
+      ],
+      griha: [
+        { icon: 'H', title: 'Griha Pravesh Slot', detail: '08:24 AM - 09:18 AM · calm domestic energy', pill: 'pill pill--teal', mark: 'Good' },
+        { icon: 'H', title: 'Vastu-Friendly Window', detail: '11:56 AM - 12:40 PM · supports stability', pill: 'pill pill--gold', mark: 'Best' },
+        { icon: '!', title: 'Yamaganda (avoid)', detail: '03:08 PM - 04:12 PM', pillStyle: 'color: var(--danger); border-color: rgba(255,141,166,0.3); background: rgba(255,141,166,0.08);', mark: 'No' },
+      ],
+      travel: [
+        { icon: 'T', title: 'Departure Window', detail: '06:44 AM - 07:32 AM · smooth departures', pill: 'pill pill--teal', mark: 'Good' },
+        { icon: 'T', title: 'Arrival Blessing Slot', detail: '05:14 PM - 06:02 PM · easy endings', pill: 'pill pill--gold', mark: 'Best' },
+        { icon: '!', title: 'Rahu Kaal (avoid)', detail: '09:12 AM - 10:48 AM', pillStyle: 'color: var(--danger); border-color: rgba(255,141,166,0.3); background: rgba(255,141,166,0.08);', mark: 'No' },
+      ],
+      naming: [
+        { icon: 'N', title: 'Naamkaran Muhurat', detail: '09:36 AM - 10:24 AM · clear speech and joy', pill: 'pill pill--teal', mark: 'Good' },
+        { icon: 'N', title: 'Blessing Window', detail: '12:46 PM - 01:22 PM · family support peaks', pill: 'pill pill--gold', mark: 'Best' },
+        { icon: '!', title: 'Durmuhurat (avoid)', detail: '04:06 PM - 04:44 PM', pillStyle: 'color: var(--danger); border-color: rgba(255,141,166,0.3); background: rgba(255,141,166,0.08);', mark: 'No' },
+      ],
+    };
+
+    function renderRangeState() {
+      AP.dom.setText('#monthValue', monthNames[scopeState.monthIndex]);
+      AP.dom.setText('#yearValue', String(scopeState.year));
+      document.querySelectorAll('[data-range-option]').forEach((node) => {
+        const active = node.dataset.rangeOption === scopeState.selected;
+        node.classList.toggle('is-selected', active);
+        const radio = node.querySelector('input');
+        if (radio) radio.checked = active;
+      });
+    }
+
+    function currentScopeLabel() {
+      return scopeState.selected === 'month'
+        ? monthNames[scopeState.monthIndex]
+        : String(scopeState.year);
+    }
+
+    function renderMuhuratList(type) {
+      const list = document.getElementById('muhuratList');
+      const cards = muhuratCatalog[type] || muhuratCatalog.marriage;
+      list.innerHTML = cards.map((item) => {
+        const pill = item.pill
+          ? '<span class="' + item.pill + '">' + item.mark + '</span>'
+          : '<span class="pill" style="' + item.pillStyle + '">' + item.mark + '</span>';
+        return (
+          '<div class="m-item">' +
+            '<div class="m-icon">' + item.icon + '</div>' +
+            '<div class="m-body"><b>' + item.title + '</b><span>' + item.detail + ' · ' + currentScopeLabel() + '</span></div>' +
+            pill +
+          '</div>'
+        );
+      }).join('');
+    }
+
+    document.querySelectorAll('[name="muhuratScope"]').forEach((radio) => {
+      radio.addEventListener('change', () => {
+        scopeState.selected = radio.value;
+        renderRangeState();
+        const activeType = document.querySelector('[data-muhurat-type].is-active');
+        renderMuhuratList(activeType ? activeType.dataset.muhuratType : 'marriage');
+      });
+    });
+
+    document.querySelectorAll('[data-range-nav]').forEach((button) => {
+      button.addEventListener('click', (event) => {
+        event.preventDefault();
+        const target = button.dataset.rangeTarget;
+        const step = button.dataset.rangeNav === 'next' ? 1 : -1;
+        scopeState.selected = target;
+        if (target === 'month') {
+          scopeState.monthIndex = (scopeState.monthIndex + step + 12) % 12;
+        } else {
+          scopeState.year += step;
+        }
+        renderRangeState();
+        const activeType = document.querySelector('[data-muhurat-type].is-active');
+        renderMuhuratList(activeType ? activeType.dataset.muhuratType : 'marriage');
+      });
+    });
+
+    document.querySelectorAll('[data-muhurat-type]').forEach((button) => {
+      button.addEventListener('click', () => {
+        document.querySelectorAll('[data-muhurat-type]').forEach((node) => {
+          node.classList.toggle('is-active', node === button);
+        });
+        renderMuhuratList(button.dataset.muhuratType);
+      });
+    });
+
+    renderRangeState();
+    renderMuhuratList('marriage');
   })();
 </script>
 </body>
