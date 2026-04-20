@@ -23,8 +23,11 @@
     "smoke:all": "node test/logic.js && node test/astronomy.js && node test/antardasha.js && node test/divisional.js && node test/panchang.js && node test/transits.js && node test/i18n.js"
   },
   "dependencies": {
+    "compression": "^1.8.1",
     "cors": "^2.8.5",
     "express": "^4.19.2",
-    "firebase-admin": "^12.2.0"
+    "express-rate-limit": "^8.3.2",
+    "firebase-admin": "^12.2.0",
+    "helmet": "^8.1.0"
   }
 }

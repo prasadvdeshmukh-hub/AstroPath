@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AstroPath — Learn Jyotish Vidya</title>
+<link rel="stylesheet" href="./shared.css">
+<style>
+  .mod-grid { display: grid; gap: 10px; margin-top: 12px; }
+  .mod {
+    position: relative;
+    padding: 14px;
+    border-radius: 16px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,236,205,0.10);
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 12px;
+    align-items: center;
+    cursor: pointer;
+    transition: 180ms ease;
+  }
+  .mod:hover { border-color: rgba(255,213,148,0.35); }
+  .mod.is-locked { opacity: 0.85; }
+  .mod.is-preview { border-color: rgba(255,213,148,0.24); background: linear-gradient(180deg, rgba(255,213,148,0.10), rgba(255,154,58,0.04)); }
+
+  .mod-ico {
+    width: 40px; height: 40px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, rgba(255,213,148,0.30), rgba(192,124,255,0.30));
+    color: var(--gold-3); font-weight: 700;
+    display: grid; place-items: center;
+    font-size: 1.1rem;
+  }
+  .mod-body b { display: block; font-size: 0.96rem; color: var(--gold-3); }
+  .mod-body span { color: var(--muted); font-size: 0.78rem; line-height: 1.4; }
+
+  .mod-pill {
+    font-size: 0.64rem; letter-spacing: 0.16em; text-transform: uppercase;
+    padding: 4px 8px; border-radius: 999px;
+    border: 1px solid rgba(255,236,205,0.18);
+    color: var(--muted-2);
+    background: rgba(255,255,255,0.04);
+  }
+  .mod-pill.pill-free { color: var(--teal); border-color: rgba(130, 214, 214, 0.5); }
+  .mod-pill.pill-pro { color: var(--gold-3); border-color: rgba(255, 213, 148, 0.5); }
+
+  .reader {
+    margin-top: 14px;
+    padding: 14px;
+    border-radius: 16px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,236,205,0.08);
+    display: none;
+  }
+  .reader.is-open { display: block; }
+  .reader h3 { margin: 0 0 6px; font-size: 1.04rem; color: var(--gold-3); }
+  .reader p { margin: 8px 0; color: var(--muted-2); font-size: 0.88rem; line-height: 1.5; }
+  .reader .tagrow { display: flex; gap: 6px; flex-wrap: wrap; margin: 8px 0; }
+  .reader .tag { font-size: 0.7rem; padding: 4px 8px; border-radius: 8px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,236,205,0.12); color: var(--muted); }
+
+  .gate {
+    margin-top: 10px;
+    padding: 12px;
+    border-radius: 14px;
+    background: linear-gradient(180deg, rgba(255,213,148,0.14), rgba(192,124,255,0.06));
+    border: 1px dashed rgba(255,213,148,0.35);
+    color: var(--gold-2);
+    font-size: 0.86rem;
+    text-align: center;
+  }
+  .gate .btn { margin-top: 8px; }
+</style>
+</head>
+<body>
+<main class="scene">
+  <section class="shell">
+    <article class="panel form-wrap">
+      <div class="phone-frame">
+        <div class="phone-notch"></div>
+        <div class="phone-screen">
+          <div class="status-row">
+            <span>9:41</span>
+            <span><span class="status-dot"></span>Learn</span>
+          </div>
+
+          <div class="brand-lockup">
+            <div class="brand-icon">📚</div>
+            <div class="brand-meta">
+              <strong data-i18n="learn.title">LEARN JYOTISH VIDYA</strong>
+              <span data-i18n="learn.sub">Structured modules — free preview, full access with subscription.</span>
+            </div>
+          </div>
+
+          <div class="mod-grid" id="modGrid"></div>
+
+          <div class="reader" id="reader">
+            <h3 id="readerTitle">—</h3>
+            <div class="tagrow" id="readerTags"></div>
+            <div id="readerBody"></div>
+            <div id="readerGate" class="gate" style="display: none;">
+              <div data-i18n="learn.locked">Subscribers only</div>
+              <a class="btn btn-primary" href="./subscription.html" data-i18n="btn.subscribe">Subscribe</a>
+            </div>
+          </div>
+
+          <nav class="bottom-nav">
+            <a class="bn-item" href="./dashboard.html"><span class="bn-icon">☰</span><span data-i18n="nav.home">Home</span></a>
+            <a class="bn-item" href="./kundli.html"><span class="bn-icon">⊕</span><span data-i18n="nav.kundli">Kundli</span></a>
+            <a class="bn-item" href="./consultation.html"><span class="bn-icon">💬</span><span data-i18n="nav.consult">Consult</span></a>
+            <a class="bn-item" href="./assistant.html"><span class="bn-icon">✶</span><span data-i18n="nav.ai">AI</span></a>
+            <a class="bn-item" href="./settings.html"><span class="bn-icon">⚙</span><span data-i18n="nav.settings">Settings</span></a>
+          </nav>
+        </div>
+      </div>
+    </article>
+  </section>
+</main>
+
+<script src="./i18n.js"></script>
+<script src="./app.js"></script>
+<script>
+  (async function () {
+    const AP = window.AstroPath;
+    const I18N = window.AstroPathI18n;
+    if (!AP) return;
+    if (!(await AP.guard('app'))) return;
+
+    // ---------------------------------------------------------------
+    // Module catalog. Free preview tier (isFree=true) is always open;
+    // the rest unlock for Bronze+ (full catalog on Silver+).
+    // Each module carries a compact body so the Learn tab reads as a
+    // standalone primer, not a marketing placeholder.
+    // ---------------------------------------------------------------
+    const MODULES = [
+      {
+        id: 'foundations', ico: '🕉', i18n: 'learn.module.foundations',
+        isFree: true, tier: 'free',
+        tags: ['Jyotish', 'Vedic', 'Sidereal'],
+        body: [
+          'Jyotish ("science of light") is the Vedic study of how celestial cycles map to human experience. Unlike tropical astrology, it uses the **sidereal zodiac** — anchored to fixed stars via Lahiri Ayanamsa.',
+          'A chart (kundli) is a 2D snapshot of the sky at your birth moment, projected from your birthplace. Three components matter most: **Lagna** (rising sign), **Rashi** (Moon sign), and the **Nakshatra** the Moon occupies.',
+          'Interpretation layers: planets (grahas) act as actors, signs (rashis) as stages, houses (bhavas) as story arcs, and dashas as the unfolding timeline.',
+        ],
+      },
+      {
+        id: 'rashis', ico: '♈', i18n: 'learn.module.rashis',
+        isFree: true, tier: 'free',
+        tags: ['12 Rashis', 'Lords', 'Elements'],
+        body: [
+          'The 12 rashis, each 30° wide, cycle from **Mesha (Aries)** to **Meena (Pisces)**. Each has a ruling planet: Mesha/Vrishchika — Mars, Vrishabha/Tula — Venus, Mithuna/Kanya — Mercury, Karka — Moon, Simha — Sun, Dhanu/Meena — Jupiter, Makara/Kumbha — Saturn.',
+          'Signs cluster by **element** (fire/earth/air/water) and **modality** (movable/fixed/dual). Fire signs act; earth signs build; air signs connect; water signs feel.',
+          'A planet performs according to the rashi it sits in — e.g., Venus exalts in Pisces, debilitates in Virgo. This alone re-rates its promise in any house.',
+        ],
+      },
+      {
+        id: 'houses', ico: '⌂', i18n: 'learn.module.houses',
+        isFree: true, tier: 'free',
+        tags: ['12 Bhavas', 'Kendras', 'Trikonas'],
+        body: [
+          'The 12 bhavas divide life by theme: 1st (self), 2nd (wealth/speech), 3rd (courage), 4th (home), 5th (progeny/creativity), 6th (service/debts), 7th (partnership), 8th (transformation), 9th (dharma), 10th (karma/career), 11th (gains), 12th (moksha/losses).',
+          '**Kendras** (1, 4, 7, 10) are pillars — action-oriented. **Trikonas** (1, 5, 9) are the dharma triangle — prosperity-oriented. A planet in both (e.g., the 1st) is supremely empowered; this is the foundation of Raja Yoga.',
+          '**Dusthanas** (6, 8, 12) stress the self but build depth. Most transformative healers have malefics well-placed in dusthanas.',
+        ],
+      },
+      {
+        id: 'planets', ico: '☉', i18n: 'learn.module.planets',
+        tier: 'bronze',
+        tags: ['9 Grahas', 'Karakas', 'Dignity'],
+        body: [
+          'The nine grahas: Sun, Moon, Mars, Mercury, Jupiter, Venus, Saturn, Rahu (north node), Ketu (south node). Each owns specific signs, houses of friendship, and **karakatvas** (significations).',
+          'Karakas at a glance — Sun: soul/father/authority; Moon: mind/mother; Mars: drive/siblings; Mercury: intellect/speech; Jupiter: wisdom/wealth; Venus: relationships/arts; Saturn: discipline/longevity; Rahu: obsession/foreign; Ketu: detachment/spiritual residue.',
+          '**Dignity states** reorder a planet\'s promise: exalted > mulatrikona > own sign > friendly > neutral > enemy > debilitated. Always check the sign a planet sits in before judging its house.',
+        ],
+      },
+      {
+        id: 'nakshatras', ico: '✦', i18n: 'learn.module.nakshatras',
+        tier: 'bronze',
+        tags: ['27 Nakshatras', 'Padas', 'Deities'],
+        body: [
+          'The zodiac also splits into 27 **nakshatras** (lunar mansions), each 13°20\' wide. Your birth nakshatra (the Moon\'s) describes instinctual patterning — often more accurately than the Sun sign.',
+          'Each nakshatra has a ruling deity, a ruling planet (which seeds the Vimshottari dasha), a shakti (power), and four 3°20\' **padas**.',
+          'For remedies, matching, and naming, the Moon\'s nakshatra is the single most cited factor in classical texts.',
+        ],
+      },
+      {
+        id: 'dashas', ico: '⟳', i18n: 'learn.module.dashas',
+        tier: 'silver',
+        tags: ['Vimshottari', '120 years', 'Antardasha'],
+        body: [
+          '**Vimshottari Dasha** is a 120-year planetary cycle seeded by your birth nakshatra. Each planet "rules" a stretch of your life — Ketu 7y, Venus 20y, Sun 6y, Moon 10y, Mars 7y, Rahu 18y, Jupiter 16y, Saturn 19y, Mercury 17y.',
+          'Within each mahadasha sits a nested **antardasha** (sub-period), and within that a **pratyantardasha**. Events cluster where the active mahadasha lord + antardasha lord + transits all coincide.',
+          'Reading a timeline: the dasha lord shows the actor; its house + sign + aspects show the stage and story. Combined with current transits, this is the primary timing engine in Jyotish.',
+        ],
+      },
+      {
+        id: 'yogas', ico: '☯', i18n: 'learn.module.yogas',
+        tier: 'silver',
+        tags: ['Raja Yoga', 'Mahapurusha', 'Doshas'],
+        body: [
+          'A **yoga** is a specific planetary combination with named effects. **Raja yogas** (kendra + trikona lords connecting) raise worldly status; **Dhana yogas** accumulate wealth; **Mahapurusha yogas** empower individual planets exalted in kendras.',
+          'Opposite are **doshas** — Mangal (Mars in 1/2/4/7/8/12), Kaal Sarpa (all planets between Rahu-Ketu), Sade Sati (Saturn 12th/1st/2nd from Moon). Doshas exaggerate strain; well-placed benefics often neutralise them.',
+          'Classical texts (BPHS, Jaimini) list hundreds. Modern practice starts from the big three — Raja, Dhana, Mahapurusha — and uses the rest as fine-tuning.',
+        ],
+      },
+      {
+        id: 'remedies', ico: '🕯', i18n: 'learn.module.remedies',
+        tier: 'gold',
+        tags: ['Mantras', 'Gemstones', 'Charity'],
+        body: [
+          'Remedies (**upayas**) are preventive or propitiatory. Classical categories: mantra (sound), yantra (geometry), dana (charity), homa (fire rites), and ratna (gemstones).',
+          'A remedy is personalised to the afflicted planet, not the symptom. E.g., a weak Mercury is strengthened via emerald (only if a sthita analysis supports it), green colours, Wednesday charity, and Bij mantra japa.',
+          '**Ethical note**: AstroPath never prescribes medical, legal, or financial action. Remedies here are spiritual/psychological practices; combine with professional advice when life choices are serious.',
+        ],
+      },
+    ];
+
+    // Subscription gating — simplest mapping: tier ranking. A user's active
+    // plan unlocks modules at its tier or lower; free previews are always
+    // open regardless of plan. This avoids hard-coding per-module lists.
+    const TIER_RANK = { free: 0, bronze: 1, silver: 2, gold: 3 };
+
+    function userTierRank(status) {
+      if (!status || status.status !== 'active') return 0;
+      return TIER_RANK[status.plan] || 0;
+    }
+
+    function canAccess(mod, status) {
+      if (mod.isFree) return true;
+      const need = TIER_RANK[mod.tier] || 0;
+      return userTierRank(status) >= need;
+    }
+
+    function renderModules(status) {
+      const grid = document.getElementById('modGrid');
+      grid.innerHTML = '';
+      MODULES.forEach((m) => {
+        const unlocked = canAccess(m, status);
+        const tierLabel = m.isFree ? I18N.t('learn.preview') : m.tier.charAt(0).toUpperCase() + m.tier.slice(1) + '+';
+        const pillCls = m.isFree ? 'mod-pill pill-free' : (unlocked ? 'mod-pill pill-pro' : 'mod-pill');
+        const card = document.createElement('div');
+        card.className = 'mod' + (m.isFree ? ' is-preview' : '') + (unlocked ? '' : ' is-locked');
+        card.innerHTML =
+          '<div class="mod-ico">' + m.ico + '</div>' +
+          '<div class="mod-body">' +
+            '<b data-i18n="' + m.i18n + '">' + m.i18n + '</b>' +
+            '<span>' + m.tags.join(' · ') + '</span>' +
+          '</div>' +
+          '<span class="' + pillCls + '">' + (unlocked ? tierLabel : '🔒 ' + tierLabel) + '</span>';
+        card.addEventListener('click', () => openModule(m, unlocked));
+        grid.appendChild(card);
+      });
+      // Re-translate labels on the new nodes.
+      if (I18N && I18N.apply) I18N.apply(grid);
+    }
+
+    function openModule(mod, unlocked) {
+      const reader = document.getElementById('reader');
+      document.getElementById('readerTitle').textContent = I18N.t(mod.i18n);
+      const tags = document.getElementById('readerTags');
+      tags.innerHTML = (mod.tags || []).map((t) => '<span class="tag">' + t + '</span>').join('');
+      const body = document.getElementById('readerBody');
+      const gate = document.getElementById('readerGate');
+      if (unlocked) {
+        body.style.display = '';
+        gate.style.display = 'none';
+        body.innerHTML = (mod.body || []).map((para) =>
+          '<p>' + para.replace(/\*\*(.+?)\*\*/g, '<b>$1</b>') + '</p>'
+        ).join('');
+      } else {
+        // Show only the first paragraph as a teaser.
+        const teaser = (mod.body || [])[0] || '';
+        body.style.display = '';
+        body.innerHTML = '<p>' + teaser.replace(/\*\*(.+?)\*\*/g, '<b>$1</b>') + '</p>';
+        gate.style.display = '';
+      }
+      reader.classList.add('is-open');
+      reader.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    let status = { plan: 'free', status: 'none' };
+    try {
+      status = await AP.api.subStatus();
+    } catch (e) {
+      // Non-fatal — treat as free tier.
+      console.warn('sub status fetch failed:', e && e.message);
+    }
+    renderModules(status);
+  })();
+</script>
+</body>
+</html>

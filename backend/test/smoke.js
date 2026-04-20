@@ -99,6 +99,13 @@ async function main() {
       assert(r.body.data.profile.preferences.languageCode, 'languageCode missing');
     });
 
+    await run('GET /v1/auth/config', async () => {
+      const r = await request(server, 'GET', '/v1/auth/config');
+      assert(r.status === 200, `status=${r.status}`);
+      assert(r.body.data.mode === 'bypass', 'auth mode missing');
+      assert(r.body.data.hasClientConfig === false, 'default client config should be false');
+    });
+
     await run('GET /v1/dashboard?lang=en', async () => {
       const r = await request(server, 'GET', '/v1/dashboard?lang=en');
       assert(r.status === 200, `status=${r.status}`);

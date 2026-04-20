@@ -1,0 +1,252 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AstroPath — Subscription</title>
+<link rel="stylesheet" href="./shared.css">
+<style>
+  .plan-grid { display: grid; gap: 10px; margin-top: 14px; }
+  .plan {
+    position: relative;
+    padding: 16px;
+    border-radius: 18px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,236,205,0.10);
+  }
+  .plan.is-current {
+    background: linear-gradient(180deg, rgba(255, 213, 148, 0.20), rgba(255, 154, 58, 0.08));
+    border-color: rgba(255, 213, 148, 0.48);
+  }
+  .plan h3 {
+    margin: 0 0 4px;
+    font-size: 1.04rem;
+    color: var(--gold-3);
+    letter-spacing: 0.02em;
+  }
+  .plan .price {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--gold-2);
+    margin: 4px 0 8px;
+  }
+  .plan .price small { font-size: 0.72rem; color: var(--muted); font-weight: 400; letter-spacing: 0.08em; }
+  .plan ul { margin: 0; padding-left: 18px; color: var(--muted-2); font-size: 0.82rem; line-height: 1.5; }
+  .plan .btn { margin-top: 12px; width: 100%; }
+  .plan .badge-now {
+    position: absolute; top: 10px; right: 10px;
+    font-size: 0.66rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--gold-3);
+    background: rgba(255, 213, 148, 0.16);
+    border: 1px solid rgba(255, 213, 148, 0.4);
+    padding: 3px 8px;
+    border-radius: 999px;
+  }
+  .status-card {
+    margin-top: 14px;
+    padding: 12px 14px;
+    border-radius: 14px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,236,205,0.10);
+    color: var(--muted);
+    font-size: 0.84rem;
+  }
+  .status-card b { color: var(--gold-3); }
+  .small-note { color: var(--muted); font-size: 0.74rem; margin-top: 10px; text-align: center; }
+</style>
+</head>
+<body>
+<main class="scene">
+  <section class="shell">
+    <article class="panel form-wrap">
+      <div class="phone-frame">
+        <div class="phone-notch"></div>
+        <div class="phone-screen">
+          <div class="status-row">
+            <span>9:41</span>
+            <span><span class="status-dot"></span>Subscription</span>
+          </div>
+
+          <div class="brand-lockup">
+            <div class="brand-icon">✦</div>
+            <div class="brand-meta">
+              <strong data-i18n="sub.title">SUBSCRIPTION</strong>
+              <span data-i18n="sub.sub">Unlock the full AstroPath experience.</span>
+            </div>
+          </div>
+
+          <div class="status-card" id="statusCard">
+            <span data-i18n="sub.current">Current plan</span>: <b id="statusPlan">—</b>
+          </div>
+
+          <div class="plan-grid" id="planGrid"></div>
+
+          <p class="small-note" id="stubNote" style="display: none;">
+            Dev mode · Razorpay keys not configured. Clicking Subscribe runs a stubbed end-to-end flow so the UI can be validated.
+          </p>
+
+          <nav class="bottom-nav">
+            <a class="bn-item" href="./dashboard.html"><span class="bn-icon">☰</span><span data-i18n="nav.home">Home</span></a>
+            <a class="bn-item" href="./kundli.html"><span class="bn-icon">⊕</span><span data-i18n="nav.kundli">Kundli</span></a>
+            <a class="bn-item" href="./consultation.html"><span class="bn-icon">💬</span><span data-i18n="nav.consult">Consult</span></a>
+            <a class="bn-item" href="./assistant.html"><span class="bn-icon">✶</span><span data-i18n="nav.ai">AI</span></a>
+            <a class="bn-item is-active" href="./settings.html"><span class="bn-icon">⚙</span><span data-i18n="nav.settings">Settings</span></a>
+          </nav>
+        </div>
+      </div>
+    </article>
+  </section>
+</main>
+
+<!-- Razorpay Checkout (no-op when keys not configured; we fall back to the dev stub). -->
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script src="./i18n.js"></script>
+<script src="./app.js"></script>
+<script>
+  (async function () {
+    const AP = window.AstroPath;
+    const I18N = window.AstroPathI18n;
+    if (!AP) return;
+    if (!(await AP.guard('app'))) return;
+
+    const planGrid = document.getElementById('planGrid');
+    const statusPlan = document.getElementById('statusPlan');
+    const statusCard = document.getElementById('statusCard');
+    const stubNote = document.getElementById('stubNote');
+
+    let status = { plan: 'free', status: 'none' };
+    let plansResp = { plans: [], stubbed: true };
+
+    function priceLabel(p) {
+      if (p.priceINR === 0) return I18N.t('sub.free') + ' — ₹0';
+      return '₹' + p.priceINR.toLocaleString('en-IN') + ' ' + I18N.t('sub.perMonth');
+    }
+
+    function renderPlans() {
+      planGrid.innerHTML = '';
+      plansResp.plans.forEach((p) => {
+        const isCurrent = status.plan === p.id && status.status === 'active';
+        const card = document.createElement('div');
+        card.className = 'plan' + (isCurrent ? ' is-current' : '');
+        const perks = (p.perks || []).map((k) => '<li>' + k + '</li>').join('');
+        const btnLabel = p.id === 'free'
+          ? (isCurrent ? I18N.t('sub.current') : '—')
+          : (isCurrent ? I18N.t('btn.cancel') : I18N.t('sub.choose'));
+        card.innerHTML =
+          (isCurrent ? '<span class="badge-now">' + I18N.t('sub.current') + '</span>' : '') +
+          '<h3>' + p.name + '</h3>' +
+          '<div class="price">' + priceLabel(p) + '</div>' +
+          '<ul>' + perks + '</ul>' +
+          (p.id === 'free' ? '' :
+            '<button class="btn btn-primary" type="button" data-plan="' + p.id + '">' + btnLabel + '</button>');
+        planGrid.appendChild(card);
+      });
+
+      planGrid.querySelectorAll('button[data-plan]').forEach((btn) => {
+        btn.addEventListener('click', async () => {
+          const planId = btn.dataset.plan;
+          if (status.plan === planId && status.status === 'active') {
+            await cancelPlan();
+          } else {
+            await subscribeToPlan(planId);
+          }
+        });
+      });
+    }
+
+    async function loadAll() {
+      try {
+        plansResp = await AP.api.subPlans();
+        status = await AP.api.subStatus();
+      } catch (e) {
+        AP.dom.toast('Failed to load plans: ' + e.message);
+        return;
+      }
+      statusPlan.textContent = planNameFor(status.plan) + (status.status === 'active' ? '' : ' (' + status.status + ')');
+      stubNote.style.display = plansResp.stubbed ? '' : 'none';
+      renderPlans();
+    }
+
+    function planNameFor(id) {
+      const p = (plansResp.plans || []).find((x) => x.id === id);
+      return p ? p.name : (id || '—');
+    }
+
+    async function subscribeToPlan(planId) {
+      AP.dom.toast(I18N.t('sub.processing'));
+      let order;
+      try {
+        order = await AP.api.subCreateOrder(planId);
+      } catch (e) {
+        AP.dom.toast('Order failed: ' + e.message);
+        return;
+      }
+
+      // Real Razorpay path: open checkout modal.
+      if (!order.stubbed && window.Razorpay) {
+        const rzp = new window.Razorpay({
+          key: order.keyId,
+          amount: order.amount,
+          currency: order.currency,
+          name: 'AstroPath',
+          description: order.planName + ' subscription',
+          order_id: order.orderId,
+          handler: async function (resp) {
+            try {
+              const next = await AP.api.subVerify({
+                razorpay_order_id: resp.razorpay_order_id,
+                razorpay_payment_id: resp.razorpay_payment_id,
+                razorpay_signature: resp.razorpay_signature,
+                planId,
+              });
+              status = next;
+              AP.dom.toast(I18N.t('sub.success'));
+              renderPlans();
+              statusPlan.textContent = planNameFor(status.plan);
+            } catch (e) {
+              AP.dom.toast('Verify failed: ' + e.message);
+            }
+          },
+          modal: { ondismiss: () => AP.dom.toast(I18N.t('btn.cancel')) },
+        });
+        rzp.open();
+        return;
+      }
+
+      // Stub path: server mints payment id + signature, then we verify.
+      try {
+        const stub = await AP.api.subStubComplete(order.orderId);
+        const next = await AP.api.subVerify({
+          razorpay_order_id: order.orderId,
+          razorpay_payment_id: stub.razorpay_payment_id,
+          razorpay_signature: stub.razorpay_signature,
+          planId,
+        });
+        status = next;
+        AP.dom.toast(I18N.t('sub.success'));
+        renderPlans();
+        statusPlan.textContent = planNameFor(status.plan);
+      } catch (e) {
+        AP.dom.toast('Stub verify failed: ' + e.message);
+      }
+    }
+
+    async function cancelPlan() {
+      if (!confirm('Cancel your current plan and return to Free?')) return;
+      try {
+        status = await AP.api.subCancel();
+        AP.dom.toast('Cancelled.');
+        renderPlans();
+        statusPlan.textContent = planNameFor(status.plan);
+      } catch (e) {
+        AP.dom.toast('Cancel failed: ' + e.message);
+      }
+    }
+
+    loadAll();
+  })();
+</script>
+</body>
+</html>

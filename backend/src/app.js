@@ -25,6 +25,8 @@ const compatibilityRoutes = require('./routes/compatibility');
 const consultationsRoutes = require('./routes/consultations');
 const assistantRoutes = require('./routes/assistant');
 const transitsRoutes = require('./routes/transits');
+const geoRoutes = require('./routes/geo');
+const subscriptionRoutes = require('./routes/subscription');
 
 function buildApp(env) {
   const app = express();
@@ -44,12 +46,21 @@ function buildApp(env) {
         useDefaults: true,
         directives: {
           'default-src': ["'self'"],
-          'script-src': ["'self'", "'unsafe-inline'"],
+          // Razorpay Checkout JS is loaded from checkout.razorpay.com.
+          'script-src': ["'self'", "'unsafe-inline'", 'https://checkout.razorpay.com'],
           'style-src': ["'self'", "'unsafe-inline'"],
-          'img-src': ["'self'", 'data:', 'blob:'],
-          'connect-src': ["'self'"],
+          'img-src': ["'self'", 'data:', 'blob:', 'https://*.razorpay.com'],
+          'connect-src': [
+            "'self'",
+            'https://identitytoolkit.googleapis.com',
+            'https://securetoken.googleapis.com',
+            'https://api.razorpay.com',
+            'https://lumberjack.razorpay.com',
+          ],
           'font-src': ["'self'", 'data:'],
           'object-src': ["'none'"],
+          // Razorpay Checkout opens a modal in an iframe — allow its origin.
+          'frame-src': ['https://api.razorpay.com', 'https://checkout.razorpay.com'],
           'frame-ancestors': ["'none'"],
         },
       },
@@ -130,6 +141,11 @@ function buildApp(env) {
   app.use('/health', healthRoutes);
   app.use('/v1/auth', authLimiter, authRoutes(env));
 
+  // Razorpay webhook — MUST be mounted before authMiddleware because Razorpay
+  // posts with its own signature header, not a Firebase bearer token. The
+  // route uses a raw body parser so signature verification works.
+  app.use('/v1/subscription/webhook', subscriptionRoutes.webhookRouter(env));
+
   // Everything under /v1 (other than /v1/auth) is rate-limited + authenticated.
   app.use('/v1', globalLimiter);
   app.use('/v1', authMiddleware(env));
@@ -143,6 +159,8 @@ function buildApp(env) {
   app.use('/v1/consultations', consultationsRoutes);
   app.use('/v1/assistant', assistantLimiter, assistantRoutes);
   app.use('/v1/transits', transitsRoutes);
+  app.use('/v1/geo', geoRoutes);
+  app.use('/v1/subscription', subscriptionRoutes.authRouter(env));
 
   // Root: HTML browsers go to the production UI (if mounted), otherwise
   // the lightweight /demo forms; everything else gets the JSON summary.
@@ -170,6 +188,16 @@ function buildApp(env) {
           'GET /v1/assistant/snapshot',
           'POST /v1/assistant/query',
           'GET /v1/transits',
+          'GET /v1/geo/countries',
+          'GET /v1/geo/states',
+          'GET /v1/geo/states/:state/cities',
+          'GET /v1/geo/pincode/:code',
+          'GET /v1/subscription/plans',
+          'GET /v1/subscription/status',
+          'POST /v1/subscription/order',
+          'POST /v1/subscription/verify',
+          'POST /v1/subscription/cancel',
+          'POST /v1/subscription/webhook (public)',
         ],
       },
     });

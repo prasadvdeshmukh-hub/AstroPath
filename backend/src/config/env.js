@@ -47,6 +47,9 @@ function loadEnv() {
       .filter(Boolean),
     FIRESTORE_MODE: (merged.FIRESTORE_MODE || 'memory').toLowerCase(),
     FIREBASE_PROJECT_ID: merged.FIREBASE_PROJECT_ID || '',
+    FIREBASE_API_KEY: merged.FIREBASE_API_KEY || '',
+    FIREBASE_AUTH_DOMAIN: merged.FIREBASE_AUTH_DOMAIN || '',
+    FIREBASE_APP_ID: merged.FIREBASE_APP_ID || '',
     GOOGLE_APPLICATION_CREDENTIALS: merged.GOOGLE_APPLICATION_CREDENTIALS || '',
     AUTH_MODE: (merged.AUTH_MODE || 'bypass').toLowerCase(),
     DEV_USER_ID: merged.DEV_USER_ID || 'dev-user-001',
@@ -55,6 +58,12 @@ function loadEnv() {
     // Point at the AstroPath root folder. When set, the backend mounts it at /app
     // and redirects / to /app/ for HTML browsers.
     PUBLIC_UI_DIR: merged.PUBLIC_UI_DIR || '',
+    // Razorpay credentials — in test/dev mode these may be empty, and the
+    // subscription service will fall back to a deterministic dev stub so the
+    // checkout flow remains exercisable without real keys.
+    RAZORPAY_KEY_ID: merged.RAZORPAY_KEY_ID || '',
+    RAZORPAY_KEY_SECRET: merged.RAZORPAY_KEY_SECRET || '',
+    RAZORPAY_WEBHOOK_SECRET: merged.RAZORPAY_WEBHOOK_SECRET || '',
   };
 
   if (!['memory', 'firestore'].includes(env.FIRESTORE_MODE)) {

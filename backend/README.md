@@ -43,6 +43,9 @@ See `.env.example` for the full list. Key flags:
 | `AUTH_MODE` | `bypass` \| `firebase` | Dev bypass (synthetic user) vs Firebase ID-token verification. |
 | `CORS_ORIGINS` | csv | Comma-separated allowed origins. `*` allows all. |
 | `FIREBASE_PROJECT_ID` | string | Required when `FIRESTORE_MODE=firestore` or `AUTH_MODE=firebase`. |
+| `FIREBASE_API_KEY` | string | Public web API key used by the login page for Firebase email/password auth. |
+| `FIREBASE_AUTH_DOMAIN` | string | Optional Firebase auth domain exposed to the web client for future provider flows. |
+| `FIREBASE_APP_ID` | string | Optional Firebase app id exposed to the web client. |
 | `GOOGLE_APPLICATION_CREDENTIALS` | path | Service account JSON for firebase-admin. |
 
 ---
