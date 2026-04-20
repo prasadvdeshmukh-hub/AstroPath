@@ -3,22 +3,20 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="theme-color" content="#120d20" />
+  <meta name="theme-color" content="#07030f" />
   <title>AstroPath — Your cosmic companion</title>
   <style>
     :root {
-      --bg-0: #080412;
-      --bg-1: #120d20;
-      --bg-2: #1f1530;
-      --gold: #f4c979;
-      --gold-soft: #ffdfaa;
-      --pink: #f09cb8;
-      --violet: #af8cff;
-      --text: #fff6ec;
-      --muted: #d4b9c0;
-      --panel: rgba(34, 25, 48, 0.72);
-      --panel-line: rgba(255, 219, 163, 0.28);
-      --shadow: 0 32px 64px -24px rgba(8, 4, 18, 0.9);
+      --bg-0:#050212;
+      --bg-1:#0c0820;
+      --bg-2:#1a0f34;
+      --gold:#f4c979;
+      --gold-2:#ffe1a8;
+      --violet:#af8cff;
+      --text:#fff6ec;
+      --muted:#cbb9d4;
+      --panel:rgba(14, 8, 28, 0.72);
+      --panel-line:rgba(255,219,163,0.18);
     }
 
     * { box-sizing: border-box; }
@@ -33,145 +31,196 @@
 
     body {
       min-height: 100dvh;
-      background:
-        radial-gradient(circle at 15% 18%, rgba(175, 140, 255, 0.32), transparent 42%),
-        radial-gradient(circle at 85% 12%, rgba(244, 201, 121, 0.22), transparent 38%),
-        radial-gradient(circle at 50% 95%, rgba(240, 156, 184, 0.20), transparent 48%),
-        linear-gradient(180deg, var(--bg-0) 0%, var(--bg-1) 55%, var(--bg-2) 100%);
       overflow-x: hidden;
       position: relative;
     }
 
-    body::before {
-      content: "";
+    /* ---------- Cosmic background ---------- */
+    .sky {
       position: fixed;
       inset: 0;
-      background-image:
-        radial-gradient(1px 1px at 12% 22%, rgba(255,255,255,0.9), transparent 50%),
-        radial-gradient(1px 1px at 28% 68%, rgba(255,255,255,0.7), transparent 50%),
-        radial-gradient(1.2px 1.2px at 46% 14%, rgba(255,236,200,0.8), transparent 50%),
-        radial-gradient(1px 1px at 62% 80%, rgba(255,255,255,0.6), transparent 50%),
-        radial-gradient(1.2px 1.2px at 78% 36%, rgba(255,236,200,0.7), transparent 50%),
-        radial-gradient(1px 1px at 90% 64%, rgba(255,255,255,0.8), transparent 50%),
-        radial-gradient(1px 1px at 18% 88%, rgba(255,255,255,0.6), transparent 50%),
-        radial-gradient(1.4px 1.4px at 72% 6%, rgba(255,236,200,0.9), transparent 50%);
+      z-index: 0;
+      background:
+        radial-gradient(ellipse at 50% 38%, rgba(175, 140, 255, 0.30), transparent 46%),
+        radial-gradient(ellipse at 18% 82%, rgba(244, 201, 121, 0.14), transparent 42%),
+        radial-gradient(ellipse at 82% 78%, rgba(240, 156, 184, 0.14), transparent 42%),
+        linear-gradient(180deg, var(--bg-0) 0%, var(--bg-1) 45%, var(--bg-2) 100%);
+    }
+
+    /* Optional photographic artwork — if present at ./ui/assets/landing-cosmos.jpg
+       it will overlay the CSS fallback. The ::before uses image-set-like fallback:
+       the img tag loads the artwork; if it 404s nothing bad happens. */
+    .sky-art {
+      position: fixed; inset: 0; z-index: 0;
+      width: 100%; height: 100%;
+      object-fit: cover;
+      opacity: 0; /* stays 0 until onload */
+      transition: opacity 600ms ease;
       pointer-events: none;
-      animation: twinkle 6s ease-in-out infinite alternate;
+    }
+    .sky-art.is-loaded { opacity: 0.92; }
+
+    /* Starfield */
+    .stars, .stars::after {
+      position: fixed; inset: 0; z-index: 0;
+      background-image:
+        radial-gradient(1px 1px at 6% 12%, rgba(255,255,255,0.9), transparent 60%),
+        radial-gradient(1px 1px at 14% 32%, rgba(255,255,255,0.7), transparent 60%),
+        radial-gradient(1.2px 1.2px at 22% 70%, rgba(255,236,200,0.9), transparent 60%),
+        radial-gradient(1px 1px at 33% 22%, rgba(255,255,255,0.7), transparent 60%),
+        radial-gradient(1px 1px at 44% 56%, rgba(255,255,255,0.6), transparent 60%),
+        radial-gradient(1.2px 1.2px at 52% 14%, rgba(255,236,200,0.85), transparent 60%),
+        radial-gradient(1px 1px at 61% 72%, rgba(255,255,255,0.6), transparent 60%),
+        radial-gradient(1px 1px at 70% 28%, rgba(255,255,255,0.7), transparent 60%),
+        radial-gradient(1.2px 1.2px at 78% 60%, rgba(255,236,200,0.9), transparent 60%),
+        radial-gradient(1px 1px at 86% 44%, rgba(255,255,255,0.7), transparent 60%),
+        radial-gradient(1px 1px at 92% 80%, rgba(255,255,255,0.6), transparent 60%),
+        radial-gradient(1.3px 1.3px at 38% 88%, rgba(255,236,200,0.85), transparent 60%);
+      animation: twinkle 5.4s ease-in-out infinite alternate;
       opacity: 0.85;
+      pointer-events: none;
     }
+    @keyframes twinkle { 0% { opacity: .6; } 100% { opacity: 1; } }
 
-    @keyframes twinkle {
-      0% { opacity: 0.7; }
-      100% { opacity: 1; }
+    /* ---------- Solar-system motif (CSS fallback, shown when no artwork) ---------- */
+    .solar {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      display: grid;
+      place-items: center;
     }
+    .solar-stage {
+      position: relative;
+      width: min(92vw, 520px);
+      height: min(92vw, 520px);
+      margin-top: 8vh;
+    }
+    .sun {
+      position: absolute;
+      left: 50%; top: 50%;
+      width: 54px; height: 54px;
+      margin: -27px 0 0 -27px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, #fff4c0 0%, var(--gold-2) 40%, var(--gold) 65%, #c28132 100%);
+      box-shadow:
+        0 0 36px rgba(255, 220, 150, 0.9),
+        0 0 90px rgba(255, 200, 110, 0.55);
+    }
+    .orbit {
+      position: absolute;
+      left: 50%; top: 50%;
+      border: 1px solid rgba(255, 226, 182, 0.18);
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+    }
+    .orbit.o1 { width:  26%; height:  26%; }
+    .orbit.o2 { width:  42%; height:  42%; }
+    .orbit.o3 { width:  58%; height:  58%; border-color: rgba(255, 226, 182, 0.22); }
+    .orbit.o4 { width:  74%; height:  74%; }
+    .orbit.o5 { width:  88%; height:  88%; }
+    .orbit.o6 { width: 100%; height: 100%; }
 
+    .planet {
+      position: absolute;
+      left: 50%; top: 50%;
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+    }
+    .mercury  { width:  8px; height:  8px; background:#c9b39a; box-shadow:0 0 8px rgba(255,220,170,.5); margin-left: calc(26% * 0.5); }
+    .venus    { width: 12px; height: 12px; background:#e8b880; box-shadow:0 0 10px rgba(255,200,130,.6); margin-left: calc(-42% * 0.5); }
+    .earth    { width: 14px; height: 14px; background:radial-gradient(circle at 35% 35%, #78d0ff, #2a6fbf 70%); box-shadow:0 0 10px rgba(120,200,255,.55); margin-top: calc(58% * 0.5); }
+    .mars     { width: 11px; height: 11px; background:#d3744a; box-shadow:0 0 8px rgba(255,150,110,.55); margin-top: calc(-74% * 0.5); margin-left: calc(74% * 0.18); }
+    .jupiter  { width: 22px; height: 22px; background:radial-gradient(circle at 30% 30%, #f6d9a0, #b88548 75%); box-shadow:0 0 14px rgba(255,200,140,.55); margin-top: calc(88% * 0.34); margin-left: calc(-88% * 0.32); }
+    .saturn   { width: 18px; height: 18px; background:radial-gradient(circle at 30% 30%, #f1dda4, #a88244 75%); box-shadow:0 0 14px rgba(255,220,170,.55); margin-top: calc(-100% * 0.38); margin-left: calc(100% * 0.30); }
+    .saturn::after {
+      content: "";
+      position: absolute;
+      left: 50%; top: 50%;
+      width: 34px; height: 10px;
+      margin: -5px 0 0 -17px;
+      border: 1.3px solid rgba(255,220,170,.85);
+      border-radius: 50%;
+      transform: rotate(-18deg);
+      box-shadow: inset 0 0 3px rgba(255,220,170,.4);
+    }
+    .uranus   { width: 12px; height: 12px; background:radial-gradient(circle at 35% 35%, #b7e9e7, #4a8f99 75%); box-shadow:0 0 10px rgba(150,220,220,.55); margin-top: calc(100% * 0.20); margin-left: calc(100% * 0.40); }
+
+    /* Hide the CSS solar system when artwork image loads successfully */
+    body.has-artwork .solar { display: none; }
+
+    /* ---------- Foreground layout ---------- */
     .landing {
       position: relative;
-      z-index: 1;
-      max-width: 560px;
+      z-index: 2;
+      max-width: 480px;
       margin: 0 auto;
-      padding: clamp(36px, 8vw, 72px) clamp(22px, 6vw, 40px);
+      padding: clamp(28px, 6vw, 44px) clamp(18px, 5vw, 28px) 24px;
       min-height: 100dvh;
       display: flex;
       flex-direction: column;
-      justify-content: space-between;
     }
 
-    .header {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
     .brand {
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      letter-spacing: 0.28em;
-      font-size: 12px;
-      color: var(--gold);
-      font-weight: 600;
-    }
-    .brand-mark {
-      width: 28px;
-      height: 28px;
-      border-radius: 50%;
-      display: grid;
-      place-items: center;
-      background: radial-gradient(circle at 30% 30%, var(--gold-soft), var(--gold) 60%, #b5893c 100%);
-      box-shadow: 0 0 24px rgba(244, 201, 121, 0.55);
-      color: #1b0f05;
-      font-size: 16px;
-      font-weight: 800;
-    }
-
-    .hero { margin-top: clamp(28px, 8vh, 72px); }
-
-    .eyebrow {
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      padding: 6px 14px;
-      border-radius: 999px;
-      background: rgba(175, 140, 255, 0.16);
-      border: 1px solid rgba(175, 140, 255, 0.4);
-      color: #e4d4ff;
-      font-size: 11px;
-      letter-spacing: 0.22em;
-      text-transform: uppercase;
-    }
-
-    .title {
-      font-family: "Georgia", "Playfair Display", serif;
-      font-size: clamp(36px, 8vw, 54px);
-      font-weight: 600;
-      line-height: 1.08;
-      margin: 22px 0 14px;
-      letter-spacing: -0.01em;
-    }
-    .title em { font-style: italic; color: var(--gold-soft); }
-
-    .subtitle {
-      color: var(--muted);
-      font-size: 16px;
-      line-height: 1.55;
-      margin: 0 0 36px;
-      max-width: 440px;
-    }
-
-    .features {
-      display: grid;
-      gap: 14px;
-      margin-bottom: 44px;
-    }
-    .feature {
-      display: grid;
-      grid-template-columns: 40px 1fr;
-      gap: 14px;
-      align-items: center;
-      padding: 14px 16px;
-      background: var(--panel);
-      border: 1px solid var(--panel-line);
-      border-radius: 18px;
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-    }
-    .feature-icon {
-      width: 40px;
-      height: 40px;
-      border-radius: 12px;
-      display: grid;
-      place-items: center;
-      background: linear-gradient(135deg, rgba(244, 201, 121, 0.28), rgba(175, 140, 255, 0.24));
-      font-size: 20px;
-    }
-    .feature strong { font-size: 14px; display: block; margin-bottom: 2px; }
-    .feature span { color: var(--muted); font-size: 12.5px; line-height: 1.4; }
-
-    .cta-row {
       display: flex;
       flex-direction: column;
-      gap: 12px;
-      margin-bottom: 14px;
+      align-items: center;
+      gap: 14px;
+      margin-top: clamp(12px, 3vh, 28px);
+    }
+    .orb {
+      width: 64px; height: 64px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 32% 30%, #fff3c8, var(--gold-2) 40%, var(--gold) 68%, #c28132 100%);
+      box-shadow:
+        0 0 30px rgba(255, 214, 140, 0.75),
+        0 0 70px rgba(255, 200, 110, 0.35);
+    }
+    .wordmark {
+      font-family: "Georgia", "Playfair Display", serif;
+      font-size: clamp(28px, 6.5vw, 36px);
+      letter-spacing: 0.24em;
+      font-weight: 600;
+    }
+    .wordmark .astro { color: #ffffff; }
+    .wordmark .path  { color: var(--gold); }
+    .tag {
+      color: var(--gold-2);
+      font-size: 10.5px;
+      letter-spacing: 0.36em;
+      text-transform: uppercase;
+      opacity: .92;
+    }
+
+    /* Spacer so the solar system can breathe between brand and login panel */
+    .spacer { flex: 1; min-height: clamp(180px, 32vh, 320px); }
+
+    /* ---------- Login panel ---------- */
+    .login-card {
+      position: relative;
+      z-index: 3;
+      padding: 22px 20px 18px;
+      border-radius: 28px;
+      background: linear-gradient(180deg, rgba(24, 14, 40, 0.82), rgba(12, 6, 22, 0.88));
+      border: 1px solid var(--panel-line);
+      box-shadow: 0 28px 80px rgba(0,0,0,0.55);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+    }
+    .login-title {
+      margin: 2px 0 2px;
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      text-align: center;
+    }
+    .login-sub {
+      margin: 0 0 16px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
     }
 
     .btn {
@@ -180,104 +229,283 @@
       justify-content: center;
       gap: 10px;
       width: 100%;
-      padding: 16px 22px;
-      border-radius: 999px;
+      padding: 14px 18px;
+      border-radius: 16px;
       border: 0;
       font-size: 15px;
       font-weight: 600;
-      text-decoration: none;
       cursor: pointer;
-      transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+      transition: transform 0.16s ease, filter 0.16s ease, background 0.16s ease;
+      font-family: inherit;
+      text-decoration: none;
     }
-    .btn:active { transform: scale(0.98); }
-    .btn-primary {
-      background: linear-gradient(90deg, var(--gold) 0%, #e8a964 100%);
-      color: #1c0e05;
-      box-shadow: 0 18px 40px -16px rgba(244, 201, 121, 0.65);
+    .btn:active { transform: scale(0.985); }
+    .btn:hover  { filter: brightness(1.04); }
+
+    .btn-google {
+      background: #ffffff;
+      color: #1f1b2e;
+      box-shadow: 0 12px 30px -12px rgba(0,0,0,0.5);
     }
-    .btn-primary:hover { box-shadow: 0 22px 46px -14px rgba(244, 201, 121, 0.8); }
-    .btn-secondary {
-      background: rgba(255, 255, 255, 0.06);
+    .btn-google .g-logo { width: 18px; height: 18px; flex: 0 0 18px; }
+
+    .btn-ghost {
+      background: rgba(255,255,255,0.06);
       color: var(--text);
-      border: 1px solid rgba(255, 255, 255, 0.22);
+      border: 1px solid rgba(255,255,255,0.18);
     }
-    .btn-secondary:hover { background: rgba(255, 255, 255, 0.12); }
+    .btn-ghost:hover { background: rgba(255,255,255,0.12); }
 
-    .footer {
-      text-align: center;
-      color: var(--muted);
+    .alt-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .divider {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: 12px;
+      align-items: center;
+      margin: 14px 0 10px;
+      color: rgba(203,185,212,0.7);
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+    }
+    .divider::before, .divider::after {
+      content: "";
+      height: 1px;
+      background: rgba(255, 236, 215, 0.12);
+    }
+
+    .legal {
+      margin: 14px 0 2px;
+      color: rgba(203,185,212,0.75);
       font-size: 11.5px;
-      letter-spacing: 0.12em;
-      padding-top: 18px;
+      text-align: center;
+      line-height: 1.5;
     }
-    .footer a { color: var(--gold-soft); text-decoration: none; margin: 0 6px; }
-    .footer a:hover { text-decoration: underline; }
+    .legal a {
+      color: var(--gold-2);
+      text-decoration: none;
+      margin: 0 2px;
+    }
+    .legal a:hover { text-decoration: underline; }
 
-    @media (min-width: 720px) {
-      .features { grid-template-columns: 1fr 1fr; }
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: calc(env(safe-area-inset-bottom, 0px) + 18px);
+      transform: translate(-50%, 14px);
+      z-index: 9;
+      padding: 10px 14px;
+      border-radius: 14px;
+      background: rgba(18, 10, 32, 0.92);
+      border: 1px solid rgba(255, 236, 215, 0.18);
+      color: var(--text);
+      font-size: 13px;
+      opacity: 0;
+      pointer-events: none;
+      transition: transform 220ms ease, opacity 220ms ease;
+    }
+    .toast.is-visible {
+      opacity: 1;
+      transform: translate(-50%, 0);
+    }
+
+    /* Splash while bootstrapping the already-signed-in user */
+    .splash {
+      position: fixed;
+      inset: 0;
+      z-index: 10;
+      display: none;
+      place-items: center;
+      background: rgba(5, 2, 14, 0.82);
+      backdrop-filter: blur(8px);
+    }
+    .splash.is-visible { display: grid; }
+    .splash .ring {
+      width: 46px; height: 46px;
+      border-radius: 50%;
+      border: 3px solid rgba(255, 225, 168, 0.2);
+      border-top-color: var(--gold-2);
+      animation: spin 900ms linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    @media (max-height: 680px) {
+      .spacer { min-height: 120px; }
+      .solar-stage { width: min(82vw, 420px); height: min(82vw, 420px); }
+    }
+    @media (min-width: 640px) {
+      .landing { padding-top: 48px; }
     }
   </style>
 </head>
 <body>
-  <div class="landing">
-    <header class="header">
-      <span class="brand">
-        <span class="brand-mark">✦</span>
-        ASTROPATH
-      </span>
-    </header>
+  <!-- Cosmic background layers -->
+  <div class="sky" aria-hidden="true"></div>
+  <img class="sky-art" id="skyArt" src="./ui/assets/landing-cosmos.jpg" alt="" aria-hidden="true"
+       onload="this.classList.add('is-loaded'); document.body.classList.add('has-artwork');"
+       onerror="this.remove();">
+  <div class="stars" aria-hidden="true"></div>
 
-    <main class="hero">
-      <span class="eyebrow">Vedic · Daily · Personal</span>
-      <h1 class="title">Your cosmic<br/><em>companion</em> for every day.</h1>
-      <p class="subtitle">
-        Kundli, horoscope, panchang, and AI-guided insights — rooted in Vedic tradition,
-        tuned to your birth chart, and ready when you need them.
-      </p>
-
-      <div class="features">
-        <div class="feature">
-          <div class="feature-icon">🪐</div>
-          <div><strong>Personal Kundli</strong><span>Lagna, Moon &amp; Sun, dasha, nakshatra</span></div>
-        </div>
-        <div class="feature">
-          <div class="feature-icon">🌙</div>
-          <div><strong>Daily Horoscope</strong><span>Career, love, health, finance</span></div>
-        </div>
-        <div class="feature">
-          <div class="feature-icon">🕉</div>
-          <div><strong>Panchang &amp; Muhurat</strong><span>Tithi, vara, auspicious timings</span></div>
-        </div>
-        <div class="feature">
-          <div class="feature-icon">✨</div>
-          <div><strong>AstroPath AI</strong><span>Chat grounded in your chart</span></div>
-        </div>
-      </div>
-
-      <div class="cta-row">
-        <a class="btn btn-primary" href="./login.html">Get started</a>
-        <a class="btn btn-secondary" href="./login.html?mode=signin">I already have an account</a>
-      </div>
-    </main>
-
-    <footer class="footer">
-      By continuing you agree to our
-      <a href="./ui/guidelines.html#terms">Terms</a> ·
-      <a href="./ui/guidelines.html#privacy">Privacy</a> ·
-      <a href="./ui/guidelines.html#ai">AI disclaimer</a>
-    </footer>
+  <!-- CSS solar system (hidden when artwork loads) -->
+  <div class="solar" aria-hidden="true">
+    <div class="solar-stage">
+      <div class="orbit o1"></div>
+      <div class="orbit o2"></div>
+      <div class="orbit o3"></div>
+      <div class="orbit o4"></div>
+      <div class="orbit o5"></div>
+      <div class="orbit o6"></div>
+      <div class="sun"></div>
+      <div class="planet mercury"></div>
+      <div class="planet venus"></div>
+      <div class="planet earth"></div>
+      <div class="planet mars"></div>
+      <div class="planet jupiter"></div>
+      <div class="planet saturn"></div>
+      <div class="planet uranus"></div>
+    </div>
   </div>
 
+  <!-- Foreground -->
+  <div class="landing">
+    <header class="brand">
+      <div class="orb" aria-hidden="true"></div>
+      <div class="wordmark"><span class="astro">ASTRO</span><span class="path">PATH</span></div>
+      <div class="tag">Vedic · Daily · Personal</div>
+    </header>
+
+    <div class="spacer" aria-hidden="true"></div>
+
+    <section class="login-card" aria-label="Sign in">
+      <h1 class="login-title">Sign in to AstroPath</h1>
+      <p class="login-sub">Enter the cosmos — your kundli, horoscope and AI guide.</p>
+
+      <button class="btn btn-google" id="btnGoogle" type="button">
+        <svg class="g-logo" viewBox="0 0 48 48" aria-hidden="true">
+          <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+          <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+          <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+          <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+          <path fill="none" d="M0 0h48v48H0z"/>
+        </svg>
+        <span>Continue with Google</span>
+      </button>
+
+      <div class="divider">or</div>
+
+      <div class="alt-row">
+        <a class="btn btn-ghost" id="btnPhone" href="./login.html#phone">Phone</a>
+        <a class="btn btn-ghost" id="btnEmail" href="./login.html#email">Email</a>
+      </div>
+
+      <p class="legal">
+        By continuing, you agree to our
+        <a href="./ui/guidelines.html#terms">Terms</a> ·
+        <a href="./ui/guidelines.html#privacy">Privacy</a> ·
+        <a href="./ui/guidelines.html#ai">AI disclaimer</a>
+      </p>
+    </section>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <div class="splash" id="splash" aria-hidden="true"><div class="ring"></div></div>
+
+  <script src="./ui/app.js"></script>
   <script>
-    // If a session already exists, skip the landing and go straight to the app.
-    try {
-      var token = localStorage.getItem('astropath.token');
-      var onboarded = localStorage.getItem('astropath.onboarding');
-      if (token) {
-        var dest = onboarded === 'complete' ? './ui/dashboard.html' : './ui/onboarding.html';
-        location.replace(dest);
+    (function () {
+      var toastEl = document.getElementById('toast');
+      var toastTimer = null;
+      function toast(msg) {
+        toastEl.textContent = msg;
+        toastEl.classList.add('is-visible');
+        window.clearTimeout(toastTimer);
+        toastTimer = window.setTimeout(function () {
+          toastEl.classList.remove('is-visible');
+        }, 2200);
       }
-    } catch (_) { /* ignore private-mode / storage errors */ }
+
+      var splash = document.getElementById('splash');
+      function showSplash() { splash.classList.add('is-visible'); }
+      function hideSplash() { splash.classList.remove('is-visible'); }
+
+      // Already-signed-in users skip the landing.
+      //
+      // IMPORTANT: we must only auto-redirect when a user session is ALREADY
+      // cached locally. Calling AP.bootstrap() here unconditionally is unsafe
+      // because in AUTH_MODE=bypass the backend always hands back a synthetic
+      // dev user, which would permanently skip the login screen after the very
+      // first sign-in (no way back short of clearing localStorage).
+      //
+      // Also guard against the ?forceLogin=1 / #login escape hatch so testers
+      // can always reach the landing + login form when needed.
+      (async function redirectIfAuthed() {
+        var AP = window.AstroPath;
+        if (!AP) return;
+
+        var forceLogin = false;
+        try {
+          var qs = new URLSearchParams(location.search || '');
+          forceLogin = qs.get('forceLogin') === '1' || (location.hash || '').toLowerCase() === '#login';
+        } catch (_e) {}
+        if (forceLogin) {
+          // User explicitly asked for the login screen — wipe the "skip landing"
+          // flag so we don't auto-redirect on the next visit either.
+          try { window.localStorage.removeItem('astropath.signedInExplicitly'); } catch (_e) {}
+          return;
+        }
+
+        var already = false;
+        try { already = window.localStorage.getItem('astropath.signedInExplicitly') === '1'; } catch (_e) {}
+        if (!already) return;
+
+        // Only short-circuit to the app when we already have a cached user.
+        // Do NOT call AP.bootstrap() here — in bypass mode it would invent one.
+        if (!AP.state || !AP.state.isAuthenticated()) return;
+
+        showSplash();
+        try {
+          var dest = AP.state.onboardingComplete ? './ui/dashboard.html' : './ui/onboarding.html';
+          location.replace(dest);
+          return;
+        } catch (_err) { /* fall through to landing */ }
+        hideSplash();
+      })();
+
+      // Google button → /v1/auth/session (bypass in dev; real Google OAuth in prod).
+      var btnGoogle = document.getElementById('btnGoogle');
+      btnGoogle.addEventListener('click', async function () {
+        var AP = window.AstroPath;
+        if (!AP) { toast('Client not ready. Reload the page.'); return; }
+        btnGoogle.disabled = true;
+        showSplash();
+        try {
+          var data = await AP.api.session({});
+          if (data && data.user)    AP.state.user = data.user;
+          if (data && data.profile) AP.state.profile = data.profile;
+          if (data && data.profile && data.profile.preferences && data.profile.preferences.languageCode) {
+            AP.state.locale = data.profile.preferences.languageCode;
+          }
+          try { window.localStorage.setItem('astropath.signedInExplicitly', '1'); } catch (_e) {}
+          var next = AP.state.onboardingComplete ? './ui/dashboard.html' : './ui/onboarding.html';
+          location.href = next;
+        } catch (err) {
+          hideSplash();
+          btnGoogle.disabled = false;
+          var msg = (err && err.message) ? err.message : 'unknown';
+          toast('Sign-in failed: ' + msg);
+        }
+      });
+
+      // Phone / Email → existing login.html (phone is its default tab; anchor
+      // helps us auto-select in login.html below). No preventDefault here — let
+      // the anchor navigate natively.
+    })();
   </script>
 </body>
 </html>

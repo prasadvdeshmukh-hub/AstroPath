@@ -126,15 +126,47 @@
           <div class="brand-lockup" style="margin-top: 16px;">
             <div class="brand-icon">⊕</div>
             <div class="brand-meta">
-              <strong>KUNDLI</strong>
+              <strong data-i18n="kundli.title">KUNDLI</strong>
               <span id="kundliMeta">Vihaan · 08 Aug 2001 · 04:32 AM · Pune</span>
             </div>
           </div>
 
+          <!-- Primary CTAs: Generate / Match -->
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 16px;">
+            <button type="button" class="primary-button" id="ctaGenerate" data-i18n="kundli.generate" style="width: 100%;">Generate Kundli</button>
+            <button type="button" class="ghost-button" id="ctaMatch" data-i18n="kundli.match" style="width: 100%;">Match Kundli</button>
+          </div>
+
+          <!-- Match Kundli form (hidden by default, opens on demand) -->
+          <section id="matchPanel" class="card" style="display: none; margin-top: 14px;">
+            <h4 class="card-title" data-i18n="kundli.match.title">Match Two Kundlis</h4>
+            <p class="card-body" data-i18n="kundli.match.sub">Enter both partners' birth details for Guna Milan + full compatibility.</p>
+            <div style="display: grid; gap: 10px; margin-top: 10px;">
+              <div class="field">
+                <label class="label" data-i18n="kundli.match.partnerA">Partner A</label>
+                <input id="matchAName" type="text" placeholder="Name (A)">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 6px;">
+                  <input id="matchADate" type="date">
+                  <input id="matchATime" type="time">
+                </div>
+              </div>
+              <div class="field">
+                <label class="label" data-i18n="kundli.match.partnerB">Partner B</label>
+                <input id="matchBName" type="text" placeholder="Name (B)">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 6px;">
+                  <input id="matchBDate" type="date">
+                  <input id="matchBTime" type="time">
+                </div>
+              </div>
+              <button type="button" class="primary-button" id="runMatchBtn" data-i18n="kundli.match">Match Kundli</button>
+              <div id="matchResult" style="color: var(--gold-3); font-size: 0.9rem;"></div>
+            </div>
+          </section>
+
           <div class="tabs" style="margin-top: 18px;">
-            <button class="tab is-active">Lagna</button>
-            <button class="tab">Navamsa</button>
-            <button class="tab">Chandra</button>
+            <button class="tab is-active" data-i18n="kundli.tab.lagna">Lagna</button>
+            <button class="tab" data-i18n="kundli.tab.navamsa">Navamsa</button>
+            <button class="tab" data-i18n="kundli.tab.chandra">Chandra</button>
           </div>
 
           <!-- Lagna chart (South-Indian style 4x4) -->
@@ -217,8 +249,8 @@
           </div>
 
           <div class="section-h">
-            <h3>Planet Positions</h3>
-            <a href="#">Details</a>
+            <h3 data-i18n="kundli.planets">Planet Positions</h3>
+            <a href="#" data-i18n="kundli.details">Details</a>
           </div>
           <div class="planet-list">
             <div class="p-row">
@@ -260,8 +292,8 @@
           </div>
 
           <div class="section-h">
-            <h3>Vimshottari Dasha</h3>
-            <a href="#">Full timeline</a>
+            <h3 data-i18n="kundli.dasha">Vimshottari Dasha</h3>
+            <a href="#" data-i18n="kundli.timeline">Full timeline</a>
           </div>
           <div class="dasha-bar" aria-label="Dasha periods">
             <span class="d-sun"   title="Sun 6y"></span>
@@ -279,8 +311,8 @@
           </div>
 
           <div class="section-h">
-            <h3>Doshas</h3>
-            <a href="#">Remedies</a>
+            <h3 data-i18n="kundli.doshas">Doshas</h3>
+            <a href="#" data-i18n="kundli.remedies">Remedies</a>
           </div>
           <div class="dosha-row">
             <span class="pill pill--gold">Mangal Dosha · weak</span>
@@ -289,11 +321,11 @@
           </div>
 
           <nav class="bottom-nav">
-            <a class="bn-item" href="./dashboard.html"><span class="bn-icon">☰</span>Home</a>
-            <a class="bn-item is-active" href="./kundli.html"><span class="bn-icon">⊕</span>Kundli</a>
-            <a class="bn-item" href="./consultation.html"><span class="bn-icon">💬</span>Consult</a>
-            <a class="bn-item" href="./assistant.html"><span class="bn-icon">✶</span>AI</a>
-            <a class="bn-item" href="./settings.html"><span class="bn-icon">⚙</span>More</a>
+            <a class="bn-item" href="./dashboard.html"><span class="bn-icon">☰</span><span data-i18n="nav.home">Home</span></a>
+            <a class="bn-item is-active" href="./kundli.html"><span class="bn-icon">⊕</span><span data-i18n="nav.kundli">Kundli</span></a>
+            <a class="bn-item" href="./consultation.html"><span class="bn-icon">💬</span><span data-i18n="nav.consult">Consult</span></a>
+            <a class="bn-item" href="./assistant.html"><span class="bn-icon">✶</span><span data-i18n="nav.ai">AI</span></a>
+            <a class="bn-item" href="./settings.html"><span class="bn-icon">⚙</span><span data-i18n="nav.settings">Settings</span></a>
           </nav>
         </div>
       </div>
@@ -301,12 +333,93 @@
   </section>
 </main>
 
+<script src="./i18n.js"></script>
 <script src="./app.js"></script>
 <script>
+  // Top CTAs: regenerate chart from stored birthInfo / open Match Kundli panel.
+  function wireCtas(AP) {
+    const gen = document.getElementById('ctaGenerate');
+    const match = document.getElementById('ctaMatch');
+    const panel = document.getElementById('matchPanel');
+    const runMatch = document.getElementById('runMatchBtn');
+    const matchResult = document.getElementById('matchResult');
+    const I18N = window.AstroPathI18n;
+
+    if (gen) gen.addEventListener('click', async () => {
+      const bi = AP.state.birthInfo;
+      if (!bi || !bi.birthDate) {
+        AP.dom.toast('Complete onboarding first.');
+        location.href = './onboarding.html#step4';
+        return;
+      }
+      AP.dom.toast('Regenerating kundli…');
+      try {
+        const k = await AP.api.generateKundli({
+          name: bi.name,
+          birthDate: bi.birthDate,
+          birthTime: bi.birthTime,
+          latitude: bi.latitude,
+          longitude: bi.longitude,
+          tzOffsetMinutes: bi.tzOffsetMinutes,
+        });
+        AP.state.lastKundli = k;
+        AP.dom.toast('Kundli updated.');
+        setTimeout(() => location.reload(), 600);
+      } catch (err) {
+        AP.dom.toast('Failed: ' + (err && err.message ? err.message : 'error'));
+      }
+    });
+
+    if (match) match.addEventListener('click', () => {
+      if (!panel) return;
+      const showing = panel.style.display === 'block';
+      panel.style.display = showing ? 'none' : 'block';
+      if (!showing) panel.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    });
+
+    if (runMatch) runMatch.addEventListener('click', async () => {
+      const a = {
+        name: (document.getElementById('matchAName').value || '').trim(),
+        birthDate: document.getElementById('matchADate').value,
+        birthTime: document.getElementById('matchATime').value,
+        latitude: 18.5204, longitude: 73.8567, tzOffsetMinutes: 330,
+      };
+      const b = {
+        name: (document.getElementById('matchBName').value || '').trim(),
+        birthDate: document.getElementById('matchBDate').value,
+        birthTime: document.getElementById('matchBTime').value,
+        latitude: 18.5204, longitude: 73.8567, tzOffsetMinutes: 330,
+      };
+      if (!a.birthDate || !a.birthTime || !b.birthDate || !b.birthTime) {
+        AP.dom.toast('Enter both partners\' date + time.');
+        return;
+      }
+      matchResult.textContent = '…';
+      try {
+        const res = await AP.api.compatibility({ partnerA: a, partnerB: b });
+        const score = (res && (res.score || res.gunaScore)) || 'n/a';
+        const verdict = (res && res.verdict) || (res && res.summary) || 'Compatibility report ready.';
+        matchResult.innerHTML = '<b>Guna Milan:</b> ' + score + '<br>' + verdict;
+      } catch (err) {
+        matchResult.textContent = 'Match failed: ' + (err && err.message ? err.message : '');
+      }
+    });
+
+    // Honour ?action=generate / ?action=match from dashboard quick actions
+    try {
+      const qs = new URLSearchParams(location.search);
+      const action = qs.get('action');
+      if (action === 'match' && match) match.click();
+      if (action === 'generate' && gen) gen.click();
+    } catch (_e) {}
+  }
+
   (async function () {
     const AP = window.AstroPath;
     if (!AP) return;
     if (!(await AP.guard('app'))) return;
+
+    wireCtas(AP);
 
     const bi = AP.state.birthInfo;
     let k = AP.state.lastKundli;

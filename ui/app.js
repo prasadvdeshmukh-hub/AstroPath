@@ -162,6 +162,20 @@
         body: { prompt, history: history || [] },
       });
     },
+
+    // Geo: India-only pincode / state / city master (backend-served CSV)
+    geoCountries()         { return fetchJson('/v1/geo/countries'); },
+    geoStates()            { return fetchJson('/v1/geo/states'); },
+    geoCities(state)       { return fetchJson('/v1/geo/states/' + encodeURIComponent(state) + '/cities'); },
+    geoPincode(code)       { return fetchJson('/v1/geo/pincode/' + encodeURIComponent(code)); },
+
+    // Subscription / Razorpay
+    subPlans()             { return fetchJson('/v1/subscription/plans'); },
+    subStatus()            { return fetchJson('/v1/subscription/status'); },
+    subCreateOrder(planId) { return fetchJson('/v1/subscription/order', { method: 'POST', body: { planId } }); },
+    subVerify(payload)     { return fetchJson('/v1/subscription/verify', { method: 'POST', body: payload }); },
+    subCancel()            { return fetchJson('/v1/subscription/cancel', { method: 'POST', body: {} }); },
+    subStubComplete(orderId) { return fetchJson('/v1/subscription/stub-complete', { method: 'POST', body: { orderId } }); },
   };
 
   // ------------------------------------------------------------------
@@ -294,7 +308,9 @@
     'panchang.html':     'kundli',
     'consultation.html': 'consult',
     'assistant.html':    'ai',
-    'settings.html':     'more',
+    'settings.html':     'settings',
+    'learn.html':        'settings',
+    'subscription.html': 'settings',
   };
   function setActiveNav() {
     const here = location.pathname.split('/').pop() || '';
@@ -302,14 +318,13 @@
     if (!key) return;
     const items = document.querySelectorAll('.bn-item');
     items.forEach((node) => {
-      const label = (node.textContent || '').trim().toLowerCase();
       const href  = (node.getAttribute('href') || '').split('/').pop();
       const match = (
-        (key === 'home'    && (label.startsWith('home')    || href === 'dashboard.html')) ||
-        (key === 'kundli'  && (label.startsWith('kundli')  || href === 'kundli.html')) ||
-        (key === 'consult' && (label.startsWith('consult') || href === 'consultation.html')) ||
-        (key === 'ai'      && (label.startsWith('ai')      || href === 'assistant.html')) ||
-        (key === 'more'    && (label.startsWith('more')    || href === 'settings.html'))
+        (key === 'home'    && href === 'dashboard.html') ||
+        (key === 'kundli'  && href === 'kundli.html')    ||
+        (key === 'consult' && href === 'consultation.html') ||
+        (key === 'ai'      && href === 'assistant.html') ||
+        (key === 'settings'&& href === 'settings.html')
       );
       node.classList.toggle('is-active', !!match);
     });
@@ -476,24 +491,27 @@
   function mountSessionMenu() {
     if (pageIsPublic()) return;
     const here = location.pathname.split('/').pop() || '';
+    // Product decision (2026-04-20): profile icon only on Home (dashboard).
+    // Other pages wire the session menu only when the page explicitly opts in
+    // via a [data-session-trigger] element (e.g. dashboard's avatar button).
     const explicitTrigger = document.querySelector('[data-session-trigger]');
     if (explicitTrigger) {
       decorateSessionTrigger(explicitTrigger);
       sessionMenuMounted = true;
       return;
     }
-    if (here === 'settings.html' || sessionMenuMounted) return;
-    const phoneScreen = document.querySelector('.phone-screen');
-    if (!phoneScreen) return;
-    const floating = document.createElement('button');
-    floating.className = 'session-trigger session-trigger--floating';
-    phoneScreen.appendChild(floating);
-    decorateSessionTrigger(floating);
-    sessionMenuMounted = true;
+    // No floating icon injected anywhere else anymore.
   }
 
   normalizeNavIcons();
   hydrateStatusRow();
+
+  // Re-apply i18n whenever the locale changes mid-page (Settings picker).
+  function refreshI18n() {
+    if (window.AstroPathI18n && typeof window.AstroPathI18n.apply === 'function') {
+      window.AstroPathI18n.apply();
+    }
+  }
 
   // ------------------------------------------------------------------
   // Public surface
@@ -511,5 +529,6 @@
     paths,
     nav: { navigate, setActive: setActiveNav, showSplash, hideSplash },
     sessionMenu: { open: openSessionMenu, close: closeSessionMenu, mount: mountSessionMenu },
+    i18n: { refresh: refreshI18n, t: (k, f) => (window.AstroPathI18n ? window.AstroPathI18n.t(k, f) : (f || k)) },
   });
 })();

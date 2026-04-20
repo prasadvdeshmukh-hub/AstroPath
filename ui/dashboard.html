@@ -176,59 +176,75 @@
           </div>
 
           <div class="horoscope">
-            <span class="horoscope-label">Today's Horoscope</span>
+            <span class="horoscope-label" data-i18n="dash.todayHoroscope">Today's Horoscope</span>
             <div class="horoscope-title" id="horoTitle">The sun favours your second house.</div>
             <p class="horoscope-body" id="horoBody">
               A career conversation opens a door you didn't know was closed. Move with intent after 3 PM,
               and avoid financial commitments until Mercury settles tomorrow morning.
             </p>
-            <a class="horoscope-cta" href="./horoscope.html">Read full horoscope →</a>
+            <a class="horoscope-cta" href="./horoscope.html" data-i18n="dash.readFull">Read full horoscope →</a>
           </div>
 
           <div class="energy">
             <div class="gauge" id="energyGauge" data-val="76" style="--val: 76;"></div>
             <div>
-              <div class="energy-label">Cosmic Energy</div>
+              <div class="energy-label" data-i18n="dash.cosmicEnergy">Cosmic Energy</div>
               <div class="energy-title" id="energyTitle">76 · High focus window</div>
               <p class="energy-sub" id="energySub">Best time for decisions: 10:30 AM – 1:45 PM</p>
             </div>
           </div>
 
           <div class="section-h">
-            <h3>Quick Actions</h3>
-            <a href="#">Customize</a>
+            <h3 data-i18n="dash.quickActions">Quick Actions</h3>
+            <a href="#" data-i18n="dash.customize">Customize</a>
           </div>
-          <div class="quick">
-            <a class="qa" href="./kundli.html">
+          <div class="quick" style="grid-template-columns: repeat(4, 1fr);">
+            <a class="qa" href="./kundli.html?action=generate">
               <div class="qa-icon">⊕</div>
-              <span>Kundli</span>
+              <span data-i18n="btn.generate">Generate Kundli</span>
+            </a>
+            <a class="qa" href="./kundli.html?action=match">
+              <div class="qa-icon">⚭</div>
+              <span data-i18n="btn.match">Match Kundli</span>
             </a>
             <a class="qa" href="./panchang.html">
               <div class="qa-icon">☼</div>
-              <span>Panchang</span>
+              <span data-i18n="dash.qa.panchang">Panchang</span>
+            </a>
+            <a class="qa" href="./horoscope.html">
+              <div class="qa-icon">♎</div>
+              <span data-i18n="nav.horoscope">Horoscope</span>
             </a>
             <a class="qa" href="./consultation.html">
               <div class="qa-icon">💬</div>
-              <span>Consult</span>
+              <span data-i18n="dash.qa.consult">Consult</span>
             </a>
             <a class="qa" href="./assistant.html">
               <div class="qa-icon">✶</div>
-              <span>AI Guru</span>
+              <span data-i18n="dash.qa.ai">AI Guru</span>
+            </a>
+            <a class="qa" href="./learn.html">
+              <div class="qa-icon">📖</div>
+              <span data-i18n="dash.qa.learn">Learn</span>
+            </a>
+            <a class="qa" href="./subscription.html">
+              <div class="qa-icon">★</div>
+              <span data-i18n="settings.plan">Subscription</span>
             </a>
           </div>
 
           <div class="moon">
             <div class="moon-orb"></div>
             <div>
-              <div class="moon-label">Moon Phase</div>
+              <div class="moon-label" data-i18n="dash.moonPhase">Moon Phase</div>
               <div class="moon-phase" id="moonPhase">Waxing Gibbous · 82%</div>
               <p class="moon-sub" id="moonSub">Ideal for starting long-term commitments. Energy peaks at 11:14 PM.</p>
             </div>
           </div>
 
           <div class="section-h">
-            <h3>Recent</h3>
-            <a href="#">See all</a>
+            <h3 data-i18n="dash.recent">Recent</h3>
+            <a href="#" data-i18n="dash.seeAll">See all</a>
           </div>
           <div class="notif">
             <div class="n-item">
@@ -257,12 +273,14 @@
             </div>
           </div>
 
+          <button class="danger" id="dashLogoutBtn" type="button" style="margin-top: 14px; padding: 12px 14px; border-radius: 14px; background: rgba(255,141,166,0.06); border: 1px solid rgba(255,141,166,0.20); color: var(--danger); font-size: 0.88rem; text-align: center; cursor: pointer; width: 100%;" data-i18n="btn.logout">Log out</button>
+
           <nav class="bottom-nav">
-            <a class="bn-item is-active" href="./dashboard.html"><span class="bn-icon">☰</span>Home</a>
-            <a class="bn-item" href="./kundli.html"><span class="bn-icon">⊕</span>Kundli</a>
-            <a class="bn-item" href="./consultation.html"><span class="bn-icon">💬</span>Consult</a>
-            <a class="bn-item" href="./assistant.html"><span class="bn-icon">✶</span>AI</a>
-            <a class="bn-item" href="./settings.html"><span class="bn-icon">⚙</span>More</a>
+            <a class="bn-item is-active" href="./dashboard.html"><span class="bn-icon">☰</span><span data-i18n="nav.home">Home</span></a>
+            <a class="bn-item" href="./kundli.html"><span class="bn-icon">⊕</span><span data-i18n="nav.kundli">Kundli</span></a>
+            <a class="bn-item" href="./consultation.html"><span class="bn-icon">💬</span><span data-i18n="nav.consult">Consult</span></a>
+            <a class="bn-item" href="./assistant.html"><span class="bn-icon">✶</span><span data-i18n="nav.ai">AI</span></a>
+            <a class="bn-item" href="./settings.html"><span class="bn-icon">⚙</span><span data-i18n="nav.settings">Settings</span></a>
           </nav>
         </div>
       </div>
@@ -270,6 +288,7 @@
   </section>
 </main>
 
+<script src="./i18n.js"></script>
 <script src="./app.js"></script>
 <script>
   (async function () {
@@ -277,9 +296,22 @@
     if (!AP) return;
     if (!(await AP.guard('app'))) return;
 
+    // Wire Log out button (task: logout on Home).
+    const lo = document.getElementById('dashLogoutBtn');
+    if (lo) lo.addEventListener('click', () => {
+      if (!confirm((window.AstroPathI18n && window.AstroPathI18n.t('btn.logout')) || 'Log out?')) return;
+      AP.state.signOut();
+      location.replace('../login.html');
+    });
+
     // Seed greeting from the cached user while we fetch.
+    const I18N = window.AstroPathI18n;
     const hour = new Date().getHours();
-    const greetBase = hour < 5 ? 'Good night' : hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
+    const greetKey = hour < 5 ? 'dash.greeting.night'
+                 : hour < 12 ? 'dash.greeting.morning'
+                 : hour < 17 ? 'dash.greeting.afternoon'
+                 : 'dash.greeting.evening';
+    const greetBase = I18N ? I18N.t(greetKey) : 'Good morning';
     const user = AP.state.user;
     const name = (AP.state.birthInfo && AP.state.birthInfo.name) || (user && user.email ? user.email.split('@')[0] : 'seeker');
     AP.dom.setText('#greeting', greetBase + ', ' + name + ' ✦');

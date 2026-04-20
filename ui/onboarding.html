@@ -69,14 +69,12 @@
   .nav-row .ghost-button { width: auto; flex: 0 0 44%; }
   .nav-row .primary-button { width: auto; flex: 1; }
 
-  /* Time-of-birth dropdowns: Hour / Minute / AM-PM in one row */
   .time-row {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
     gap: 8px;
   }
 
-  /* Normalize native <select> appearance so it matches <input> tiles */
   .field select {
     appearance: none;
     -webkit-appearance: none;
@@ -94,14 +92,11 @@
   .field select:disabled { opacity: 0.45; cursor: not-allowed; }
   .field select option { background: #1a1028; color: var(--text); }
 
-  /* Date input: native calendar picker in dark mode. Make the whole field feel clickable
-     and force the calendar glyph to pure white so it's visible against the dark input. */
   .field input[type="date"] {
     color-scheme: dark;
     cursor: pointer;
   }
   .field input[type="date"]::-webkit-calendar-picker-indicator {
-    /* brightness(0) flattens the glyph to black, invert(1) flips it to pure white */
     filter: brightness(0) invert(1);
     opacity: 1;
     cursor: pointer;
@@ -111,12 +106,32 @@
     height: 20px;
   }
 
-  /* Required-field indicator: small red star next to the label / heading text */
   .req {
     color: #ff6b6b;
     margin-left: 4px;
     font-weight: 700;
   }
+
+  /* Inline validation error */
+  .err-line {
+    color: #ff8d8d;
+    font-size: 0.78rem;
+    margin-top: 6px;
+    min-height: 1em;
+  }
+  .field.is-invalid input,
+  .field.is-invalid select {
+    border-color: rgba(255, 107, 107, 0.55) !important;
+    background: rgba(255, 107, 107, 0.06);
+  }
+
+  .pin-status {
+    font-size: 0.76rem;
+    color: var(--gold-2);
+    margin-top: 6px;
+    min-height: 1em;
+  }
+  .pin-status.err { color: #ff8d8d; }
 </style>
 </head>
 <body>
@@ -137,7 +152,7 @@
             <div class="brand-icon">✦</div>
             <div class="brand-meta">
               <strong>ASTROPATH</strong>
-              <span>Step <span id="stepIdx">1</span> of 4</span>
+              <span><span data-i18n="onb.step">Step</span> <span id="stepIdx">1</span> <span data-i18n="onb.of">of</span> 4</span>
             </div>
           </div>
 
@@ -150,8 +165,9 @@
 
           <!-- Step 1: Welcome -->
           <section class="step is-active" data-step="1">
-            <strong class="panel-title">Welcome,<br>seeker.</strong>
-            <p class="panel-subtitle">
+            <strong class="panel-title" data-i18n="onb.welcome.title">Welcome,
+seeker.</strong>
+            <p class="panel-subtitle" data-i18n="onb.welcome.sub">
               AstroPath turns your birth chart into a living daily guide — horoscope, panchang, rituals,
               and real astrologers. Ready to decode your destiny?
             </p>
@@ -163,53 +179,54 @@
             </div>
 
             <div class="card" style="margin-top: 14px;">
-              <h4 class="card-title">Three things this week</h4>
-              <p class="card-body">Personalised kundli · Daily cosmic energy · One free AI consult to try.</p>
+              <h4 class="card-title" data-i18n="onb.welcome.threeTitle">Three things this week</h4>
+              <p class="card-body" data-i18n="onb.welcome.threeBody">Personalised kundli · Daily cosmic energy · One free AI consult to try.</p>
             </div>
 
             <div class="nav-row">
-              <button type="button" class="primary-button" data-next="2">Next</button>
+              <button type="button" class="primary-button" data-next="2" data-i18n="btn.next">Next</button>
             </div>
           </section>
 
           <!-- Step 2: Focus -->
           <section class="step" data-step="2">
-            <strong class="panel-title">Where do you seek guidance?<span class="req" aria-hidden="true">*</span></strong>
-            <p class="panel-subtitle">Pick one or more focus areas — we'll tune horoscopes, reminders, and rituals around them. <span class="req" aria-hidden="true">*</span> required.</p>
+            <strong class="panel-title"><span data-i18n="onb.focus.title">Where do you seek guidance?</span><span class="req" aria-hidden="true">*</span></strong>
+            <p class="panel-subtitle" data-i18n="onb.focus.sub">Pick one or more focus areas — we'll tune horoscopes, reminders, and rituals around them.</p>
 
             <div class="choice-grid" data-group="focus">
               <div class="choice is-selected" data-value="career">
                 <div class="choice-icon">◎</div>
-                <div class="choice-title">Career</div>
-                <div class="choice-sub">Direction & growth</div>
+                <div class="choice-title" data-i18n="onb.focus.career">Career</div>
+                <div class="choice-sub" data-i18n="onb.focus.career.sub">Direction & growth</div>
               </div>
               <div class="choice" data-value="love">
                 <div class="choice-icon">♡</div>
-                <div class="choice-title">Love</div>
-                <div class="choice-sub">Relationships & match</div>
+                <div class="choice-title" data-i18n="onb.focus.love">Love</div>
+                <div class="choice-sub" data-i18n="onb.focus.love.sub">Relationships & match</div>
               </div>
               <div class="choice" data-value="finance">
                 <div class="choice-icon">₹</div>
-                <div class="choice-title">Finance</div>
-                <div class="choice-sub">Wealth & decisions</div>
+                <div class="choice-title" data-i18n="onb.focus.finance">Finance</div>
+                <div class="choice-sub" data-i18n="onb.focus.finance.sub">Wealth & decisions</div>
               </div>
               <div class="choice" data-value="spiritual">
                 <div class="choice-icon">✺</div>
-                <div class="choice-title">Spiritual</div>
-                <div class="choice-sub">Rituals & practice</div>
+                <div class="choice-title" data-i18n="onb.focus.spiritual">Spiritual</div>
+                <div class="choice-sub" data-i18n="onb.focus.spiritual.sub">Rituals & practice</div>
               </div>
             </div>
+            <div class="err-line" id="err-focus"></div>
 
             <div class="nav-row">
-              <button type="button" class="ghost-button" data-next="1">Back</button>
-              <button type="button" class="primary-button" data-next="3">Next</button>
+              <button type="button" class="ghost-button" data-next="1" data-i18n="btn.back">Back</button>
+              <button type="button" class="primary-button" data-step-next="3" data-validates="focus" data-i18n="btn.next">Next</button>
             </div>
           </section>
 
           <!-- Step 3: Language -->
           <section class="step" data-step="3">
-            <strong class="panel-title">Choose your language<span class="req" aria-hidden="true">*</span></strong>
-            <p class="panel-subtitle">The whole app — dashboard, kundli, horoscope, consultations — will switch to your pick. Change any time from Settings. <span class="req" aria-hidden="true">*</span> required.</p>
+            <strong class="panel-title"><span data-i18n="onb.lang.title">Choose your language</span><span class="req" aria-hidden="true">*</span></strong>
+            <p class="panel-subtitle" data-i18n="onb.lang.sub">The whole app will switch to your pick. Change any time from Settings.</p>
 
             <div class="lang-list" data-group="lang">
               <div class="lang is-selected" data-value="en">
@@ -233,39 +250,35 @@
                 </div>
                 <div class="lang-check">✓</div>
               </div>
-              <div class="lang" data-value="ta">
-                <div>
-                  <div class="lang-name">தமிழ்</div>
-                  <div class="lang-native">Tamil · coming soon</div>
-                </div>
-                <div class="lang-check">✓</div>
-              </div>
             </div>
+            <div class="err-line" id="err-lang"></div>
 
             <div class="nav-row">
-              <button type="button" class="ghost-button" data-next="2">Back</button>
-              <button type="button" class="primary-button" data-next="4">Next</button>
+              <button type="button" class="ghost-button" data-next="2" data-i18n="btn.back">Back</button>
+              <button type="button" class="primary-button" data-step-next="4" data-validates="lang" data-i18n="btn.next">Next</button>
             </div>
           </section>
 
           <!-- Step 4: Birth Details -->
           <section class="step" data-step="4">
-            <strong class="panel-title">Your birth moment</strong>
-            <p class="panel-subtitle">The kundli engine uses Lahiri Ayanamsa and your exact time + place to compute Lagna, nakshatra, and dashas.</p>
+            <strong class="panel-title" data-i18n="onb.birth.title">Your birth moment</strong>
+            <p class="panel-subtitle" data-i18n="onb.birth.sub">The kundli engine uses Lahiri Ayanamsa and your exact time + place to compute Lagna, nakshatra, and dashas.</p>
 
             <div class="field-stack">
-              <div class="field">
-                <label class="label" for="fullName">Full Name<span class="req" aria-hidden="true">*</span></label>
+              <div class="field" id="f-name">
+                <label class="label" for="fullName"><span data-i18n="onb.field.name">Full Name</span><span class="req" aria-hidden="true">*</span></label>
                 <input id="fullName" type="text" placeholder="Vihaan Deshmukh" required>
+                <div class="err-line" id="err-name"></div>
               </div>
 
-              <div class="field">
-                <label class="label" for="dob">Date of Birth<span class="req" aria-hidden="true">*</span></label>
+              <div class="field" id="f-dob">
+                <label class="label" for="dob"><span data-i18n="onb.field.dob">Date of Birth</span><span class="req" aria-hidden="true">*</span></label>
                 <input id="dob" type="date" required>
+                <div class="err-line" id="err-dob"></div>
               </div>
 
-              <div class="field">
-                <label class="label">Time of Birth<span class="req" aria-hidden="true">*</span></label>
+              <div class="field" id="f-tob">
+                <label class="label"><span data-i18n="onb.field.tob">Time of Birth</span><span class="req" aria-hidden="true">*</span></label>
                 <div class="field-row time-row">
                   <select id="tobHour" aria-label="Hour" required></select>
                   <select id="tobMinute" aria-label="Minute" required></select>
@@ -274,36 +287,48 @@
                     <option value="PM">PM</option>
                   </select>
                 </div>
+                <div class="err-line" id="err-tob"></div>
               </div>
 
               <div class="field">
-                <label class="label" for="country">Country<span class="req" aria-hidden="true">*</span></label>
-                <select id="country" required><option value="">Select country</option></select>
+                <label class="label" for="country"><span data-i18n="onb.field.country">Country</span><span class="req" aria-hidden="true">*</span></label>
+                <select id="country" required disabled>
+                  <option value="IN" selected>India</option>
+                </select>
               </div>
+
+              <div class="field" id="f-pincode">
+                <label class="label" for="pincode"><span data-i18n="onb.field.pincode">Postal Code (PIN)</span><span class="req" aria-hidden="true">*</span></label>
+                <input id="pincode" type="text" inputmode="numeric" maxlength="6" pattern="\d{6}" placeholder="411001" required>
+                <div class="pin-status" id="pinStatus" data-i18n="onb.field.pincode.help">Enter a 6-digit Indian PIN — state &amp; city auto-fill.</div>
+                <div class="err-line" id="err-pincode"></div>
+              </div>
+
               <div class="field-row">
-                <div class="field">
-                  <label class="label" for="state">State<span class="req" aria-hidden="true">*</span></label>
-                  <select id="state" disabled required><option value="">Select state</option></select>
+                <div class="field" id="f-state">
+                  <label class="label" for="state"><span data-i18n="onb.field.state">State</span><span class="req" aria-hidden="true">*</span></label>
+                  <select id="state" required><option value="">—</option></select>
+                  <div class="err-line" id="err-state"></div>
                 </div>
-                <div class="field">
-                  <label class="label" for="city">City<span class="req" aria-hidden="true">*</span></label>
-                  <select id="city" disabled required><option value="">Select city</option></select>
+                <div class="field" id="f-city">
+                  <label class="label" for="city"><span data-i18n="onb.field.city">City / District</span><span class="req" aria-hidden="true">*</span></label>
+                  <select id="city" disabled required><option value="">—</option></select>
+                  <div class="err-line" id="err-city"></div>
                 </div>
               </div>
             </div>
 
-            <p class="panel-subtitle" style="margin-top: 14px; font-size: 0.8rem;">
+            <p class="panel-subtitle" style="margin-top: 14px; font-size: 0.8rem;" data-i18n="onb.locked">
               🔒 Locked inside your profile. Used only for kundli &amp; horoscope computations.
             </p>
 
             <div class="nav-row">
-              <button type="button" class="ghost-button" data-next="3">Back</button>
-              <button type="button" class="primary-button" id="finishBtn">Next</button>
+              <button type="button" class="ghost-button" data-next="3" data-i18n="btn.back">Back</button>
+              <button type="button" class="primary-button" id="finishBtn" data-i18n="btn.next">Next</button>
             </div>
           </section>
 
           <div class="footer-links">
-            <a href="./hub.html">All previews</a>
             <a href="#">Privacy</a>
             <a href="#">Terms</a>
           </div>
@@ -313,6 +338,7 @@
   </section>
 </main>
 
+<script src="./i18n.js"></script>
 <script src="./app.js"></script>
 <script>
   const steps = document.querySelectorAll('.step');
@@ -320,6 +346,8 @@
   const stepIdx = document.getElementById('stepIdx');
   const toast = document.getElementById('toast');
   let toastTimer;
+  const AP = window.AstroPath;
+  const I18N = window.AstroPathI18n;
 
   function show(n) {
     steps.forEach(s => s.classList.toggle('is-active', Number(s.dataset.step) === n));
@@ -334,30 +362,69 @@
     clearTimeout(toastTimer);
     toastTimer = setTimeout(() => toast.classList.remove('is-visible'), 2200);
   }
+  function setErr(id, msg) {
+    const el = document.getElementById('err-' + id);
+    if (el) el.textContent = msg || '';
+    const field = document.getElementById('f-' + id);
+    if (field) field.classList.toggle('is-invalid', !!msg);
+  }
+  function clearAllErrors() {
+    document.querySelectorAll('.err-line').forEach(el => el.textContent = '');
+    document.querySelectorAll('.field').forEach(el => el.classList.remove('is-invalid'));
+  }
 
+  // Plain back buttons
   document.querySelectorAll('[data-next]').forEach(btn => {
     btn.addEventListener('click', (e) => {
       e.preventDefault();
+      clearAllErrors();
       show(Number(btn.dataset.next));
     });
   });
 
-  // DOB: open the native calendar popover when the user taps anywhere on the input.
-  // Some browsers only trigger it on the tiny indicator icon otherwise.
+  // Validated forward buttons (steps 2, 3)
+  document.querySelectorAll('[data-step-next]').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      const target = Number(btn.dataset.stepNext);
+      const validates = btn.dataset.validates;
+      if (validates === 'focus') {
+        const picked = document.querySelectorAll('[data-group="focus"] .choice.is-selected').length;
+        if (!picked) {
+          setErr('focus', I18N.t('onb.validation.focus'));
+          showToast(I18N.t('onb.validation.focus'));
+          return;
+        }
+      }
+      if (validates === 'lang') {
+        const picked = document.querySelector('[data-group="lang"] .lang.is-selected');
+        if (!picked) {
+          setErr('lang', I18N.t('onb.validation.lang'));
+          showToast(I18N.t('onb.validation.lang'));
+          return;
+        }
+        // Apply language live immediately so step 4 renders in the chosen locale.
+        const lang = picked.dataset.value;
+        if (I18N && I18N.SUPPORTED.includes(lang)) I18N.setLocale(lang);
+      }
+      clearAllErrors();
+      show(target);
+    });
+  });
+
   (function wireDobPicker() {
     const dob = document.getElementById('dob');
     if (!dob) return;
     const openPicker = () => {
       if (typeof dob.showPicker === 'function') {
-        try { dob.showPicker(); } catch (_e) { /* user gesture required on some browsers */ }
+        try { dob.showPicker(); } catch (_e) {}
       }
     };
     dob.addEventListener('focus', openPicker);
     dob.addEventListener('click', openPicker);
   })();
 
-  // Failsafe: if the auth splash overlay is still on screen 2s after load (e.g., network
-  // hiccup during bootstrap), force-hide it so clicks reach the buttons.
+  // Failsafe: if the auth splash is still on screen 2s after load, force-hide it.
   setTimeout(() => {
     const s = document.querySelector('.auth-splash');
     if (s) { s.classList.remove('is-visible'); s.style.pointerEvents = 'none'; s.style.opacity = '0'; }
@@ -365,42 +432,49 @@
 
   // multi-select focus
   document.querySelectorAll('[data-group="focus"] .choice').forEach(c => {
-    c.addEventListener('click', () => c.classList.toggle('is-selected'));
+    c.addEventListener('click', () => {
+      c.classList.toggle('is-selected');
+      setErr('focus', '');
+    });
   });
 
-  // single-select language
+  // single-select language (also switches the UI locale live)
   document.querySelectorAll('[data-group="lang"] .lang').forEach(l => {
     l.addEventListener('click', () => {
       document.querySelectorAll('[data-group="lang"] .lang').forEach(x => x.classList.remove('is-selected'));
       l.classList.add('is-selected');
+      setErr('lang', '');
+      const lang = l.dataset.value;
+      if (I18N && I18N.SUPPORTED.includes(lang)) I18N.setLocale(lang);
     });
   });
 
-  // Auth gate: if the user isn't signed in, kick back to login.
+  // Auth gate
   (async function () {
-    const AP = window.AstroPath;
     if (!AP) return;
     await AP.guard('onboarding');
-    // Pre-populate name from stored user if any
     const user = AP.state.user;
     if (user && user.email) {
       const name = document.getElementById('fullName');
       if (name && !name.value) name.placeholder = user.email.split('@')[0];
     }
+    // Seed language picker from cached locale
+    const cur = I18N.getLocale();
+    document.querySelectorAll('[data-group="lang"] .lang').forEach(x => {
+      x.classList.toggle('is-selected', x.dataset.value === cur);
+    });
   })();
 
-  // -------- Time-of-birth: Hour / Minute / AM-PM dropdowns ----------------
+  // Time-of-birth dropdowns
   (function initTimeDropdowns() {
     const hourSel = document.getElementById('tobHour');
     const minSel  = document.getElementById('tobMinute');
     if (!hourSel || !minSel) return;
-
     hourSel.appendChild(new Option('HH', '', true, true));
     hourSel.options[0].disabled = true;
     for (let h = 1; h <= 12; h++) {
       hourSel.appendChild(new Option(String(h).padStart(2, '0'), String(h)));
     }
-
     minSel.appendChild(new Option('MM', '', true, true));
     minSel.options[0].disabled = true;
     for (let m = 0; m < 60; m++) {
@@ -408,140 +482,107 @@
     }
   })();
 
-  // -------- Place of Birth: cascading Country / State / City --------------
-  const PLACE_DATA = {
-    'India': {
-      'Maharashtra': ['Pune', 'Mumbai', 'Nagpur', 'Nashik', 'Aurangabad', 'Thane', 'Solapur', 'Kolhapur'],
-      'Karnataka': ['Bengaluru', 'Mysuru', 'Mangaluru', 'Hubballi', 'Belagavi'],
-      'Tamil Nadu': ['Chennai', 'Coimbatore', 'Madurai', 'Tiruchirappalli', 'Salem'],
-      'Delhi': ['New Delhi', 'Delhi'],
-      'Uttar Pradesh': ['Lucknow', 'Kanpur', 'Varanasi', 'Agra', 'Noida', 'Ghaziabad', 'Prayagraj'],
-      'Gujarat': ['Ahmedabad', 'Surat', 'Vadodara', 'Rajkot'],
-      'West Bengal': ['Kolkata', 'Howrah', 'Siliguri', 'Durgapur'],
-      'Telangana': ['Hyderabad', 'Warangal', 'Nizamabad'],
-      'Andhra Pradesh': ['Visakhapatnam', 'Vijayawada', 'Guntur', 'Tirupati'],
-      'Kerala': ['Kochi', 'Thiruvananthapuram', 'Kozhikode', 'Thrissur'],
-      'Rajasthan': ['Jaipur', 'Jodhpur', 'Udaipur', 'Kota', 'Ajmer'],
-      'Punjab': ['Amritsar', 'Ludhiana', 'Jalandhar', 'Patiala'],
-      'Haryana': ['Gurugram', 'Faridabad', 'Panipat', 'Karnal'],
-      'Madhya Pradesh': ['Bhopal', 'Indore', 'Gwalior', 'Jabalpur', 'Ujjain'],
-      'Bihar': ['Patna', 'Gaya', 'Muzaffarpur', 'Bhagalpur'],
-      'Odisha': ['Bhubaneswar', 'Cuttack', 'Rourkela', 'Puri'],
-      'Assam': ['Guwahati', 'Dibrugarh', 'Silchar'],
-      'Jharkhand': ['Ranchi', 'Jamshedpur', 'Dhanbad'],
-      'Chhattisgarh': ['Raipur', 'Bilaspur', 'Bhilai'],
-      'Uttarakhand': ['Dehradun', 'Haridwar', 'Nainital'],
-      'Goa': ['Panaji', 'Margao', 'Vasco da Gama'],
-      'Chandigarh': ['Chandigarh'],
-      'Jammu and Kashmir': ['Srinagar', 'Jammu'],
-    },
-    'United States': {
-      'California': ['Los Angeles', 'San Francisco', 'San Diego', 'San Jose', 'Sacramento', 'Oakland'],
-      'New York': ['New York City', 'Buffalo', 'Rochester', 'Albany'],
-      'Texas': ['Houston', 'Dallas', 'Austin', 'San Antonio', 'Fort Worth'],
-      'Florida': ['Miami', 'Orlando', 'Tampa', 'Jacksonville'],
-      'Illinois': ['Chicago', 'Aurora', 'Springfield', 'Naperville'],
-      'Washington': ['Seattle', 'Spokane', 'Tacoma', 'Bellevue'],
-      'New Jersey': ['Jersey City', 'Newark', 'Edison'],
-      'Massachusetts': ['Boston', 'Cambridge', 'Worcester'],
-    },
-    'United Kingdom': {
-      'England': ['London', 'Manchester', 'Birmingham', 'Liverpool', 'Leeds', 'Bristol'],
-      'Scotland': ['Edinburgh', 'Glasgow', 'Aberdeen', 'Dundee'],
-      'Wales': ['Cardiff', 'Swansea', 'Newport'],
-      'Northern Ireland': ['Belfast', 'Derry'],
-    },
-    'Canada': {
-      'Ontario': ['Toronto', 'Ottawa', 'Mississauga', 'Hamilton', 'Brampton'],
-      'British Columbia': ['Vancouver', 'Victoria', 'Surrey', 'Burnaby'],
-      'Quebec': ['Montreal', 'Quebec City', 'Laval'],
-      'Alberta': ['Calgary', 'Edmonton'],
-      'Manitoba': ['Winnipeg'],
-    },
-    'Australia': {
-      'New South Wales': ['Sydney', 'Newcastle', 'Wollongong'],
-      'Victoria': ['Melbourne', 'Geelong'],
-      'Queensland': ['Brisbane', 'Gold Coast', 'Cairns'],
-      'Western Australia': ['Perth', 'Fremantle'],
-      'South Australia': ['Adelaide'],
-    },
-    'United Arab Emirates': {
-      'Dubai': ['Dubai'],
-      'Abu Dhabi': ['Abu Dhabi', 'Al Ain'],
-      'Sharjah': ['Sharjah'],
-    },
-    'Singapore': { 'Singapore': ['Singapore'] },
-    'Nepal': {
-      'Bagmati': ['Kathmandu', 'Lalitpur', 'Bhaktapur'],
-      'Gandaki': ['Pokhara'],
-      'Lumbini': ['Butwal', 'Nepalgunj'],
-    },
-    'Sri Lanka': {
-      'Western': ['Colombo', 'Negombo'],
-      'Central': ['Kandy'],
-      'Southern': ['Galle'],
-    },
-    'Malaysia': {
-      'Kuala Lumpur': ['Kuala Lumpur'],
-      'Selangor': ['Shah Alam', 'Petaling Jaya'],
-      'Penang': ['George Town'],
-    },
-  };
+  // -------- India-only cascade via backend pincode master ---------------
+  const pinEl   = document.getElementById('pincode');
+  const stateEl = document.getElementById('state');
+  const cityEl  = document.getElementById('city');
+  const pinStatus = document.getElementById('pinStatus');
 
-  (function initPlaceCascade() {
-    const cEl = document.getElementById('country');
-    const sEl = document.getElementById('state');
-    const ciEl = document.getElementById('city');
-    if (!cEl || !sEl || !ciEl) return;
-
-    // Populate countries
-    Object.keys(PLACE_DATA).sort().forEach(c => {
-      cEl.appendChild(new Option(c, c));
-    });
-
-    function resetSelect(el, placeholder) {
-      el.innerHTML = '';
-      el.appendChild(new Option(placeholder, ''));
-      el.disabled = true;
+  let statesLoaded = false;
+  let statesCache = [];
+  async function ensureStatesLoaded() {
+    if (statesLoaded) return statesCache;
+    try {
+      const res = await AP.api.geoStates();
+      statesCache = (res && res.states) || [];
+      statesEl: {
+        stateEl.innerHTML = '';
+        stateEl.appendChild(new Option('—', ''));
+        statesCache.forEach(st => stateEl.appendChild(new Option(st, st)));
+      }
+      statesLoaded = true;
+    } catch (err) {
+      // Offline / auth hiccup — leave the "—" placeholder.
     }
+    return statesCache;
+  }
 
-    cEl.addEventListener('change', () => {
-      resetSelect(sEl, 'Select state');
-      resetSelect(ciEl, 'Select city');
-      const country = cEl.value;
-      if (!country || !PLACE_DATA[country]) return;
-      Object.keys(PLACE_DATA[country]).sort().forEach(st => {
-        sEl.appendChild(new Option(st, st));
-      });
-      sEl.disabled = false;
-    });
+  async function populateCitiesFor(state, preselect) {
+    cityEl.innerHTML = '';
+    cityEl.appendChild(new Option('—', ''));
+    cityEl.disabled = true;
+    if (!state) return;
+    try {
+      const res = await AP.api.geoCities(state);
+      const cities = (res && res.cities) || [];
+      cities.forEach(c => cityEl.appendChild(new Option(c, c)));
+      cityEl.disabled = cities.length === 0;
+      if (preselect) cityEl.value = preselect;
+    } catch (err) {
+      cityEl.disabled = true;
+    }
+  }
 
-    sEl.addEventListener('change', () => {
-      resetSelect(ciEl, 'Select city');
-      const country = cEl.value;
-      const state = sEl.value;
-      if (!country || !state || !PLACE_DATA[country][state]) return;
-      PLACE_DATA[country][state].slice().sort().forEach(ci => {
-        ciEl.appendChild(new Option(ci, ci));
-      });
-      ciEl.disabled = false;
-    });
-  })();
+  // Preload states on step 4 activation (so manual override works even if PIN fails)
+  document.querySelectorAll('[data-step-next="4"], [data-next="4"]').forEach(btn => {
+    btn.addEventListener('click', ensureStatesLoaded);
+  });
+  // Also preload after first render if we're already on step 4 (edit-from-settings deep link).
+  if (location.hash === '#step4') show(4);
+  ensureStatesLoaded();
+
+  let pinTimer = null;
+  pinEl.addEventListener('input', () => {
+    // Strip non-digits
+    const v = (pinEl.value || '').replace(/\D/g, '').slice(0, 6);
+    if (v !== pinEl.value) pinEl.value = v;
+    setErr('pincode', '');
+
+    clearTimeout(pinTimer);
+    if (!/^\d{6}$/.test(v)) {
+      pinStatus.textContent = I18N.t('onb.field.pincode.help');
+      pinStatus.classList.remove('err');
+      return;
+    }
+    pinStatus.textContent = 'Looking up…';
+    pinStatus.classList.remove('err');
+    pinTimer = setTimeout(async () => {
+      try {
+        const rec = await AP.api.geoPincode(v);
+        if (rec && rec.state) {
+          await ensureStatesLoaded();
+          stateEl.value = rec.state;
+          await populateCitiesFor(rec.state, rec.district || '');
+          pinStatus.textContent = rec.office
+            ? rec.office + ' · ' + rec.district + ', ' + rec.state
+            : rec.district + ', ' + rec.state;
+          pinStatus.classList.remove('err');
+          setErr('state', '');
+          setErr('city', '');
+        }
+      } catch (err) {
+        pinStatus.textContent = I18N.t('onb.pincode.notfound');
+        pinStatus.classList.add('err');
+      }
+    }, 280);
+  });
+
+  stateEl.addEventListener('change', () => {
+    setErr('state', '');
+    populateCitiesFor(stateEl.value, '');
+  });
+  cityEl.addEventListener('change', () => setErr('city', ''));
 
   function parseBirthInputs() {
     const name = (document.getElementById('fullName').value || '').trim();
     const dob  = (document.getElementById('dob').value  || '').trim();
 
-    // dob from <input type="date"> already comes as YYYY-MM-DD
     let isoDate = null;
     if (dob) {
       const tryDate = new Date(dob);
-      if (!isNaN(tryDate.getTime())) {
-        isoDate = tryDate.toISOString().slice(0, 10);
-      }
+      if (!isNaN(tryDate.getTime())) isoDate = tryDate.toISOString().slice(0, 10);
     }
 
-    // Assemble time from dropdowns (12-hour + AM/PM) → 24-hour HH:MM
     const hourRaw   = document.getElementById('tobHour').value;
     const minRaw    = document.getElementById('tobMinute').value;
     const periodRaw = document.getElementById('tobPeriod').value;
@@ -553,32 +594,39 @@
       isoTime = String(h).padStart(2, '0') + ':' + minRaw;
     }
 
-    // Place = "City, State, Country" from the cascading selects
-    const country = document.getElementById('country').value;
-    const state   = document.getElementById('state').value;
-    const city    = document.getElementById('city').value;
-    const place = [city, state, country].filter(Boolean).join(', ');
+    const pincode = (pinEl.value || '').trim();
+    const state   = stateEl.value;
+    const city    = cityEl.value;
+    const place   = [city, state, 'India'].filter(Boolean).join(', ');
 
-    return { name, isoDate, isoTime, place };
+    return { name, isoDate, isoTime, place, pincode, state, city };
   }
 
   document.getElementById('finishBtn').addEventListener('click', async () => {
-    const AP = window.AstroPath;
     if (!AP) { showToast('Client not ready.'); return; }
+    clearAllErrors();
 
     const parsed = parseBirthInputs();
-    if (!parsed.name)    return showToast('Please enter your full name.');
-    if (!parsed.isoDate) return showToast('Please pick your date of birth.');
-    if (!parsed.isoTime) return showToast('Please pick hour, minute, and AM/PM.');
-    if (!parsed.place)   return showToast('Please pick country, state, and city.');
+    let firstErr = null;
+    if (!parsed.name)    { setErr('name', I18N.t('onb.validation.name')); firstErr = firstErr || 'name'; }
+    if (!parsed.isoDate) { setErr('dob', I18N.t('onb.validation.dob')); firstErr = firstErr || 'dob'; }
+    if (!parsed.isoTime) { setErr('tob', I18N.t('onb.validation.tob')); firstErr = firstErr || 'tob'; }
+    if (!/^\d{6}$/.test(parsed.pincode)) { setErr('pincode', I18N.t('onb.validation.pincode')); firstErr = firstErr || 'pincode'; }
+    if (!parsed.state)   { setErr('state', I18N.t('onb.validation.state')); firstErr = firstErr || 'state'; }
+    if (!parsed.city)    { setErr('city', I18N.t('onb.validation.city')); firstErr = firstErr || 'city'; }
+    if (firstErr) {
+      showToast(I18N.t('onb.validation.' + (firstErr === 'pincode' ? 'pincode' : firstErr)));
+      const field = document.getElementById('f-' + firstErr);
+      if (field && field.scrollIntoView) field.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return;
+    }
 
-    // Gather focus + language
     const focuses = Array.from(document.querySelectorAll('[data-group="focus"] .choice.is-selected'))
       .map(c => c.dataset.value).filter(Boolean);
     const langEl = document.querySelector('[data-group="lang"] .lang.is-selected');
     const lang = (langEl && langEl.dataset.value) || 'en';
 
-    // Pune default coords; the real app would geocode.
+    // Default coords: Pune (real app would geocode city → lat/long).
     const payload = {
       name: parsed.name,
       birthDate: parsed.isoDate,
@@ -590,7 +638,6 @@
 
     showToast('Casting your kundli…');
     try {
-      // Persist locale + focus on backend preferences.
       const patch = {};
       if (['en','hi','mr'].includes(lang)) patch.languageCode = lang;
       if (focuses.includes('career'))      patch.focusArea = 'career';
@@ -598,14 +645,21 @@
       else if (focuses.includes('finance'))patch.focusArea = 'finance';
       else if (focuses.includes('spiritual')) patch.focusArea = 'spiritual';
       else patch.focusArea = 'balance';
-      if (Object.keys(patch).length > 0) {
+      if (Object.keys(patch).length) {
         try { await AP.api.patchPreferences(patch); } catch (_e) {}
       }
 
       const kundli = await AP.api.generateKundli(payload);
 
       AP.state.locale = lang;
-      AP.state.birthInfo = { ...payload, place: parsed.place, focuses };
+      AP.state.birthInfo = {
+        ...payload,
+        place: parsed.place,
+        pincode: parsed.pincode,
+        state: parsed.state,
+        city: parsed.city,
+        focuses,
+      };
       AP.state.lastKundli = kundli;
       AP.state.onboardingComplete = true;
 

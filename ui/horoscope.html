@@ -92,16 +92,16 @@
           <div class="brand-lockup">
             <div class="brand-icon">☼</div>
             <div class="brand-meta">
-              <strong>HOROSCOPE</strong>
-              <span>For your Moon sign · Kanya (Virgo)</span>
+              <strong data-i18n="horo.title">HOROSCOPE</strong>
+              <span><span data-i18n="horo.sub">For your Moon sign</span> · <span id="moonSignLabel">Kanya (Virgo)</span></span>
             </div>
           </div>
 
           <div class="tabs" style="margin-top: 18px;">
-            <button class="tab is-active" data-tab="day">Day</button>
-            <button class="tab" data-tab="week">Week</button>
-            <button class="tab" data-tab="month">Month</button>
-            <button class="tab" data-tab="year">Year</button>
+            <button class="tab is-active" data-tab="day" data-i18n="horo.tab.day">Day</button>
+            <button class="tab" data-tab="week" data-i18n="horo.tab.week">Week</button>
+            <button class="tab" data-tab="month" data-i18n="horo.tab.month">Month</button>
+            <button class="tab" data-tab="year" data-i18n="horo.tab.year">Year</button>
           </div>
 
           <div class="rashi-strip" aria-label="Rashi selector">
@@ -121,8 +121,8 @@
 
           <div class="period-card">
             <div class="pc-head">
-              <div class="pc-sign">Kanya · Today</div>
-              <div class="pc-date">Sat, 18 Apr</div>
+              <div class="pc-sign" id="pcSign">Kanya · Today</div>
+              <div class="pc-date" id="pcDate">Sat, 18 Apr</div>
             </div>
             <p class="pc-body" id="periodBody">
               The Sun transits your second house and illuminates conversations about value — your own and what
@@ -130,41 +130,41 @@
               motion, not what anchors you to the past.
             </p>
             <div class="pc-meta">
-              <div><b>76</b><span>Energy</span></div>
-              <div><b>High</b><span>Focus</span></div>
-              <div><b>3 PM</b><span>Peak hour</span></div>
+              <div><b id="metaEnergy">76</b><span data-i18n="horo.meta.energy">Energy</span></div>
+              <div><b id="metaFocus">High</b><span data-i18n="horo.meta.focus">Focus</span></div>
+              <div><b id="metaPeak">3 PM</b><span data-i18n="horo.meta.peak">Peak hour</span></div>
             </div>
           </div>
 
           <div class="section-h">
-            <h3>Areas</h3>
+            <h3 data-i18n="horo.areas">Areas</h3>
             <a href="#">Explain</a>
           </div>
           <div class="cat-grid">
-            <div class="cat">
-              <div class="cat-top"><div class="cat-icon">♡</div><div class="cat-title">Love</div></div>
+            <div class="cat" data-cat="love">
+              <div class="cat-top"><div class="cat-icon">♡</div><div class="cat-title" data-i18n="horo.cat.love">Love</div></div>
               <div class="cat-score"><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span></span></div>
               <div class="cat-line">Gentle reconciliation is possible tonight. Soften language.</div>
             </div>
-            <div class="cat">
-              <div class="cat-top"><div class="cat-icon">◎</div><div class="cat-title">Career</div></div>
+            <div class="cat" data-cat="career">
+              <div class="cat-top"><div class="cat-icon">◎</div><div class="cat-title" data-i18n="horo.cat.career">Career</div></div>
               <div class="cat-score"><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span></div>
               <div class="cat-line">A senior opens a door. Prepare your one-line pitch by noon.</div>
             </div>
-            <div class="cat">
-              <div class="cat-top"><div class="cat-icon">₹</div><div class="cat-title">Finance</div></div>
+            <div class="cat" data-cat="finance">
+              <div class="cat-top"><div class="cat-icon">₹</div><div class="cat-title" data-i18n="horo.cat.finance">Finance</div></div>
               <div class="cat-score"><span class="on"></span><span class="on"></span><span></span><span></span><span></span></div>
               <div class="cat-line">Defer major commitments until Mercury stabilises tomorrow.</div>
             </div>
-            <div class="cat">
-              <div class="cat-top"><div class="cat-icon">✚</div><div class="cat-title">Health</div></div>
+            <div class="cat" data-cat="health">
+              <div class="cat-top"><div class="cat-icon">✚</div><div class="cat-title" data-i18n="horo.cat.health">Health</div></div>
               <div class="cat-score"><span class="on"></span><span class="on"></span><span class="on"></span><span></span><span></span></div>
               <div class="cat-line">Hydrate + sunrise walk. Avoid heavy meals after 8 PM.</div>
             </div>
           </div>
 
           <div class="section-h">
-            <h3>Lucky for today</h3>
+            <h3 data-i18n="horo.lucky">Lucky for today</h3>
             <a href="#">Why</a>
           </div>
           <div class="lucky-grid">
@@ -174,11 +174,11 @@
           </div>
 
           <nav class="bottom-nav">
-            <a class="bn-item" href="./dashboard.html"><span class="bn-icon">☰</span>Home</a>
-            <a class="bn-item" href="./kundli.html"><span class="bn-icon">⊕</span>Kundli</a>
-            <a class="bn-item" href="./consultation.html"><span class="bn-icon">💬</span>Consult</a>
-            <a class="bn-item" href="./assistant.html"><span class="bn-icon">✶</span>AI</a>
-            <a class="bn-item" href="./settings.html"><span class="bn-icon">⚙</span>More</a>
+            <a class="bn-item is-active" href="./dashboard.html"><span class="bn-icon">☰</span><span data-i18n="nav.home">Home</span></a>
+            <a class="bn-item" href="./kundli.html"><span class="bn-icon">⊕</span><span data-i18n="nav.kundli">Kundli</span></a>
+            <a class="bn-item" href="./consultation.html"><span class="bn-icon">💬</span><span data-i18n="nav.consult">Consult</span></a>
+            <a class="bn-item" href="./assistant.html"><span class="bn-icon">✶</span><span data-i18n="nav.ai">AI</span></a>
+            <a class="bn-item" href="./settings.html"><span class="bn-icon">⚙</span><span data-i18n="nav.settings">Settings</span></a>
           </nav>
         </div>
       </div>
@@ -186,23 +186,22 @@
   </section>
 </main>
 
+<script src="./i18n.js"></script>
 <script src="./app.js"></script>
 <script>
   const TAB_TO_RANGE = { day: 'daily', week: 'weekly', month: 'monthly', year: 'yearly' };
-  const cache = {}; // range -> response
+  const cache = {};
 
   const tabs = document.querySelectorAll('[data-tab]');
   const body = document.getElementById('periodBody');
 
   function renderCategories(categories) {
-    const cats = document.querySelectorAll('.cat');
+    const I18N = window.AstroPathI18n;
     if (!categories || !categories.length) return;
     const byCat = {};
     categories.forEach(c => { byCat[c.category] = c; });
-    // Map DOM cats by their title text
-    cats.forEach(el => {
-      const title = (el.querySelector('.cat-title') || {}).textContent || '';
-      const key = title.toLowerCase();
+    document.querySelectorAll('.cat').forEach(el => {
+      const key = el.dataset.cat;
       const rec = byCat[key];
       if (!rec) return;
       const line = el.querySelector('.cat-line');
@@ -229,11 +228,22 @@
   async function activate(tabKey) {
     tabs.forEach(x => x.classList.toggle('is-active', x.dataset.tab === tabKey));
     const data = await loadRange(tabKey);
-    if (data && data.categories && data.categories.length) {
-      // Use first category's body as the headline paragraph (career is strongest signal).
-      const lead = data.categories.find(c => c.category === 'career') || data.categories[0];
-      if (body) body.textContent = lead.body;
-      renderCategories(data.categories);
+    if (data) {
+      // Period label (Today / Week of … / April 2026 / 2026)
+      const moonSign = (document.getElementById('moonSignLabel').textContent || 'Kanya').split(' ')[0];
+      const I18N = window.AstroPathI18n;
+      const tabLabel = I18N.t('horo.tab.' + tabKey, tabKey);
+      document.getElementById('pcSign').textContent = moonSign + ' · ' + tabLabel;
+      if (data.periodLabel) document.getElementById('pcDate').textContent = data.periodLabel;
+      if (data.categories && data.categories.length) {
+        const lead = data.categories.find(c => c.category === 'career') || data.categories[0];
+        if (body) body.textContent = lead.body;
+        renderCategories(data.categories);
+        // Meta block: energy = average score
+        const avg = Math.round(data.categories.reduce((s, c) => s + (c.score || 50), 0) / data.categories.length);
+        document.getElementById('metaEnergy').textContent = String(avg);
+        document.getElementById('metaFocus').textContent = avg >= 75 ? 'High' : avg >= 55 ? 'Steady' : 'Gentle';
+      }
     }
   }
 
@@ -242,6 +252,12 @@
   document.querySelectorAll('.rashi').forEach(r => r.addEventListener('click', () => {
     document.querySelectorAll('.rashi').forEach(x => x.classList.remove('is-active'));
     r.classList.add('is-active');
+    const name = r.querySelector('.rashi-name');
+    if (name) document.getElementById('moonSignLabel').textContent = name.textContent;
+    // Reset cache so new rashi refreshes
+    Object.keys(cache).forEach(k => delete cache[k]);
+    const active = document.querySelector('.tab.is-active');
+    if (active) activate(active.dataset.tab);
   }));
 
   (async function () {

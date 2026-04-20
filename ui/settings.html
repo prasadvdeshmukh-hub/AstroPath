@@ -142,8 +142,8 @@
           <div class="brand-lockup">
             <div class="brand-icon">⚙</div>
             <div class="brand-meta">
-              <strong>SETTINGS</strong>
-              <span>Control every cosmic preference</span>
+              <strong data-i18n="settings.title">SETTINGS</strong>
+              <span data-i18n="settings.sub">Control every cosmic preference</span>
             </div>
           </div>
 
@@ -153,12 +153,22 @@
               <div class="p-name" id="profileName">Vihaan Deshmukh</div>
               <div class="p-meta" id="profileMeta">Meena Lagna · Kanya Moon · Free tier</div>
             </div>
-            <a class="p-edit" href="#" id="editProfile">Edit</a>
+            <a class="p-edit" href="#" id="editProfile" data-i18n="btn.edit">Edit</a>
+          </div>
+
+          <!-- Subscription quick access -->
+          <div class="group">
+            <div class="grp-h" data-i18n="settings.plan">Subscription</div>
+            <a class="row" href="./subscription.html" style="color: inherit; text-decoration: none;">
+              <div class="r-ico">✦</div>
+              <div><div class="r-title" data-i18n="settings.plan.current">Current plan</div><div class="r-sub" id="planSummary" data-i18n="sub.free">Free</div></div>
+              <span class="r-action gold" data-i18n="settings.plan.manage">Manage</span>
+            </a>
           </div>
 
           <!-- Language -->
           <div class="group">
-            <div class="grp-h">Language</div>
+            <div class="grp-h" data-i18n="settings.lang">Language</div>
             <div class="lang-grid" id="langGrid">
               <div class="lg is-selected" data-lang="en">
                 <div>English<small>International</small></div>
@@ -166,13 +176,12 @@
               </div>
               <div class="lg" data-lang="hi"><div>हिन्दी<small>Hindi</small></div></div>
               <div class="lg" data-lang="mr"><div>मराठी<small>Marathi</small></div></div>
-              <div class="lg" data-lang="ta"><div>தமிழ்<small>Tamil · soon</small></div></div>
             </div>
           </div>
 
           <!-- Notifications -->
           <div class="group">
-            <div class="grp-h">Notifications</div>
+            <div class="grp-h" data-i18n="settings.notif">Notifications</div>
             <div class="row">
               <div class="r-ico">✦</div>
               <div><div class="r-title">Daily horoscope</div><div class="r-sub">Every morning at sunrise</div></div>
@@ -197,7 +206,7 @@
 
           <!-- Personalization -->
           <div class="group">
-            <div class="grp-h">Personalization</div>
+            <div class="grp-h" data-i18n="settings.person">Personalization</div>
             <div class="row">
               <div class="r-ico">◎</div>
               <div><div class="r-title">Focus areas</div><div class="r-sub">Career, Finance</div></div>
@@ -217,7 +226,7 @@
 
           <!-- Consultation mode -->
           <div class="group">
-            <div class="grp-h">Default consultation mode</div>
+            <div class="grp-h" data-i18n="settings.consult">Default consultation mode</div>
             <div class="consult-modes" id="consultModes">
               <div class="cm is-selected" data-mode="chat"><b>💬</b>Chat</div>
               <div class="cm" data-mode="call"><b>📞</b>Call</div>
@@ -227,7 +236,7 @@
 
           <!-- Privacy & trust -->
           <div class="group">
-            <div class="grp-h">Trust, Privacy &amp; Disclaimer</div>
+            <div class="grp-h" data-i18n="settings.trust">Trust, Privacy &amp; Disclaimer</div>
             <a class="row" href="./guidelines.html#privacy" style="color: inherit; text-decoration: none;">
               <div class="r-ico">🔒</div>
               <div><div class="r-title">Privacy controls</div><div class="r-sub">Data, consent, export</div></div>
@@ -255,14 +264,14 @@
             </div>
           </div>
 
-          <div class="danger" id="signOutBtn">Sign out</div>
+          <div class="danger" id="signOutBtn" data-i18n="btn.signout">Sign out</div>
 
           <nav class="bottom-nav">
-            <a class="bn-item" href="./dashboard.html"><span class="bn-icon">☰</span>Home</a>
-            <a class="bn-item" href="./kundli.html"><span class="bn-icon">⊕</span>Kundli</a>
-            <a class="bn-item" href="./consultation.html"><span class="bn-icon">💬</span>Consult</a>
-            <a class="bn-item" href="./assistant.html"><span class="bn-icon">✶</span>AI</a>
-            <a class="bn-item is-active" href="./settings.html"><span class="bn-icon">⚙</span>More</a>
+            <a class="bn-item" href="./dashboard.html"><span class="bn-icon">☰</span><span data-i18n="nav.home">Home</span></a>
+            <a class="bn-item" href="./kundli.html"><span class="bn-icon">⊕</span><span data-i18n="nav.kundli">Kundli</span></a>
+            <a class="bn-item" href="./consultation.html"><span class="bn-icon">💬</span><span data-i18n="nav.consult">Consult</span></a>
+            <a class="bn-item" href="./assistant.html"><span class="bn-icon">✶</span><span data-i18n="nav.ai">AI</span></a>
+            <a class="bn-item is-active" href="./settings.html"><span class="bn-icon">⚙</span><span data-i18n="nav.settings">Settings</span></a>
           </nav>
         </div>
       </div>
@@ -270,27 +279,31 @@
   </section>
 </main>
 
+<script src="./i18n.js"></script>
 <script src="./app.js"></script>
 <script>
   const AP = window.AstroPath;
+  const I18N = window.AstroPathI18n;
 
   async function patch(p) {
     try {
       const prefs = await AP.api.patchPreferences(p);
       if (prefs && prefs.languageCode) AP.state.locale = prefs.languageCode;
-      AP.dom.toast('Saved');
+      AP.dom.toast(I18N.t('btn.save') === 'Save' ? 'Saved' : I18N.t('btn.save'));
     } catch (err) {
       AP.dom.toast('Save failed: ' + (err && err.message ? err.message : ''));
     }
   }
 
-  // Language
+  // Language — live-switch the whole UI via i18n, then persist to backend.
   document.querySelectorAll('#langGrid .lg').forEach(l => l.addEventListener('click', () => {
     const lang = l.dataset.lang;
-    if (lang === 'ta') { AP.dom.toast('Tamil is coming soon.'); return; }
+    if (!['en','hi','mr'].includes(lang)) return;
     document.querySelectorAll('#langGrid .lg').forEach(x => x.classList.remove('is-selected'));
     l.classList.add('is-selected');
-    if (['en','hi','mr'].includes(lang)) patch({ languageCode: lang });
+    I18N.setLocale(lang);                    // re-renders all data-i18n nodes
+    if (AP.i18n && AP.i18n.refresh) AP.i18n.refresh();
+    patch({ languageCode: lang });
   }));
 
   // Consultation mode

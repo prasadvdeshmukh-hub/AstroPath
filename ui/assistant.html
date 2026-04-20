@@ -131,7 +131,7 @@
           <div class="brand-lockup">
             <div class="brand-icon">✶</div>
             <div class="brand-meta">
-              <strong>ASTROPATH AI</strong>
+              <strong data-i18n="nav.ai">ASTROPATH AI</strong>
               <span>Grounded in your kundli · private</span>
             </div>
           </div>
@@ -173,11 +173,11 @@
           </div>
 
           <nav class="bottom-nav" style="margin-top: 14px;">
-            <a class="bn-item" href="./dashboard.html"><span class="bn-icon">☰</span>Home</a>
-            <a class="bn-item" href="./kundli.html"><span class="bn-icon">⊕</span>Kundli</a>
-            <a class="bn-item" href="./consultation.html"><span class="bn-icon">💬</span>Consult</a>
-            <a class="bn-item is-active" href="./assistant.html"><span class="bn-icon">✶</span>AI</a>
-            <a class="bn-item" href="./settings.html"><span class="bn-icon">⚙</span>More</a>
+            <a class="bn-item" href="./dashboard.html"><span class="bn-icon">☰</span><span data-i18n="nav.home">Home</span></a>
+            <a class="bn-item" href="./kundli.html"><span class="bn-icon">⊕</span><span data-i18n="nav.kundli">Kundli</span></a>
+            <a class="bn-item" href="./consultation.html"><span class="bn-icon">💬</span><span data-i18n="nav.consult">Consult</span></a>
+            <a class="bn-item is-active" href="./assistant.html"><span class="bn-icon">✶</span><span data-i18n="nav.ai">AI</span></a>
+            <a class="bn-item" href="./settings.html"><span class="bn-icon">⚙</span><span data-i18n="nav.settings">Settings</span></a>
           </nav>
         </div>
       </div>
@@ -185,6 +185,7 @@
   </section>
 </main>
 
+<script src="./i18n.js"></script>
 <script src="./app.js"></script>
 <script>
   const chat = document.getElementById('chat');

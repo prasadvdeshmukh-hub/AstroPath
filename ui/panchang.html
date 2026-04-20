@@ -184,7 +184,7 @@
           <div class="brand-lockup">
             <div class="brand-icon">&#9728;</div>
             <div class="brand-meta">
-              <strong>PANCHANG</strong>
+              <strong data-i18n="panch.title">PANCHANG</strong>
               <span id="panchangMeta">Sat 18 Apr 2026 - Pune</span>
             </div>
           </div>
@@ -205,13 +205,13 @@
               <circle cx="250" cy="100" r="3" fill="#c87bff"/>
             </svg>
             <div class="sun-times">
-              <div>Sunrise<b id="sunriseTime">06:18 AM</b></div>
-              <div>Now<b id="nowTime">9:41 AM</b></div>
-              <div>Sunset<b id="sunsetTime">06:54 PM</b></div>
+              <div><span data-i18n="panch.sunrise">Sunrise</span><b id="sunriseTime">06:18 AM</b></div>
+              <div><span data-i18n="panch.now">Now</span><b id="nowTime">9:41 AM</b></div>
+              <div><span data-i18n="panch.sunset">Sunset</span><b id="sunsetTime">06:54 PM</b></div>
             </div>
           </div>
 
-          <div class="section-h"><h3>Panchang elements</h3><a href="#">Learn</a></div>
+          <div class="section-h"><h3 data-i18n="panch.elements">Panchang elements</h3><a href="./learn.html" data-i18n="nav.learn">Learn</a></div>
           <div class="panch-grid" id="panchGrid">
             <div class="tile" data-key="vara"><span>Vara</span><b>Shani (Sat)</b><small>Saturn day</small></div>
             <div class="tile" data-key="tithi"><span>Tithi</span><b>Shukla 2</b><small>to 11:42 PM</small></div>
@@ -221,55 +221,61 @@
             <div class="tile" data-key="rahu"><span>Rahu kaal</span><b>09:12-10:48</b><small>avoid</small></div>
           </div>
 
-          <div class="section-h"><h3>Moon today</h3><a href="#">Phase</a></div>
+          <div class="section-h"><h3 data-i18n="panch.moon">Moon today</h3><a href="#">Phase</a></div>
           <div class="panch-grid">
             <div class="tile"><span>Moonrise</span><b>08:22 AM</b><small>Kanya</small></div>
             <div class="tile"><span>Moonset</span><b>10:14 PM</b><small>Tula</small></div>
             <div class="tile"><span>Phase</span><b>Gibbous 82%</b><small>waxing</small></div>
           </div>
 
-          <div class="section-h"><h3>Muhurat Finder</h3><a href="#">Custom</a></div>
-          <div class="muhurat-range" id="muhuratRange">
-            <label class="range-option is-selected" data-range-option="month">
-              <input type="radio" name="muhuratScope" value="month" checked>
-              <div class="range-copy">
-                <strong id="monthValue">April</strong>
-                <span>Option 1 - Browse the current month</span>
-              </div>
-              <div class="range-stepper">
-                <button class="range-arrow" type="button" data-range-target="month" data-range-nav="prev">&#8249;</button>
-                <button class="range-arrow" type="button" data-range-target="month" data-range-nav="next">&#8250;</button>
-              </div>
-            </label>
-            <label class="range-option" data-range-option="year">
-              <input type="radio" name="muhuratScope" value="year">
-              <div class="range-copy">
-                <strong id="yearValue">2026</strong>
-                <span>Option 2 - Browse the current year</span>
-              </div>
-              <div class="range-stepper">
-                <button class="range-arrow" type="button" data-range-target="year" data-range-nav="prev">&#8249;</button>
-                <button class="range-arrow" type="button" data-range-target="year" data-range-nav="next">&#8250;</button>
-              </div>
-            </label>
+          <div class="section-h"><h3 data-i18n="panch.muhurat">Muhurat Finder</h3><a href="#" id="mfReset">Reset</a></div>
+
+          <!-- Single-day vs Range toggle -->
+          <div class="choi-row" style="grid-template-columns: 1fr 1fr; margin-top: 0;">
+            <button class="choi is-active" type="button" data-mf-mode="single" data-i18n="panch.muhurat.single">Single day</button>
+            <button class="choi" type="button" data-mf-mode="range" data-i18n="panch.muhurat.range">Date range</button>
           </div>
 
-          <div class="choi-row">
-            <button class="choi is-active" type="button" data-muhurat-type="marriage">Marriage</button>
-            <button class="choi" type="button" data-muhurat-type="business">Business</button>
-            <button class="choi" type="button" data-muhurat-type="griha">Griha</button>
-            <button class="choi" type="button" data-muhurat-type="travel">Travel</button>
-            <button class="choi" type="button" data-muhurat-type="naming">Naming</button>
+          <!-- Date picker(s) — max 1 year span -->
+          <div class="muhurat-range" id="mfDates">
+            <label class="range-option is-selected" id="mfSingleWrap">
+              <div class="range-copy" style="width: 100%;">
+                <strong data-i18n="panch.muhurat.date">Pick date(s) — up to 1 year</strong>
+                <input type="date" id="mfDate" style="width: 100%; margin-top: 6px; padding: 10px 12px; border-radius: 10px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,236,205,0.14); color: var(--gold-3); font: inherit;">
+              </div>
+            </label>
+            <div class="range-option" id="mfRangeWrap" style="display: none; grid-template-columns: 1fr 1fr; gap: 10px; cursor: default;">
+              <div class="range-copy">
+                <strong data-i18n="panch.muhurat.from">From</strong>
+                <input type="date" id="mfFrom" style="width: 100%; margin-top: 6px; padding: 10px 12px; border-radius: 10px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,236,205,0.14); color: var(--gold-3); font: inherit;">
+              </div>
+              <div class="range-copy">
+                <strong data-i18n="panch.muhurat.to">To</strong>
+                <input type="date" id="mfTo" style="width: 100%; margin-top: 6px; padding: 10px 12px; border-radius: 10px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,236,205,0.14); color: var(--gold-3); font: inherit;">
+              </div>
+            </div>
+            <div id="mfRangeError" style="display: none; color: var(--danger); font-size: 0.78rem; padding: 0 4px;"></div>
           </div>
+
+          <!-- Event type -->
+          <div class="choi-row">
+            <button class="choi is-active" type="button" data-muhurat-type="marriage" data-i18n="panch.type.marriage">Marriage</button>
+            <button class="choi" type="button" data-muhurat-type="business" data-i18n="panch.type.business">Business</button>
+            <button class="choi" type="button" data-muhurat-type="griha" data-i18n="panch.type.griha">Griha</button>
+            <button class="choi" type="button" data-muhurat-type="travel" data-i18n="panch.type.travel">Travel</button>
+            <button class="choi" type="button" data-muhurat-type="naming" data-i18n="panch.type.naming">Naming</button>
+          </div>
+
+          <button class="btn btn-primary" id="mfFind" type="button" style="width: 100%; margin-top: 12px;" data-i18n="panch.muhurat.find">Find Muhurat</button>
 
           <div class="muhurat" id="muhuratList" style="margin-top: 12px;"></div>
 
           <nav class="bottom-nav">
-            <a class="bn-item" href="./dashboard.html"><span class="bn-icon">&#8962;</span>Home</a>
-            <a class="bn-item" href="./kundli.html"><span class="bn-icon">&#8854;</span>Kundli</a>
-            <a class="bn-item" href="./consultation.html"><span class="bn-icon">&#128172;</span>Consult</a>
-            <a class="bn-item" href="./assistant.html"><span class="bn-icon">&#10038;</span>AI</a>
-            <a class="bn-item" href="./settings.html"><span class="bn-icon">&#9881;</span>More</a>
+            <a class="bn-item" href="./dashboard.html"><span class="bn-icon">&#8962;</span><span data-i18n="nav.home">Home</span></a>
+            <a class="bn-item" href="./kundli.html"><span class="bn-icon">&#8854;</span><span data-i18n="nav.kundli">Kundli</span></a>
+            <a class="bn-item" href="./consultation.html"><span class="bn-icon">&#128172;</span><span data-i18n="nav.consult">Consult</span></a>
+            <a class="bn-item" href="./assistant.html"><span class="bn-icon">&#10038;</span><span data-i18n="nav.ai">AI</span></a>
+            <a class="bn-item" href="./settings.html"><span class="bn-icon">&#9881;</span><span data-i18n="nav.settings">Settings</span></a>
           </nav>
         </div>
       </div>
@@ -277,6 +283,7 @@
   </section>
 </main>
 
+<script src="./i18n.js"></script>
 <script src="./app.js"></script>
 <script>
   (async function () {
@@ -320,16 +327,6 @@
       console.warn('Panchang fetch failed:', err && err.message);
     }
 
-    const scopeState = {
-      selected: 'month',
-      monthIndex: today.getMonth(),
-      year: today.getFullYear(),
-    };
-    const monthNames = [
-      'January', 'February', 'March', 'April', 'May', 'June',
-      'July', 'August', 'September', 'October', 'November', 'December'
-    ];
-
     const muhuratCatalog = {
       marriage: [
         { icon: 'M', title: 'Abhijit Muhurat', detail: '12:02 PM - 12:54 PM · highly favourable', pill: 'pill pill--teal', mark: 'Yes' },
@@ -358,26 +355,87 @@
       ],
     };
 
-    function renderRangeState() {
-      AP.dom.setText('#monthValue', monthNames[scopeState.monthIndex]);
-      AP.dom.setText('#yearValue', String(scopeState.year));
-      document.querySelectorAll('[data-range-option]').forEach((node) => {
-        const active = node.dataset.rangeOption === scopeState.selected;
-        node.classList.toggle('is-selected', active);
-        const radio = node.querySelector('input');
-        if (radio) radio.checked = active;
+    // Muhurat finder state: single day OR date range (max 1 year).
+    const mf = {
+      mode: 'single',
+      date: toYmd(today),
+      from: toYmd(today),
+      to:   toYmd(addDays(today, 30)),
+      type: 'marriage',
+    };
+
+    // --- helpers ---
+    function toYmd(d) {
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      return y + '-' + m + '-' + day;
+    }
+    function addDays(d, n) {
+      const x = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+      x.setDate(x.getDate() + n);
+      return x;
+    }
+    function parseYmd(s) {
+      if (!s) return null;
+      const parts = s.split('-').map((p) => parseInt(p, 10));
+      if (parts.length !== 3 || parts.some(Number.isNaN)) return null;
+      return new Date(parts[0], parts[1] - 1, parts[2]);
+    }
+    function daysBetween(a, b) {
+      return Math.round((b.getTime() - a.getTime()) / 86400000);
+    }
+    function humanDate(d) {
+      return d.toLocaleDateString(undefined, { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
+    }
+
+    // Hydrate date inputs with defaults.
+    document.getElementById('mfDate').value = mf.date;
+    document.getElementById('mfFrom').value = mf.from;
+    document.getElementById('mfTo').value   = mf.to;
+    function recomputeToMax() {
+      const from = parseYmd(document.getElementById('mfFrom').value);
+      if (!from) return;
+      document.getElementById('mfTo').setAttribute('min', toYmd(from));
+      // Cap the "to" maximum at 1 year from the "from" value.
+      document.getElementById('mfTo').setAttribute('max', toYmd(addDays(from, 365)));
+    }
+    recomputeToMax();
+
+    function setMfMode(mode) {
+      mf.mode = mode;
+      document.querySelectorAll('[data-mf-mode]').forEach((b) => {
+        b.classList.toggle('is-active', b.dataset.mfMode === mode);
       });
+      document.getElementById('mfSingleWrap').style.display = mode === 'single' ? '' : 'none';
+      document.getElementById('mfRangeWrap').style.display  = mode === 'range'  ? 'grid' : 'none';
+      const err = document.getElementById('mfRangeError');
+      err.style.display = 'none'; err.textContent = '';
     }
 
-    function currentScopeLabel() {
-      return scopeState.selected === 'month'
-        ? monthNames[scopeState.monthIndex]
-        : String(scopeState.year);
+    function validateAndComputeScope() {
+      const err = document.getElementById('mfRangeError');
+      err.style.display = 'none'; err.textContent = '';
+      if (mf.mode === 'single') {
+        const d = parseYmd(document.getElementById('mfDate').value);
+        if (!d) { err.textContent = 'Please pick a date.'; err.style.display = ''; return null; }
+        mf.date = toYmd(d);
+        return { label: humanDate(d), isRange: false };
+      }
+      const from = parseYmd(document.getElementById('mfFrom').value);
+      const to   = parseYmd(document.getElementById('mfTo').value);
+      if (!from || !to) { err.textContent = 'Please pick both From and To dates.'; err.style.display = ''; return null; }
+      if (to.getTime() < from.getTime()) { err.textContent = 'To must be after From.'; err.style.display = ''; return null; }
+      const span = daysBetween(from, to);
+      if (span > 365) { err.textContent = 'Range is capped at 1 year (365 days). Please shorten the window.'; err.style.display = ''; return null; }
+      mf.from = toYmd(from); mf.to = toYmd(to);
+      return { label: humanDate(from) + ' → ' + humanDate(to) + ' · ' + (span + 1) + ' days', isRange: true };
     }
 
-    function renderMuhuratList(type) {
+    function renderMuhuratList(scope) {
       const list = document.getElementById('muhuratList');
-      const cards = muhuratCatalog[type] || muhuratCatalog.marriage;
+      if (!scope) { list.innerHTML = ''; return; }
+      const cards = muhuratCatalog[mf.type] || muhuratCatalog.marriage;
       list.innerHTML = cards.map((item) => {
         const pill = item.pill
           ? '<span class="' + item.pill + '">' + item.mark + '</span>'
@@ -385,50 +443,50 @@
         return (
           '<div class="m-item">' +
             '<div class="m-icon">' + item.icon + '</div>' +
-            '<div class="m-body"><b>' + item.title + '</b><span>' + item.detail + ' · ' + currentScopeLabel() + '</span></div>' +
+            '<div class="m-body"><b>' + item.title + '</b><span>' + item.detail + ' · ' + scope.label + '</span></div>' +
             pill +
           '</div>'
         );
       }).join('');
     }
 
-    document.querySelectorAll('[name="muhuratScope"]').forEach((radio) => {
-      radio.addEventListener('change', () => {
-        scopeState.selected = radio.value;
-        renderRangeState();
-        const activeType = document.querySelector('[data-muhurat-type].is-active');
-        renderMuhuratList(activeType ? activeType.dataset.muhuratType : 'marriage');
-      });
+    // --- event wiring ---
+    document.querySelectorAll('[data-mf-mode]').forEach((b) => {
+      b.addEventListener('click', () => setMfMode(b.dataset.mfMode));
     });
 
-    document.querySelectorAll('[data-range-nav]').forEach((button) => {
-      button.addEventListener('click', (event) => {
-        event.preventDefault();
-        const target = button.dataset.rangeTarget;
-        const step = button.dataset.rangeNav === 'next' ? 1 : -1;
-        scopeState.selected = target;
-        if (target === 'month') {
-          scopeState.monthIndex = (scopeState.monthIndex + step + 12) % 12;
-        } else {
-          scopeState.year += step;
-        }
-        renderRangeState();
-        const activeType = document.querySelector('[data-muhurat-type].is-active');
-        renderMuhuratList(activeType ? activeType.dataset.muhuratType : 'marriage');
-      });
-    });
+    document.getElementById('mfFrom').addEventListener('change', () => { recomputeToMax(); });
 
     document.querySelectorAll('[data-muhurat-type]').forEach((button) => {
       button.addEventListener('click', () => {
         document.querySelectorAll('[data-muhurat-type]').forEach((node) => {
           node.classList.toggle('is-active', node === button);
         });
-        renderMuhuratList(button.dataset.muhuratType);
+        mf.type = button.dataset.muhuratType;
       });
     });
 
-    renderRangeState();
-    renderMuhuratList('marriage');
+    document.getElementById('mfFind').addEventListener('click', () => {
+      const scope = validateAndComputeScope();
+      if (!scope) { AP.dom.toast('Please fix the date selection.'); return; }
+      renderMuhuratList(scope);
+    });
+
+    document.getElementById('mfReset').addEventListener('click', (e) => {
+      e.preventDefault();
+      mf.date = toYmd(today);
+      mf.from = toYmd(today);
+      mf.to   = toYmd(addDays(today, 30));
+      document.getElementById('mfDate').value = mf.date;
+      document.getElementById('mfFrom').value = mf.from;
+      document.getElementById('mfTo').value   = mf.to;
+      recomputeToMax();
+      setMfMode('single');
+      renderMuhuratList(null);
+    });
+
+    // Initial render — show today's muhurats for the default event.
+    renderMuhuratList({ label: humanDate(today), isRange: false });
   })();
 </script>
 </body>
