@@ -130,9 +130,13 @@ function buildApp(env) {
       }
       next();
     });
+    // Default landing = login.html (matches what start-local.bat opens).
+    // The cosmic portal is still reachable at /app/index.html if someone
+    // needs it, but bare /app/ goes straight to the login form so the
+    // deployed experience matches the local dev bat-file experience.
     app.use('/app', express.static(env.PUBLIC_UI_DIR, {
       extensions: ['html'],
-      index: 'index.html',
+      index: 'login.html',
       maxAge: env.NODE_ENV === 'production' ? '1h' : 0,
     }));
   }
@@ -166,7 +170,7 @@ function buildApp(env) {
   // the lightweight /demo forms; everything else gets the JSON summary.
   app.get('/', (req, res) => {
     const wantsHtml = (req.headers.accept || '').includes('text/html');
-    if (wantsHtml) return res.redirect(env.PUBLIC_UI_DIR ? '/app/' : '/demo/');
+    if (wantsHtml) return res.redirect(env.PUBLIC_UI_DIR ? '/app/login.html' : '/demo/');
     res.json({
       data: {
         service: 'astropath-backend',
