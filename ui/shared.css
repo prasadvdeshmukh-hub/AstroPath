@@ -351,6 +351,28 @@ body { position: relative; }
   color: var(--gold-3);
 }
 
+/* Brand logo — landscape image (planet + "ASTROPATH" wordmark) replaces
+   the old emoji+text lockup on every page. Image lives at
+   ui/assets/logo.png; the rule applies to the existing .brand-icon slot
+   inside .brand-lockup so no per-page HTML changes are needed. */
+.brand-lockup .brand-icon {
+  width: auto;
+  height: 52px;
+  aspect-ratio: 1380 / 752;
+  background:
+    url("./assets/logo.png") left center / contain no-repeat;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  color: transparent;   /* hides the fallback emoji glyph */
+  font-size: 0;         /* ensures the emoji doesn't take layout space */
+  overflow: hidden;
+}
+
+/* The logo image already contains the ASTROPATH wordmark, so the
+   text lockup beside it would double-up. Hide the duplicate text. */
+.brand-lockup .brand-meta { display: none; }
+
 .brand-meta strong {
   display: block;
   font-weight: 700;
@@ -380,21 +402,37 @@ body { position: relative; }
   font-size: 0.94rem;
 }
 
-/* ---------- buttons ---------- */
+/* ---------- buttons ----------
+   Every primary call-to-action button across the app renders at the same
+   size: full width of its container, 48px tall, 18px corners. The rule
+   deliberately covers all the CTA class names that have accumulated
+   (.primary-button / .ghost-button / .btn / .btn-primary / .danger) so a
+   page author can reach for whichever name fits the intent and still
+   get the uniform size. .pill-button intentionally overrides width to
+   stay compact for inline use (e.g., "History" next to "Top up"). */
 .primary-button,
 .ghost-button,
-.pill-button {
+.pill-button,
+.btn,
+.btn-primary,
+.danger {
   width: 100%;
+  min-height: 48px;
   border: 0;
   border-radius: 18px;
   padding: 14px 16px;
   font: inherit;
+  font-size: 1rem;
   font-weight: 600;
+  line-height: 1.2;
+  text-align: center;
   cursor: pointer;
+  box-sizing: border-box;
   transition: transform 180ms ease, filter 180ms ease, box-shadow 180ms ease;
 }
 
-.primary-button {
+.primary-button,
+.btn-primary {
   background: linear-gradient(135deg, var(--gold) 0%, var(--amber) 58%, var(--ember) 100%);
   color: #2b1308;
   box-shadow: 0 16px 32px rgba(255, 154, 58, 0.28), inset 0 1px 0 rgba(255,255,255,0.28);
@@ -402,15 +440,25 @@ body { position: relative; }
 
 .primary-button:hover,
 .ghost-button:hover,
-.pill-button:hover {
+.pill-button:hover,
+.btn:hover,
+.btn-primary:hover,
+.danger:hover {
   transform: translateY(-1px);
   filter: brightness(1.05);
 }
 
-.ghost-button {
+.ghost-button,
+.btn {
   background: transparent;
   color: var(--text);
   border: 1px solid rgba(255, 236, 205, 0.14);
+}
+
+.danger {
+  background: rgba(255, 141, 166, 0.06);
+  border: 1px solid rgba(255, 141, 166, 0.22);
+  color: var(--danger);
 }
 
 .pill-button {
@@ -730,6 +778,92 @@ body { position: relative; }
   .form-wrap { padding: 12px; }
   .phone-screen { min-height: 700px; padding-inline: 18px; }
   .portal-link { left: 20px; top: 20px; }
+}
+
+/* =========================================================
+   Mobile-app chrome flattening
+   ---------------------------------------------------------
+   Requested by product: remove the simulated "phone frame"
+   border that was showing around every screen, and pin the
+   bottom nav to the viewport like a standard native mobile
+   app so users don't have to scroll to reach it.
+   ========================================================= */
+
+/* Kill the outer "scene" padding + decorative layers so the
+   screen content fills the viewport edge-to-edge. */
+.scene {
+  padding: 0;
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: block;
+  overflow: visible;
+}
+.scene::before,
+.scene::after { display: none; }
+
+/* Shell spans the full viewport width on mobile — no more
+   centered 480px card with visible side borders. */
+.shell {
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  gap: 0;
+}
+
+/* Flatten the outer panel that was drawing the first card
+   border/shadow around every page. */
+.panel.form-wrap {
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  padding: 0;
+  backdrop-filter: none;
+  overflow: visible;
+}
+
+/* Remove the phone-mockup frame (border, padding, rounded
+   corners, drop shadow) so the screen itself IS the app. */
+.phone-frame {
+  width: 100%;
+  max-width: 100%;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+/* No need for the notch once the phone frame is gone. */
+.phone-notch { display: none; }
+
+/* Phone screen fills the viewport; reserve space at the
+   bottom so the fixed bottom nav never covers content. */
+.phone-screen {
+  min-height: 100vh;
+  min-height: 100dvh;
+  border-radius: 0;
+  padding: 22px 18px calc(92px + env(safe-area-inset-bottom, 0px));
+}
+
+/* Static bottom nav — pinned to the viewport bottom across
+   every page, matching standard iOS/Android tab bars. */
+.bottom-nav {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  margin: 0;
+  padding: 10px 8px calc(10px + env(safe-area-inset-bottom, 0px));
+  border-radius: 0;
+  border-left: 0;
+  border-right: 0;
+  border-bottom: 0;
+  border-top: 1px solid rgba(255, 236, 205, 0.12);
+  background: rgba(6, 2, 14, 0.92);
+  backdrop-filter: blur(14px) saturate(1.2);
+  -webkit-backdrop-filter: blur(14px) saturate(1.2);
+  z-index: 50;
 }
 
 /* ---------- toast (shared across pages) ---------- */

@@ -125,13 +125,6 @@
     background: rgba(255, 107, 107, 0.06);
   }
 
-  .pin-status {
-    font-size: 0.76rem;
-    color: var(--gold-2);
-    margin-top: 6px;
-    min-height: 1em;
-  }
-  .pin-status.err { color: #ff8d8d; }
 </style>
 </head>
 <body>
@@ -295,13 +288,6 @@ seeker.</strong>
                 <select id="country" required disabled>
                   <option value="IN" selected>India</option>
                 </select>
-              </div>
-
-              <div class="field" id="f-pincode">
-                <label class="label" for="pincode"><span data-i18n="onb.field.pincode">Postal Code (PIN)</span><span class="req" aria-hidden="true">*</span></label>
-                <input id="pincode" type="text" inputmode="numeric" maxlength="6" pattern="\d{6}" placeholder="411001" required>
-                <div class="pin-status" id="pinStatus" data-i18n="onb.field.pincode.help">Enter a 6-digit Indian PIN — state &amp; city auto-fill.</div>
-                <div class="err-line" id="err-pincode"></div>
               </div>
 
               <div class="field-row">
@@ -482,11 +468,9 @@ seeker.</strong>
     }
   })();
 
-  // -------- India-only cascade via backend pincode master ---------------
-  const pinEl   = document.getElementById('pincode');
+  // -------- India-only state/city cascade (manual entry, no pincode) ----
   const stateEl = document.getElementById('state');
   const cityEl  = document.getElementById('city');
-  const pinStatus = document.getElementById('pinStatus');
 
   let statesLoaded = false;
   let statesCache = [];
@@ -531,42 +515,6 @@ seeker.</strong>
   if (location.hash === '#step4') show(4);
   ensureStatesLoaded();
 
-  let pinTimer = null;
-  pinEl.addEventListener('input', () => {
-    // Strip non-digits
-    const v = (pinEl.value || '').replace(/\D/g, '').slice(0, 6);
-    if (v !== pinEl.value) pinEl.value = v;
-    setErr('pincode', '');
-
-    clearTimeout(pinTimer);
-    if (!/^\d{6}$/.test(v)) {
-      pinStatus.textContent = I18N.t('onb.field.pincode.help');
-      pinStatus.classList.remove('err');
-      return;
-    }
-    pinStatus.textContent = 'Looking up…';
-    pinStatus.classList.remove('err');
-    pinTimer = setTimeout(async () => {
-      try {
-        const rec = await AP.api.geoPincode(v);
-        if (rec && rec.state) {
-          await ensureStatesLoaded();
-          stateEl.value = rec.state;
-          await populateCitiesFor(rec.state, rec.district || '');
-          pinStatus.textContent = rec.office
-            ? rec.office + ' · ' + rec.district + ', ' + rec.state
-            : rec.district + ', ' + rec.state;
-          pinStatus.classList.remove('err');
-          setErr('state', '');
-          setErr('city', '');
-        }
-      } catch (err) {
-        pinStatus.textContent = I18N.t('onb.pincode.notfound');
-        pinStatus.classList.add('err');
-      }
-    }, 280);
-  });
-
   stateEl.addEventListener('change', () => {
     setErr('state', '');
     populateCitiesFor(stateEl.value, '');
@@ -594,12 +542,11 @@ seeker.</strong>
       isoTime = String(h).padStart(2, '0') + ':' + minRaw;
     }
 
-    const pincode = (pinEl.value || '').trim();
     const state   = stateEl.value;
     const city    = cityEl.value;
     const place   = [city, state, 'India'].filter(Boolean).join(', ');
 
-    return { name, isoDate, isoTime, place, pincode, state, city };
+    return { name, isoDate, isoTime, place, state, city };
   }
 
   document.getElementById('finishBtn').addEventListener('click', async () => {
@@ -611,11 +558,10 @@ seeker.</strong>
     if (!parsed.name)    { setErr('name', I18N.t('onb.validation.name')); firstErr = firstErr || 'name'; }
     if (!parsed.isoDate) { setErr('dob', I18N.t('onb.validation.dob')); firstErr = firstErr || 'dob'; }
     if (!parsed.isoTime) { setErr('tob', I18N.t('onb.validation.tob')); firstErr = firstErr || 'tob'; }
-    if (!/^\d{6}$/.test(parsed.pincode)) { setErr('pincode', I18N.t('onb.validation.pincode')); firstErr = firstErr || 'pincode'; }
     if (!parsed.state)   { setErr('state', I18N.t('onb.validation.state')); firstErr = firstErr || 'state'; }
     if (!parsed.city)    { setErr('city', I18N.t('onb.validation.city')); firstErr = firstErr || 'city'; }
     if (firstErr) {
-      showToast(I18N.t('onb.validation.' + (firstErr === 'pincode' ? 'pincode' : firstErr)));
+      showToast(I18N.t('onb.validation.' + firstErr));
       const field = document.getElementById('f-' + firstErr);
       if (field && field.scrollIntoView) field.scrollIntoView({ behavior: 'smooth', block: 'center' });
       return;
@@ -655,7 +601,6 @@ seeker.</strong>
       AP.state.birthInfo = {
         ...payload,
         place: parsed.place,
-        pincode: parsed.pincode,
         state: parsed.state,
         city: parsed.city,
         focuses,
